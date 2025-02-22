@@ -22,7 +22,19 @@ export function Navigation() {
       setUser(session?.user ?? null);
     });
 
-    return () => subscription.unsubscribe();
+    // Listen for logout events from other tabs
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'logout-event') {
+        window.location.href = "/";
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      subscription.unsubscribe();
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   const handleSignOut = async () => {
@@ -32,12 +44,16 @@ export function Navigation() {
         // If we get a session missing error, we can safely ignore it
         // as the user is already signed out
         if (error.message.includes("session")) {
+          // Notify other tabs about logout
+          localStorage.setItem('logout-event', Date.now().toString());
           window.location.href = "/";
           return;
         }
         throw error;
       }
       
+      // Notify other tabs about logout
+      localStorage.setItem('logout-event', Date.now().toString());
       // Redirect to home page after successful logout
       window.location.href = "/";
     } catch (error: any) {
