@@ -2,8 +2,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Mail, Lock, User, ArrowRight } from "lucide-react";
+import { Mail, Lock, User, ArrowRight, GraduationCap, BookOpen } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+type UserRole = 'student' | 'teacher';
 
 const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -12,6 +21,7 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [role, setRole] = useState<UserRole>("student");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -28,6 +38,7 @@ const Auth = () => {
             data: {
               first_name: firstName,
               last_name: lastName,
+              role: role // Add role to metadata
             },
           },
         });
@@ -102,6 +113,31 @@ const Auth = () => {
                     placeholder="Doe"
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="role" className="block text-sm font-medium text-gray-700">
+                  I want to
+                </label>
+                <Select value={role} onValueChange={(value) => setRole(value as UserRole)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="student">
+                      <div className="flex items-center gap-2">
+                        <GraduationCap className="h-4 w-4" />
+                        <span>Learn as a Student</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="teacher">
+                      <div className="flex items-center gap-2">
+                        <BookOpen className="h-4 w-4" />
+                        <span>Teach as an Instructor</span>
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </>
           )}
