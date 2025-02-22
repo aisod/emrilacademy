@@ -3,7 +3,7 @@ import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { ClassCard } from "@/components/classes/ClassCard";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";  // Update import path
 
 export default function StudentDashboard() {
   const { toast } = useToast();
@@ -33,9 +33,15 @@ export default function StudentDashboard() {
 
   const handleEnroll = async (classId: string) => {
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("No authenticated user");
+
       const { error } = await supabase
         .from("enrollments")
-        .insert({ class_id: classId });
+        .insert({ 
+          class_id: classId,
+          student_id: session.user.id
+        });
 
       if (error) throw error;
 

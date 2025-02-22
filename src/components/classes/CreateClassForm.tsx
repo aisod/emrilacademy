@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";  // Update import path
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,11 +21,16 @@ export function CreateClassForm({ onSuccess }: { onSuccess: () => void }) {
     setLoading(true);
 
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("No authenticated user");
+
       const { error } = await supabase.from("classes").insert({
-        ...formData,
+        title: formData.title,
+        description: formData.description,
         start_time: new Date(formData.startTime).toISOString(),
         end_time: new Date(formData.endTime).toISOString(),
         class_type: formData.classType,
+        teacher_id: session.user.id
       });
 
       if (error) throw error;
