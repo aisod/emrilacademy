@@ -31,18 +31,47 @@ const Auth = () => {
 
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
+        console.log("Signing up with data:", {
+          email,
+          firstName,
+          lastName,
+          role,
+        });
+
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
+            emailRedirectTo: `${window.location.origin}/auth`,
             data: {
               first_name: firstName,
               last_name: lastName,
-              role: role // Add role to metadata
+              role: role
             },
           },
         });
+
+        console.log("Signup response:", { data, error });
+
         if (error) throw error;
+
+        // Insert into profiles table directly after signup
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert([
+            {
+              id: data.user?.id,
+              first_name: firstName,
+              last_name: lastName,
+              role: role,
+            }
+          ]);
+
+        if (profileError) {
+          console.error("Profile creation error:", profileError);
+          throw profileError;
+        }
+
         toast({
           title: "Success!",
           description: "Please check your email to confirm your account.",
@@ -56,6 +85,7 @@ const Auth = () => {
         navigate("/");
       }
     } catch (error: any) {
+      console.error("Auth error:", error);
       toast({
         variant: "destructive",
         title: "Error",
