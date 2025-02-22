@@ -1,6 +1,6 @@
-
 import { Link, useLocation } from "react-router-dom";
 import { LayoutDashboard, GraduationCap, BookOpen, ChevronLeft } from "lucide-react";
+import { UnreadCount } from "@/components/messages/UnreadCount";
 import {
   Sidebar,
   SidebarContent,
@@ -25,14 +25,17 @@ export function DashboardSidebar() {
         <nav className="space-y-2 p-4">
           <Link
             to="/dashboard"
-            className={`flex items-center gap-2 p-3 rounded-lg transition-colors ${
+            className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
               isLinkActive("/dashboard")
                 ? "bg-primary text-white"
                 : "text-gray-600 hover:bg-gray-100"
             }`}
           >
-            <LayoutDashboard className="h-5 w-5" />
-            <span>Dashboard</span>
+            <div className="flex items-center gap-2">
+              <LayoutDashboard className="h-5 w-5" />
+              <span>Dashboard</span>
+            </div>
+            <UnreadCount />
           </Link>
           <Link
             to="/courses"
