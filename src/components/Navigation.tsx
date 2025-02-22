@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
 import { useToast } from "@/components/ui/use-toast";
+import { LogOut } from "lucide-react";
 
 export function Navigation() {
   const [user, setUser] = useState<User | null>(null);
@@ -25,7 +26,11 @@ export function Navigation() {
     // Listen for logout events from other tabs
     const handleStorageChange = (event: StorageEvent) => {
       if (event.key === 'logout-event') {
-        window.location.href = "/";
+        // Clear any local session data
+        supabase.auth.signOut().then(() => {
+          setUser(null);
+          window.location.href = "/";
+        });
       }
     };
 
@@ -39,27 +44,21 @@ export function Navigation() {
 
   const handleSignOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        // If we get a session missing error, we can safely ignore it
-        // as the user is already signed out
-        if (error.message.includes("session")) {
-          // Notify other tabs about logout
-          localStorage.setItem('logout-event', Date.now().toString());
-          window.location.href = "/";
-          return;
-        }
-        throw error;
-      }
-      
-      // Notify other tabs about logout
+      // First notify other tabs
       localStorage.setItem('logout-event', Date.now().toString());
-      // Redirect to home page after successful logout
+      
+      // Then sign out from Supabase
+      await supabase.auth.signOut();
+      
+      // Clear any local session data
+      setUser(null);
+      
+      // Force refresh the page to ensure clean state
       window.location.href = "/";
     } catch (error: any) {
       toast({
         variant: "destructive",
-        title: "Error",
+        title: "Error signing out",
         description: error.message,
       });
     }
@@ -91,9 +90,9 @@ export function Navigation() {
               <span className="text-gray-600">Welcome!</span>
               <button
                 onClick={handleSignOut}
-                className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
+                className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors flex items-center gap-2"
               >
-                Sign Out
+                Sign Out <LogOut className="w-4 h-4" />
               </button>
             </>
           ) : (
