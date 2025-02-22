@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Mail, Lock, User, ArrowRight, GraduationCap, BookOpen } from "lucide-react";
@@ -31,13 +30,6 @@ export const SignupForm = ({ onToggleMode }: SignupFormProps) => {
     setLoading(true);
 
     try {
-      console.log("Signing up with data:", {
-        email,
-        firstName,
-        lastName,
-        role,
-      });
-
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -51,25 +43,7 @@ export const SignupForm = ({ onToggleMode }: SignupFormProps) => {
         },
       });
 
-      console.log("Signup response:", { data, error });
-
       if (error) throw error;
-
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert([
-          {
-            id: data.user?.id,
-            first_name: firstName,
-            last_name: lastName,
-            role: role,
-          }
-        ]);
-
-      if (profileError) {
-        console.error("Profile creation error:", profileError);
-        throw profileError;
-      }
 
       toast({
         title: "Success!",
