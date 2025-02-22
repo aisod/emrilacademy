@@ -28,7 +28,12 @@ export function MessageList() {
       const { data, error } = await supabase
         .from("messages")
         .select(`
-          *,
+          id,
+          content,
+          sender_id,
+          receiver_id,
+          read_at,
+          created_at,
           profiles:sender_id(first_name, last_name)
         `)
         .or(`receiver_id.eq.${session.user.id},sender_id.eq.${session.user.id}`)
