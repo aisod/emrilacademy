@@ -1,7 +1,43 @@
 
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import type { User } from "@supabase/supabase-js";
+import { useToast } from "@/components/ui/use-toast";
 
 export function Navigation() {
+  const [user, setUser] = useState<User | null>(null);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
+    }
+  };
+
   return (
     <nav className="fixed w-full bg-white/80 backdrop-blur-md z-50 border-b">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
@@ -23,12 +59,32 @@ export function Navigation() {
           </Link>
         </div>
         <div className="flex items-center space-x-4">
-          <button className="px-4 py-2 text-primary hover:text-primary/80 transition-colors">
-            Log in
-          </button>
-          <button className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors">
-            Get Started
-          </button>
+          {user ? (
+            <>
+              <span className="text-gray-600">Welcome!</span>
+              <button
+                onClick={handleSignOut}
+                className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
+              >
+                Sign Out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/auth"
+                className="px-4 py-2 text-primary hover:text-primary/80 transition-colors"
+              >
+                Log in
+              </Link>
+              <Link
+                to="/auth"
+                className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
+              >
+                Get Started
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </nav>
