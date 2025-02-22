@@ -24,13 +24,21 @@ export function Navigation() {
     });
 
     // Listen for logout events from other tabs
-    const handleStorageChange = (event: StorageEvent) => {
+    const handleStorageChange = async (event: StorageEvent) => {
       if (event.key === 'logout-event') {
         // Clear any local session data
-        supabase.auth.signOut().then(() => {
+        try {
+          await supabase.auth.signOut();
           setUser(null);
-          window.location.href = "/";
-        });
+          // Force clear local storage to ensure no lingering session data
+          localStorage.clear();
+          // Force refresh the page to ensure clean state
+          window.location.reload();
+        } catch (error) {
+          console.error('Error during cross-tab logout:', error);
+          // Force refresh anyway to ensure synchronized state
+          window.location.reload();
+        }
       }
     };
 
@@ -44,23 +52,29 @@ export function Navigation() {
 
   const handleSignOut = async () => {
     try {
-      // First notify other tabs
+      // First clear any local storage data
+      localStorage.clear();
+      
+      // Notify other tabs about logout
       localStorage.setItem('logout-event', Date.now().toString());
       
-      // Then sign out from Supabase
-      await supabase.auth.signOut();
+      // Sign out from Supabase
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
       
-      // Clear any local session data
+      // Clear local state
       setUser(null);
       
-      // Force refresh the page to ensure clean state
-      window.location.href = "/";
+      // Force reload the page to ensure clean state
+      window.location.reload();
     } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Error signing out",
         description: error.message,
       });
+      // Force reload anyway to ensure synchronized state
+      window.location.reload();
     }
   };
 
