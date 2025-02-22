@@ -28,7 +28,18 @@ export function Navigation() {
   const handleSignOut = async () => {
     try {
       const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      if (error) {
+        // If we get a session missing error, we can safely ignore it
+        // as the user is already signed out
+        if (error.message.includes("session")) {
+          window.location.href = "/";
+          return;
+        }
+        throw error;
+      }
+      
+      // Redirect to home page after successful logout
+      window.location.href = "/";
     } catch (error: any) {
       toast({
         variant: "destructive",
