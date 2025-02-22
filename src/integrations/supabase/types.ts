@@ -9,6 +9,86 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      classes: {
+        Row: {
+          class_type: Database["public"]["Enums"]["class_type"]
+          created_at: string
+          description: string | null
+          end_time: string | null
+          id: string
+          start_time: string | null
+          teacher_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          class_type?: Database["public"]["Enums"]["class_type"]
+          created_at?: string
+          description?: string | null
+          end_time?: string | null
+          id?: string
+          start_time?: string | null
+          teacher_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          class_type?: Database["public"]["Enums"]["class_type"]
+          created_at?: string
+          description?: string | null
+          end_time?: string | null
+          id?: string
+          start_time?: string | null
+          teacher_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "classes_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      enrollments: {
+        Row: {
+          class_id: string
+          enrolled_at: string
+          id: string
+          student_id: string
+        }
+        Insert: {
+          class_id: string
+          enrolled_at?: string
+          id?: string
+          student_id: string
+        }
+        Update: {
+          class_id?: string
+          enrolled_at?: string
+          id?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "enrollments_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "enrollments_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -47,6 +127,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      class_type: "live" | "recorded"
       user_role: "student" | "teacher" | "admin"
     }
     CompositeTypes: {
