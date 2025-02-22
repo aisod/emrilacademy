@@ -1,11 +1,8 @@
-
 import { Navigation } from "@/components/Navigation";
 import { FeatureCard } from "@/components/FeatureCard";
 import { ArrowRight, Video, BookOpen, Users, Award, GraduationCap } from "lucide-react";
-
 const Index = () => {
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 font-['Inter']">
+  return <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 font-['Inter']">
       <Navigation />
       
       {/* Hero Section */}
@@ -28,11 +25,7 @@ const Index = () => {
             </div>
           </div>
           <div className="relative animate-fade-in">
-            <img
-              src="/lovable-uploads/9c1c95cc-948b-4ab7-b471-a11dea40f829.png"
-              alt="Video conference interface"
-              className="rounded-lg shadow-2xl"
-            />
+            <img alt="Video conference interface" className="rounded-lg shadow-2xl" src="/lovable-uploads/265014d0-c0a9-483b-98b2-1922c400afd1.jpg" />
           </div>
         </div>
       </section>
@@ -45,26 +38,10 @@ const Index = () => {
             <p className="text-gray-600">Discover the features that make our platform unique</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <FeatureCard
-              icon={Video}
-              title="Live Interactive Classes"
-              description="Engage in real-time with expert teachers and fellow students."
-            />
-            <FeatureCard
-              icon={BookOpen}
-              title="Study Resources"
-              description="Access comprehensive study materials and recorded sessions."
-            />
-            <FeatureCard
-              icon={Users}
-              title="Community Learning"
-              description="Learn together with peers in a collaborative environment."
-            />
-            <FeatureCard
-              icon={GraduationCap}
-              title="Expert Teachers"
-              description="Learn from qualified and experienced educators."
-            />
+            <FeatureCard icon={Video} title="Live Interactive Classes" description="Engage in real-time with expert teachers and fellow students." />
+            <FeatureCard icon={BookOpen} title="Study Resources" description="Access comprehensive study materials and recorded sessions." />
+            <FeatureCard icon={Users} title="Community Learning" description="Learn together with peers in a collaborative environment." />
+            <FeatureCard icon={GraduationCap} title="Expert Teachers" description="Learn from qualified and experienced educators." />
           </div>
         </div>
       </section>
@@ -74,31 +51,25 @@ const Index = () => {
         <div className="container mx-auto">
           <h2 className="text-3xl font-bold text-center mb-16">How Emmadex Works</h2>
           <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                step: "1",
-                title: "Sign Up",
-                description: "Create your account and choose your courses",
-              },
-              {
-                step: "2",
-                title: "Join Live Classes",
-                description: "Attend interactive live sessions with your teachers",
-              },
-              {
-                step: "3",
-                title: "Learn & Grow",
-                description: "Access resources, take assessments, and track your progress",
-              },
-            ].map((item) => (
-              <div key={item.step} className="text-center animate-fade-up">
+            {[{
+            step: "1",
+            title: "Sign Up",
+            description: "Create your account and choose your courses"
+          }, {
+            step: "2",
+            title: "Join Live Classes",
+            description: "Attend interactive live sessions with your teachers"
+          }, {
+            step: "3",
+            title: "Learn & Grow",
+            description: "Access resources, take assessments, and track your progress"
+          }].map(item => <div key={item.step} className="text-center animate-fade-up">
                 <div className="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-4">
                   {item.step}
                 </div>
                 <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
                 <p className="text-gray-600">{item.description}</p>
-              </div>
-            ))}
+              </div>)}
           </div>
         </div>
       </section>
@@ -168,8 +139,6 @@ const Index = () => {
           </div>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
