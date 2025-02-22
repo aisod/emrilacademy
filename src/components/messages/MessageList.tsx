@@ -4,6 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar } from "@/components/ui/avatar";
+import { AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface Message {
   id: string;
@@ -15,6 +17,7 @@ interface Message {
   sender: {
     first_name: string;
     last_name: string;
+    avatar_url?: string;
   };
 }
 
@@ -34,7 +37,7 @@ export function MessageList() {
           receiver_id,
           read_at,
           created_at,
-          sender:profiles!sender_id(first_name, last_name)
+          sender:profiles!sender_id(first_name, last_name, avatar_url)
         `)
         .or(`receiver_id.eq.${session.user.id},sender_id.eq.${session.user.id}`)
         .order("created_at", { ascending: false });
@@ -69,26 +72,38 @@ export function MessageList() {
   };
 
   return (
-    <ScrollArea className="h-[500px] w-full rounded-md border p-4">
-      <div className="space-y-4">
+    <ScrollArea className="h-[500px] w-full rounded-lg bg-gradient-to-b from-gray-50 to-white">
+      <div className="space-y-4 p-4">
         {messages?.map((message) => (
           <div
             key={message.id}
-            className={`p-4 rounded-lg ${
-              !message.read_at ? "bg-blue-50" : "bg-gray-50"
+            className={`flex items-start space-x-4 p-4 rounded-lg transition-all duration-200 hover:bg-gray-50/50 ${
+              !message.read_at ? "bg-blue-50/30" : ""
             }`}
             onClick={() => !message.read_at && markAsRead(message.id)}
           >
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="font-semibold">
+            <Avatar className="h-10 w-10">
+              {message.sender.avatar_url ? (
+                <AvatarImage src={message.sender.avatar_url} alt={`${message.sender.first_name}'s avatar`} />
+              ) : (
+                <AvatarFallback>
+                  {message.sender.first_name[0]}
+                  {message.sender.last_name[0]}
+                </AvatarFallback>
+              )}
+            </Avatar>
+            <div className="flex-1 space-y-1">
+              <div className="flex items-center justify-between">
+                <h4 className="text-sm font-semibold text-gray-900">
                   {message.sender.first_name} {message.sender.last_name}
-                </p>
-                <p className="text-gray-600">{message.content}</p>
+                </h4>
+                <span className="text-xs text-gray-500">
+                  {format(new Date(message.created_at), "MMM d, h:mm a")}
+                </span>
               </div>
-              <span className="text-sm text-gray-500">
-                {format(new Date(message.created_at), "MMM d, yyyy HH:mm")}
-              </span>
+              <p className="text-sm text-gray-600 leading-relaxed">
+                {message.content}
+              </p>
             </div>
           </div>
         ))}

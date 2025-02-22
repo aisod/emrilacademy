@@ -5,6 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { Send } from "lucide-react";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export function SendMessage() {
   const [message, setMessage] = useState("");
@@ -54,29 +56,36 @@ export function SendMessage() {
 
   return (
     <form onSubmit={handleSend} className="space-y-4">
-      <div>
-        <select
-          value={receiverId}
-          onChange={(e) => setReceiverId(e.target.value)}
-          className="w-full rounded-md border border-input bg-background px-3 py-2"
-          required
-        >
-          <option value="">Select recipient</option>
-          {users?.map((user) => (
-            <option key={user.id} value={user.id}>
-              {user.first_name} {user.last_name}
-            </option>
-          ))}
-        </select>
-      </div>
+      <Select value={receiverId} onValueChange={setReceiverId}>
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder="Select recipient" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            {users?.map((user) => (
+              <SelectItem key={user.id} value={user.id}>
+                {user.first_name} {user.last_name}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+      
       <div className="flex gap-2">
         <Input
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Type your message..."
+          className="flex-1 bg-gray-50/50 border-gray-200 focus:border-blue-300 rounded-full px-4"
           required
         />
-        <Button type="submit">Send</Button>
+        <Button 
+          type="submit"
+          size="icon"
+          className="rounded-full w-10 h-10 bg-blue-500 hover:bg-blue-600 transition-colors"
+        >
+          <Send className="h-4 w-4" />
+        </Button>
       </div>
     </form>
   );
