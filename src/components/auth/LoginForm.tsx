@@ -21,12 +21,32 @@ export const LoginForm = ({ onToggleMode }: LoginFormProps) => {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-      if (error) throw error;
-      navigate("/");
+      if (signInError) throw signInError;
+
+      // Get the user's role from profiles table
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("No session after login");
+
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .single();
+
+      if (profileError) throw profileError;
+
+      // Redirect based on role
+      if (profile.role === 'teacher') {
+        navigate('/teacher');
+      } else if (profile.role === 'student') {
+        navigate('/student');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (error: any) {
       console.error("Login error:", error);
       toast({
