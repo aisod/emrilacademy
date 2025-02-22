@@ -12,7 +12,7 @@ interface Message {
   receiver_id: string;
   read_at: string | null;
   created_at: string;
-  profiles: {
+  sender: {
     first_name: string;
     last_name: string;
   };
@@ -34,7 +34,7 @@ export function MessageList() {
           receiver_id,
           read_at,
           created_at,
-          profiles:sender_id(first_name, last_name)
+          sender:profiles!sender_id(first_name, last_name)
         `)
         .or(`receiver_id.eq.${session.user.id},sender_id.eq.${session.user.id}`)
         .order("created_at", { ascending: false });
@@ -82,7 +82,7 @@ export function MessageList() {
             <div className="flex justify-between items-start">
               <div>
                 <p className="font-semibold">
-                  {message.profiles.first_name} {message.profiles.last_name}
+                  {message.sender.first_name} {message.sender.last_name}
                 </p>
                 <p className="text-gray-600">{message.content}</p>
               </div>
