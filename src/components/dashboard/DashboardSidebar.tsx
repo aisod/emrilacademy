@@ -1,5 +1,6 @@
+
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, GraduationCap, BookOpen, ChevronLeft } from "lucide-react";
+import { LayoutDashboard, GraduationCap, BookOpen, ChevronLeft, Search } from "lucide-react";
 import { UnreadCount } from "@/components/messages/UnreadCount";
 import {
   Sidebar,
@@ -38,6 +39,17 @@ export function DashboardSidebar() {
             <UnreadCount />
           </Link>
           <Link
+            to="/browse-classes"
+            className={`flex items-center gap-2 p-3 rounded-lg transition-colors ${
+              isLinkActive("/browse-classes")
+                ? "bg-primary text-white"
+                : "text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            <Search className="h-5 w-5" />
+            <span>Browse Classes</span>
+          </Link>
+          <Link
             to="/courses"
             className={`flex items-center gap-2 p-3 rounded-lg transition-colors ${
               isLinkActive("/courses")
@@ -46,7 +58,7 @@ export function DashboardSidebar() {
             }`}
           >
             <GraduationCap className="h-5 w-5" />
-            <span>Courses</span>
+            <span>My Classes</span>
           </Link>
           <Link
             to="/teachers"
