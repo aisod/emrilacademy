@@ -22,37 +22,64 @@ export function ResourceUpload({ classId, onSuccess }: ResourceUploadProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!file) return;
+    if (!file) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Please select a file to upload",
+      });
+      return;
+    }
 
     try {
       setIsUploading(true);
 
       // Upload file to storage
       const fileExt = file.name.split('.').pop();
-      const filePath = `${classId}/${crypto.randomUUID()}.${fileExt}`;
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
+      const filePath = `${classId}/${fileName}`;
 
-      const { error: uploadError } = await supabase.storage
+      console.log('Starting file upload:', { filePath, fileSize: file.size });
+
+      const { error: uploadError, data: uploadData } = await supabase.storage
         .from('resources')
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('Upload error:', uploadError);
+        throw uploadError;
+      }
+
+      console.log('File uploaded successfully:', uploadData);
 
       // Get the public URL
       const { data: { publicUrl } } = supabase.storage
         .from('resources')
         .getPublicUrl(filePath);
 
+      console.log('Generated public URL:', publicUrl);
+
       // Create resource record
-      const { error: dbError } = await supabase
+      const { error: dbError, data: resourceData } = await supabase
         .from('resources')
         .insert({
           title,
           description,
           file_url: publicUrl,
           class_id: classId,
-        });
+        })
+        .select()
+        .single();
 
-      if (dbError) throw dbError;
+      if (dbError) {
+        console.error('Database error:', dbError);
+        throw dbError;
+      }
+
+      console.log('Resource record created:', resourceData);
 
       toast({
         title: "Success",
@@ -64,10 +91,11 @@ export function ResourceUpload({ classId, onSuccess }: ResourceUploadProps) {
       setFile(null);
       onSuccess();
     } catch (error: any) {
+      console.error('Upload process error:', error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message,
+        description: error.message || "Failed to upload resource",
       });
     } finally {
       setIsUploading(false);
@@ -103,10 +131,11 @@ export function ResourceUpload({ classId, onSuccess }: ResourceUploadProps) {
           type="file"
           onChange={(e) => setFile(e.target.files?.[0] || null)}
           required
+          accept="*/*"
         />
       </div>
 
-      <Button type="submit" disabled={isUploading}>
+      <Button type="submit" disabled={isUploading} className="w-full">
         <Upload className="mr-2 h-4 w-4" />
         {isUploading ? "Uploading..." : "Upload Resource"}
       </Button>
