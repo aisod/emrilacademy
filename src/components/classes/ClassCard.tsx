@@ -1,65 +1,103 @@
 
-import { format } from "date-fns";
-import { Clock, Calendar } from "lucide-react";
+import { useState } from "react";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
+import { Calendar, Clock, Users, Book } from "lucide-react";
+import { ResourceUpload } from "@/components/resources/ResourceUpload";
+import { ResourceList } from "@/components/resources/ResourceList";
 
 interface ClassCardProps {
   id: string;
   title: string;
-  description: string;
-  startTime: string;
-  endTime: string;
+  description: string | null;
+  startTime: string | null;
+  endTime: string | null;
   classType: "live" | "recorded";
-  isEnrolled?: boolean;
-  onEnroll?: () => void;
   teacherView?: boolean;
 }
 
 export function ClassCard({
+  id,
   title,
   description,
   startTime,
   endTime,
   classType,
-  isEnrolled,
-  onEnroll,
   teacherView,
 }: ClassCardProps) {
+  const [showResources, setShowResources] = useState(false);
+  const [showResourceUpload, setShowResourceUpload] = useState(false);
+
+  const handleResourceSuccess = () => {
+    setShowResourceUpload(false);
+  };
+
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 space-y-4">
-      <div>
+    <Card className="overflow-hidden">
+      <div className="p-6">
         <h3 className="text-xl font-semibold">{title}</h3>
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mt-2">
-          {classType}
-        </span>
-      </div>
-      
-      <p className="text-gray-600">{description}</p>
-      
-      <div className="space-y-2">
-        <div className="flex items-center text-gray-500">
-          <Calendar className="w-4 h-4 mr-2" />
-          <span>{format(new Date(startTime), "MMMM d, yyyy")}</span>
+        {description && (
+          <p className="mt-2 text-gray-600">{description}</p>
+        )}
+        <div className="mt-4 space-y-2">
+          {startTime && (
+            <div className="flex items-center text-gray-500">
+              <Calendar className="w-4 h-4 mr-2" />
+              <span>{format(new Date(startTime), "MMMM d, yyyy")}</span>
+            </div>
+          )}
+          {startTime && endTime && (
+            <div className="flex items-center text-gray-500">
+              <Clock className="w-4 h-4 mr-2" />
+              <span>
+                {format(new Date(startTime), "h:mm a")} -{" "}
+                {format(new Date(endTime), "h:mm a")}
+              </span>
+            </div>
+          )}
+          <div className="flex items-center text-gray-500">
+            <Users className="w-4 h-4 mr-2" />
+            <span>{classType === "live" ? "Live Class" : "Recorded"}</span>
+          </div>
         </div>
-        <div className="flex items-center text-gray-500">
-          <Clock className="w-4 h-4 mr-2" />
-          <span>
-            {format(new Date(startTime), "h:mm a")} -{" "}
-            {format(new Date(endTime), "h:mm a")}
-          </span>
+
+        <div className="mt-6 flex gap-4">
+          <Button
+            variant="outline"
+            onClick={() => setShowResources(!showResources)}
+          >
+            <Book className="mr-2 h-4 w-4" />
+            Resources
+          </Button>
+          {teacherView && (
+            <Button
+              variant="outline"
+              onClick={() => setShowResourceUpload(!showResourceUpload)}
+            >
+              Upload Resource
+            </Button>
+          )}
         </div>
       </div>
 
-      {!teacherView && (
-        <Button
-          onClick={onEnroll}
-          disabled={isEnrolled}
-          variant={isEnrolled ? "secondary" : "default"}
-          className="w-full mt-4"
-        >
-          {isEnrolled ? "Enrolled" : "Enroll Now"}
-        </Button>
+      {showResourceUpload && (
+        <div className="border-t p-6 bg-gray-50">
+          <h4 className="text-lg font-semibold mb-4">Upload New Resource</h4>
+          <ResourceUpload classId={id} onSuccess={handleResourceSuccess} />
+        </div>
       )}
-    </div>
+
+      {showResources && (
+        <div className="border-t p-6">
+          <h4 className="text-lg font-semibold mb-4">Class Resources</h4>
+          <ResourceList
+            classId={id}
+            isTeacher={teacherView}
+            onDelete={() => setShowResources(true)}
+          />
+        </div>
+      )}
+    </Card>
   );
 }
