@@ -7,7 +7,6 @@ import {
   SidebarContent,
   SidebarTrigger,
   SidebarHeader,
-  useSidebar,
 } from "@/components/ui/sidebar";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
