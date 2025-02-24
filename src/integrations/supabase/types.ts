@@ -11,6 +11,7 @@ export type Database = {
     Tables: {
       classes: {
         Row: {
+          capacity: number
           class_type: Database["public"]["Enums"]["class_type"]
           created_at: string
           description: string | null
@@ -22,6 +23,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          capacity?: number
           class_type?: Database["public"]["Enums"]["class_type"]
           created_at?: string
           description?: string | null
@@ -33,6 +35,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          capacity?: number
           class_type?: Database["public"]["Enums"]["class_type"]
           created_at?: string
           description?: string | null

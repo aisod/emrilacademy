@@ -33,9 +33,16 @@ export default function TeacherDashboard() {
   const { data: classes, refetch: refetchClasses } = useQuery({
     queryKey: ["teacher-classes"],
     queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("No session");
+
       const { data, error } = await supabase
         .from("classes")
-        .select("*")
+        .select(`
+          *,
+          enrollments:enrollments(count)
+        `)
+        .eq("teacher_id", session.user.id)
         .order("start_time", { ascending: true });
 
       if (error) throw error;

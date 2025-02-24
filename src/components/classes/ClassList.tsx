@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 
 interface Class {
   id: string;
@@ -21,6 +22,7 @@ interface Class {
     last_name: string;
   };
   enrollments: { count: number }[];
+  capacity: number;
   enrolled: { student_id: string }[];
   isEnrolled?: boolean;
 }
@@ -46,14 +48,22 @@ export function ClassList({ classes, isLoading }: ClassListProps) {
           student_id: session.user.id,
         });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message.includes("maximum capacity")) {
+          throw new Error("This class has reached its maximum capacity");
+        }
+        throw error;
+      }
 
       toast({
         title: "Success",
         description: "Successfully enrolled in class",
       });
 
+      // Invalidate both available classes and student dashboard queries
       queryClient.invalidateQueries({ queryKey: ["available-classes"] });
+      queryClient.invalidateQueries({ queryKey: ["student-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["next-class"] });
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -161,6 +171,16 @@ export function ClassList({ classes, isLoading }: ClassListProps) {
                   <span>Resources available</span>
                 </div>
               </div>
+              <div className="space-y-1">
+                <div className="flex justify-between text-sm text-gray-500">
+                  <span>Class capacity</span>
+                  <span>{class_.enrollments[0]?.count || 0}/{class_.capacity}</span>
+                </div>
+                <Progress 
+                  value={((class_.enrollments[0]?.count || 0) / class_.capacity) * 100} 
+                  className="h-2"
+                />
+              </div>
             </div>
             {class_.isEnrolled ? (
               <Button variant="secondary" className="w-full" disabled>
@@ -170,8 +190,14 @@ export function ClassList({ classes, isLoading }: ClassListProps) {
               <Button
                 onClick={() => handleEnroll(class_.id)}
                 className="w-full"
+                disabled={
+                  (class_.enrollments[0]?.count || 0) >= class_.capacity
+                }
               >
-                Enroll Now
+                {(class_.enrollments[0]?.count || 0) >= class_.capacity
+                  ? "Class Full"
+                  : "Enroll Now"
+                }
               </Button>
             )}
           </CardContent>
