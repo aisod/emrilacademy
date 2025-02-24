@@ -68,10 +68,9 @@ export function LiveClassRoom({
           }}
           userInfo={{
             displayName: userInfo ? `${userInfo.first_name} ${userInfo.last_name}` : "",
-            email: "user@example.com" // Adding required email field with a placeholder
+            email: "user@example.com"
           }}
           onApiReady={(api) => setJitsiApi(api)}
-          onIframeRef={handleJitsiIFrameRef}
           getIFrameRef={handleJitsiIFrameRef}
         />
       </div>
