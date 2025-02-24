@@ -1,12 +1,36 @@
+
 import { LandingNavigation } from "@/components/LandingNavigation";
 import { FeatureCard } from "@/components/FeatureCard";
 import { ArrowRight, Video, BookOpen, Users, GraduationCap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useUserRole } from "@/hooks/use-user-role";
+import { useEffect } from "react";
+import { useToast } from "@/components/ui/use-toast";
 
 const Index = () => {
   const navigate = useNavigate();
+  const { data: role, isLoading } = useUserRole();
+  const { toast } = useToast();
 
+  useEffect(() => {
+    if (!isLoading && role) {
+      // Redirect based on role
+      if (role === 'teacher') {
+        navigate('/teacher');
+      } else if (role === 'student') {
+        navigate('/student');
+      }
+    }
+  }, [role, isLoading, navigate]);
+
+  // If still loading, return null to prevent flash of content
+  if (isLoading) {
+    return null;
+  }
+
+  // If user is authenticated and has a role, they will be redirected
+  // If not authenticated or no role, show landing page
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 font-['Inter']">
       <LandingNavigation />
