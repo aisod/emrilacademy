@@ -11,7 +11,7 @@ export default function BrowseClasses() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const { data: classes, isLoading } = useQuery({
-    queryKey: ["available-classes"],
+    queryKey: ["available-classes", searchQuery],
     queryFn: async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("No authenticated user");
@@ -31,14 +31,14 @@ export default function BrowseClasses() {
         .order("start_time");
 
       if (error) throw error;
-      return data;
+
+      // Map the classes with enrollment status using the current user's ID from session
+      return data.map(class_ => ({
+        ...class_,
+        isEnrolled: class_.enrolled?.some(e => e.student_id === session.user.id)
+      }));
     },
   });
-
-  const filteredClasses = classes?.map(class_ => ({
-    ...class_,
-    isEnrolled: class_.enrolled?.some(e => e.student_id === supabase.auth.user()?.id)
-  })) || [];
 
   return (
     <DashboardLayout requiredRole="student">
@@ -60,7 +60,7 @@ export default function BrowseClasses() {
           />
         </div>
 
-        <ClassList classes={filteredClasses} isLoading={isLoading} />
+        <ClassList classes={classes || []} isLoading={isLoading} />
       </div>
     </DashboardLayout>
   );
