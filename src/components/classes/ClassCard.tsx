@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -34,6 +35,20 @@ interface ClassSession {
   created_at: string;
   updated_at: string;
 }
+
+const isClassSession = (obj: any): obj is ClassSession => {
+  return (
+    obj &&
+    typeof obj.id === 'string' &&
+    typeof obj.class_id === 'string' &&
+    typeof obj.is_active === 'boolean' &&
+    (obj.started_at === null || typeof obj.started_at === 'string') &&
+    (obj.ended_at === null || typeof obj.ended_at === 'string') &&
+    ['pending', 'active', 'ended'].includes(obj.status) &&
+    typeof obj.created_at === 'string' &&
+    typeof obj.updated_at === 'string'
+  );
+};
 
 export function ClassCard({
   id,
@@ -90,7 +105,9 @@ export function ClassCard({
           filter: `class_id=eq.${id}`,
         },
         (payload: RealtimePostgresChangesPayload<ClassSession>) => {
-          setClassSession(payload.new);
+          if (isClassSession(payload.new)) {
+            setClassSession(payload.new);
+          }
         }
       )
       .subscribe();
@@ -103,8 +120,8 @@ export function ClassCard({
         .eq('class_id', id)
         .maybeSingle();
         
-      if (!error && data) {
-        setClassSession(data as ClassSession);
+      if (!error && data && isClassSession(data)) {
+        setClassSession(data);
       }
     };
 
