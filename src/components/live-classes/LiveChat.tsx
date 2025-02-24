@@ -52,11 +52,14 @@ export function LiveChat({ classId }: { classId: string }) {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("Not authenticated");
 
+      // For class chat messages, we'll set receiver_id to be the same as sender_id
+      // This indicates it's a broadcast message to the class rather than a direct message
       const { data, error } = await supabase
         .from("messages")
         .insert({
           content,
           sender_id: session.user.id,
+          receiver_id: session.user.id, // Setting receiver_id to sender_id for broadcast messages
           class_id: classId,
         })
         .select()
