@@ -1,6 +1,16 @@
 
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, GraduationCap, BookOpen, ChevronLeft, Search, Menu } from "lucide-react";
+import { 
+  LayoutDashboard, 
+  GraduationCap, 
+  BookOpen, 
+  ChevronLeft, 
+  Search, 
+  Menu,
+  MessageSquare,
+  Video,
+  FileText
+} from "lucide-react";
 import { UnreadCount } from "@/components/messages/UnreadCount";
 import {
   Sidebar,
@@ -59,6 +69,7 @@ export function DashboardSidebar() {
         </SidebarHeader>
         <SidebarContent>
           <nav className="space-y-2 p-4">
+            {/* Dashboard Link */}
             <Link
               to={dashboardPath}
               className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
@@ -74,6 +85,25 @@ export function DashboardSidebar() {
               </div>
               <UnreadCount />
             </Link>
+
+            {/* Messages/Chats Link */}
+            <Link
+              to="/messages"
+              className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
+                isLinkActive("/messages")
+                  ? "bg-primary text-white"
+                  : "text-gray-600 hover:bg-gray-100"
+              }`}
+              onClick={() => isMobile && toggleSidebar()}
+            >
+              <div className="flex items-center gap-2">
+                <MessageSquare className="h-5 w-5" />
+                <span>Messages</span>
+              </div>
+              <UnreadCount />
+            </Link>
+
+            {/* Classes Section */}
             {userRole === "student" && (
               <Link
                 to="/browse-classes"
@@ -100,6 +130,35 @@ export function DashboardSidebar() {
               <GraduationCap className="h-5 w-5" />
               <span>My Classes</span>
             </Link>
+
+            {/* Live Classes Link */}
+            <Link
+              to="/live-classes"
+              className={`flex items-center gap-2 p-3 rounded-lg transition-colors ${
+                isLinkActive("/live-classes")
+                  ? "bg-primary text-white"
+                  : "text-gray-600 hover:bg-gray-100"
+              }`}
+              onClick={() => isMobile && toggleSidebar()}
+            >
+              <Video className="h-5 w-5" />
+              <span>Live Classes</span>
+            </Link>
+
+            {/* Resources Link */}
+            <Link
+              to="/resources"
+              className={`flex items-center gap-2 p-3 rounded-lg transition-colors ${
+                isLinkActive("/resources")
+                  ? "bg-primary text-white"
+                  : "text-gray-600 hover:bg-gray-100"
+              }`}
+              onClick={() => isMobile && toggleSidebar()}
+            >
+              <FileText className="h-5 w-5" />
+              <span>My Resources</span>
+            </Link>
+
             <Link
               to="/teachers"
               className={`flex items-center gap-2 p-3 rounded-lg transition-colors ${
