@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { useNavigate } from "react-router-dom";
 
 interface Class {
   id: string;
@@ -35,6 +36,7 @@ interface ClassListProps {
 export function ClassList({ classes, isLoading }: ClassListProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const handleEnroll = async (classId: string) => {
     try {
@@ -60,7 +62,6 @@ export function ClassList({ classes, isLoading }: ClassListProps) {
         description: "Successfully enrolled in class",
       });
 
-      // Invalidate both available classes and student dashboard queries
       queryClient.invalidateQueries({ queryKey: ["available-classes"] });
       queryClient.invalidateQueries({ queryKey: ["student-stats"] });
       queryClient.invalidateQueries({ queryKey: ["next-class"] });
@@ -73,16 +74,31 @@ export function ClassList({ classes, isLoading }: ClassListProps) {
     }
   };
 
-  const getClassStatus = (startTime: string | null) => {
+  const isClassInProgress = (startTime: string | null, endTime: string | null) => {
+    if (!startTime || !endTime) return false;
+    const now = new Date();
+    const classStart = new Date(startTime);
+    const classEnd = new Date(endTime);
+    return now >= classStart && now <= classEnd;
+  };
+
+  const getClassStatus = (startTime: string | null, endTime: string | null) => {
     if (!startTime) return null;
     const now = new Date();
     const classStart = new Date(startTime);
+    const classEnd = endTime ? new Date(endTime) : null;
     
     if (now < classStart) {
       return <Badge variant="outline">Upcoming</Badge>;
+    } else if (classEnd && now > classEnd) {
+      return <Badge variant="secondary">Completed</Badge>;
     } else {
-      return <Badge>In Progress</Badge>;
+      return <Badge variant="default">In Progress</Badge>;
     }
+  };
+
+  const handleJoinLiveClass = (classId: string) => {
+    navigate(`/live-classes/${classId}`);
   };
 
   if (isLoading) {
@@ -137,7 +153,7 @@ export function ClassList({ classes, isLoading }: ClassListProps) {
                     Recorded
                   </Badge>
                 )}
-                {getClassStatus(class_.start_time)}
+                {getClassStatus(class_.start_time, class_.end_time)}
               </div>
             </div>
           </CardHeader>
@@ -182,24 +198,36 @@ export function ClassList({ classes, isLoading }: ClassListProps) {
                 />
               </div>
             </div>
-            {class_.isEnrolled ? (
-              <Button variant="secondary" className="w-full" disabled>
-                Already Enrolled
-              </Button>
-            ) : (
-              <Button
-                onClick={() => handleEnroll(class_.id)}
-                className="w-full"
-                disabled={
-                  (class_.enrollments[0]?.count || 0) >= class_.capacity
-                }
-              >
-                {(class_.enrollments[0]?.count || 0) >= class_.capacity
-                  ? "Class Full"
-                  : "Enroll Now"
-                }
-              </Button>
-            )}
+            <div className="space-y-2">
+              {class_.isEnrolled ? (
+                <>
+                  {class_.class_type === "live" && 
+                   isClassInProgress(class_.start_time, class_.end_time) && (
+                    <Button 
+                      onClick={() => handleJoinLiveClass(class_.id)}
+                      className="w-full"
+                      variant="default"
+                    >
+                      Join Live Class
+                    </Button>
+                  )}
+                  <Button variant="secondary" className="w-full" disabled>
+                    Already Enrolled
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  onClick={() => handleEnroll(class_.id)}
+                  className="w-full"
+                  disabled={(class_.enrollments[0]?.count || 0) >= class_.capacity}
+                >
+                  {(class_.enrollments[0]?.count || 0) >= class_.capacity
+                    ? "Class Full"
+                    : "Enroll Now"
+                  }
+                </Button>
+              )}
+            </div>
           </CardContent>
         </Card>
       ))}
