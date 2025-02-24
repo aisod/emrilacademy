@@ -5,6 +5,9 @@ import { LiveChat } from "./LiveChat";
 import { useUserRole } from "@/hooks/use-user-role";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface LiveClassRoomProps {
   classId: string;
@@ -23,6 +26,8 @@ export function LiveClassRoom({
 }: LiveClassRoomProps) {
   const { data: userRole } = useUserRole();
   const [jitsiApi, setJitsiApi] = useState<any>(null);
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
   const { data: userInfo } = useQuery({
     queryKey: ["user-info"],
@@ -39,6 +44,39 @@ export function LiveClassRoom({
       return data;
     },
   });
+
+  const endSession = async () => {
+    try {
+      const { error } = await supabase
+        .from('class_sessions')
+        .update({
+          is_active: false,
+          status: 'ended',
+          ended_at: new Date().toISOString()
+        })
+        .eq('class_id', classId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Class ended",
+        description: "The live session has been ended successfully.",
+      });
+
+      // Force all participants to leave
+      if (jitsiApi) {
+        jitsiApi.executeCommand('hangup');
+      }
+
+      navigate('/teacher');
+    } catch (error) {
+      toast({
+        title: "Error ending session",
+        description: "Could not end the live session. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleJitsiIFrameRef = (iframeRef: any) => {
     iframeRef.style.border = "10px solid #000";
@@ -73,6 +111,17 @@ export function LiveClassRoom({
           onApiReady={(api) => setJitsiApi(api)}
           getIFrameRef={handleJitsiIFrameRef}
         />
+        {userRole === "teacher" && (
+          <div className="absolute top-4 right-4 z-10">
+            <Button 
+              variant="destructive"
+              onClick={endSession}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              End Class Session
+            </Button>
+          </div>
+        )}
       </div>
       <div className="w-80 bg-white border-l">
         <LiveChat classId={classId} />

@@ -49,6 +49,7 @@ export function ClassCard({
   const [showResources, setShowResources] = useState(false);
   const [showResourceUpload, setShowResourceUpload] = useState(false);
   const [classSession, setClassSession] = useState<ClassSession | null>(null);
+  const [timeUntilClass, setTimeUntilClass] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -57,9 +58,31 @@ export function ClassCard({
   };
 
   useEffect(() => {
+    if (startTime) {
+      const timer = setInterval(() => {
+        const now = new Date();
+        const start = new Date(startTime);
+        const diff = start.getTime() - now.getTime();
+
+        if (diff <= 0) {
+          setTimeUntilClass(null);
+          clearInterval(timer);
+        } else {
+          const hours = Math.floor(diff / (1000 * 60 * 60));
+          const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+          setTimeUntilClass(`${hours}h ${minutes}m`);
+        }
+      }, 60000); // Update every minute
+
+      return () => clearInterval(timer);
+    }
+  }, [startTime]);
+
+  useEffect(() => {
     // Subscribe to real-time updates for class sessions
-    const channel = supabase
-      .channel(`class-${id}`)
+    const channel = supabase.channel(`class-${id}`);
+    
+    channel
       .on(
         'postgres_changes',
         {
@@ -139,7 +162,16 @@ export function ClassCard({
     }
     
     if (now < classStart) {
-      return <Badge variant="outline">Upcoming</Badge>;
+      return (
+        <div className="flex items-center gap-2">
+          <Badge variant="outline">Upcoming</Badge>
+          {timeUntilClass && (
+            <span className="text-sm text-gray-500">
+              Starts in {timeUntilClass}
+            </span>
+          )}
+        </div>
+      );
     } else if (classEnd && now > classEnd) {
       return <Badge variant="secondary">Ended</Badge>;
     }
