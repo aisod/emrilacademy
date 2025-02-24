@@ -94,6 +94,7 @@ export type Database = {
       }
       messages: {
         Row: {
+          class_id: string | null
           content: string
           created_at: string
           id: string
@@ -102,6 +103,7 @@ export type Database = {
           sender_id: string
         }
         Insert: {
+          class_id?: string | null
           content: string
           created_at?: string
           id?: string
@@ -110,6 +112,7 @@ export type Database = {
           sender_id: string
         }
         Update: {
+          class_id?: string | null
           content?: string
           created_at?: string
           id?: string
@@ -118,6 +121,13 @@ export type Database = {
           sender_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "messages_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "messages_receiver_id_fkey"
             columns: ["receiver_id"]

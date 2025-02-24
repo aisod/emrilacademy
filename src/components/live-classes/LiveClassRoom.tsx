@@ -67,8 +67,7 @@ export function LiveClassRoom({
             DISABLE_JOIN_LEAVE_NOTIFICATIONS: true,
           }}
           userInfo={{
-            displayName: `${userInfo?.first_name} ${userInfo?.last_name}`,
-            role: userRole,
+            displayName: userInfo ? `${userInfo.first_name} ${userInfo.last_name}` : "",
           }}
           onApiReady={(api) => setJitsiApi(api)}
           onIframeRef={handleJitsiIFrameRef}

@@ -13,6 +13,7 @@ interface Message {
   id: string;
   content: string;
   created_at: string;
+  class_id: string;
   sender: {
     first_name: string;
     last_name: string;
