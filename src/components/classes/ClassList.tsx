@@ -2,11 +2,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import { Calendar, Clock, Users } from "lucide-react";
+import { Calendar, Clock, Users, Video, PlayCircle, BookOpen } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { Badge } from "@/components/ui/badge";
 
 interface Class {
   id: string;
@@ -21,6 +22,7 @@ interface Class {
   };
   enrollments: { count: number }[];
   enrolled: { student_id: string }[];
+  isEnrolled?: boolean;
 }
 
 interface ClassListProps {
@@ -51,7 +53,6 @@ export function ClassList({ classes, isLoading }: ClassListProps) {
         description: "Successfully enrolled in class",
       });
 
-      // Refetch classes to update enrollment status
       queryClient.invalidateQueries({ queryKey: ["available-classes"] });
     } catch (error: any) {
       toast({
@@ -59,6 +60,18 @@ export function ClassList({ classes, isLoading }: ClassListProps) {
         title: "Error",
         description: error.message,
       });
+    }
+  };
+
+  const getClassStatus = (startTime: string | null) => {
+    if (!startTime) return null;
+    const now = new Date();
+    const classStart = new Date(startTime);
+    
+    if (now < classStart) {
+      return <Badge variant="outline">Upcoming</Badge>;
+    } else {
+      return <Badge>In Progress</Badge>;
     }
   };
 
@@ -93,26 +106,44 @@ export function ClassList({ classes, isLoading }: ClassListProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {classes.map((class_) => (
-        <Card key={class_.id}>
-          <CardHeader>
-            <CardTitle>{class_.title}</CardTitle>
-            <p className="text-sm text-gray-500">
-              by {class_.teacher.first_name} {class_.teacher.last_name}
-            </p>
+        <Card key={class_.id} className="overflow-hidden">
+          <CardHeader className="space-y-3">
+            <div className="flex items-start justify-between">
+              <div className="space-y-1">
+                <CardTitle>{class_.title}</CardTitle>
+                <p className="text-sm text-gray-500">
+                  by {class_.teacher.first_name} {class_.teacher.last_name}
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                {class_.class_type === "live" ? (
+                  <Badge variant="secondary" className="flex items-center gap-1">
+                    <PlayCircle className="w-3 h-3" />
+                    Live
+                  </Badge>
+                ) : (
+                  <Badge variant="secondary" className="flex items-center gap-1">
+                    <Video className="w-3 h-3" />
+                    Recorded
+                  </Badge>
+                )}
+                {getClassStatus(class_.start_time)}
+              </div>
+            </div>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-6">
             {class_.description && (
-              <p className="text-gray-600">{class_.description}</p>
+              <p className="text-gray-600 text-sm">{class_.description}</p>
             )}
             <div className="space-y-2">
               {class_.start_time && (
-                <div className="flex items-center text-gray-500">
+                <div className="flex items-center text-gray-500 text-sm">
                   <Calendar className="w-4 h-4 mr-2" />
                   <span>{format(new Date(class_.start_time), "MMMM d, yyyy")}</span>
                 </div>
               )}
               {class_.start_time && class_.end_time && (
-                <div className="flex items-center text-gray-500">
+                <div className="flex items-center text-gray-500 text-sm">
                   <Clock className="w-4 h-4 mr-2" />
                   <span>
                     {format(new Date(class_.start_time), "h:mm a")} -{" "}
@@ -120,12 +151,18 @@ export function ClassList({ classes, isLoading }: ClassListProps) {
                   </span>
                 </div>
               )}
-              <div className="flex items-center text-gray-500">
-                <Users className="w-4 h-4 mr-2" />
-                <span>{class_.enrollments[0]?.count || 0} students enrolled</span>
+              <div className="flex items-center justify-between text-sm">
+                <div className="flex items-center text-gray-500">
+                  <Users className="w-4 h-4 mr-2" />
+                  <span>{class_.enrollments[0]?.count || 0} students enrolled</span>
+                </div>
+                <div className="flex items-center text-gray-500">
+                  <BookOpen className="w-4 h-4 mr-2" />
+                  <span>Resources available</span>
+                </div>
               </div>
             </div>
-            {class_.enrolled?.length > 0 ? (
+            {class_.isEnrolled ? (
               <Button variant="secondary" className="w-full" disabled>
                 Already Enrolled
               </Button>
