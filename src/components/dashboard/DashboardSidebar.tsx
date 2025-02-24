@@ -1,17 +1,6 @@
 
 import { Link, useLocation } from "react-router-dom";
-import { 
-  LayoutDashboard, 
-  GraduationCap, 
-  BookOpen, 
-  ChevronLeft, 
-  Search, 
-  Menu,
-  MessageSquare,
-  Video,
-  FileText
-} from "lucide-react";
-import { UnreadCount } from "@/components/messages/UnreadCount";
+import { LayoutDashboard, Menu, ChevronLeft } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -19,31 +8,18 @@ import {
   SidebarHeader,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useUserRole } from "@/hooks/use-user-role";
+import { MainLinks } from "./sidebar/MainLinks";
+import { ClassLinks } from "./sidebar/ClassLinks";
+import { ResourceLinks } from "./sidebar/ResourceLinks";
 
 export function DashboardSidebar() {
   const location = useLocation();
   const { toggleSidebar } = useSidebar();
   const isMobile = useIsMobile();
-
-  const { data: userRole } = useQuery({
-    queryKey: ["user-role"],
-    queryFn: async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return null;
-
-      const { data } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", session.user.id)
-        .single();
-
-      return data?.role;
-    },
-  });
+  const { data: userRole } = useUserRole();
 
   const isLinkActive = (path: string) => location.pathname === path;
   const dashboardPath = userRole === "teacher" ? "/teacher" : "/student";
@@ -69,108 +45,20 @@ export function DashboardSidebar() {
         </SidebarHeader>
         <SidebarContent>
           <nav className="space-y-2 p-4">
-            {/* Dashboard Link */}
-            <Link
-              to={dashboardPath}
-              className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
-                isLinkActive(dashboardPath)
-                  ? "bg-primary text-white"
-                  : "text-gray-600 hover:bg-gray-100"
-              }`}
-              onClick={() => isMobile && toggleSidebar()}
-            >
-              <div className="flex items-center gap-2">
-                <LayoutDashboard className="h-5 w-5" />
-                <span>Dashboard</span>
-              </div>
-              <UnreadCount />
-            </Link>
-
-            {/* Messages/Chats Link */}
-            <Link
-              to="/messages"
-              className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
-                isLinkActive("/messages")
-                  ? "bg-primary text-white"
-                  : "text-gray-600 hover:bg-gray-100"
-              }`}
-              onClick={() => isMobile && toggleSidebar()}
-            >
-              <div className="flex items-center gap-2">
-                <MessageSquare className="h-5 w-5" />
-                <span>Messages</span>
-              </div>
-              <UnreadCount />
-            </Link>
-
-            {/* Classes Section */}
-            {userRole === "student" && (
-              <Link
-                to="/browse-classes"
-                className={`flex items-center gap-2 p-3 rounded-lg transition-colors ${
-                  isLinkActive("/browse-classes")
-                    ? "bg-primary text-white"
-                    : "text-gray-600 hover:bg-gray-100"
-                }`}
-                onClick={() => isMobile && toggleSidebar()}
-              >
-                <Search className="h-5 w-5" />
-                <span>Browse Classes</span>
-              </Link>
-            )}
-            <Link
-              to="/courses"
-              className={`flex items-center gap-2 p-3 rounded-lg transition-colors ${
-                isLinkActive("/courses")
-                  ? "bg-primary text-white"
-                  : "text-gray-600 hover:bg-gray-100"
-              }`}
-              onClick={() => isMobile && toggleSidebar()}
-            >
-              <GraduationCap className="h-5 w-5" />
-              <span>My Classes</span>
-            </Link>
-
-            {/* Live Classes Link */}
-            <Link
-              to="/live-classes"
-              className={`flex items-center gap-2 p-3 rounded-lg transition-colors ${
-                isLinkActive("/live-classes")
-                  ? "bg-primary text-white"
-                  : "text-gray-600 hover:bg-gray-100"
-              }`}
-              onClick={() => isMobile && toggleSidebar()}
-            >
-              <Video className="h-5 w-5" />
-              <span>Live Classes</span>
-            </Link>
-
-            {/* Resources Link */}
-            <Link
-              to="/resources"
-              className={`flex items-center gap-2 p-3 rounded-lg transition-colors ${
-                isLinkActive("/resources")
-                  ? "bg-primary text-white"
-                  : "text-gray-600 hover:bg-gray-100"
-              }`}
-              onClick={() => isMobile && toggleSidebar()}
-            >
-              <FileText className="h-5 w-5" />
-              <span>My Resources</span>
-            </Link>
-
-            <Link
-              to="/teachers"
-              className={`flex items-center gap-2 p-3 rounded-lg transition-colors ${
-                isLinkActive("/teachers")
-                  ? "bg-primary text-white"
-                  : "text-gray-600 hover:bg-gray-100"
-              }`}
-              onClick={() => isMobile && toggleSidebar()}
-            >
-              <BookOpen className="h-5 w-5" />
-              <span>Teachers</span>
-            </Link>
+            <MainLinks
+              dashboardPath={dashboardPath}
+              isLinkActive={isLinkActive}
+              onLinkClick={() => isMobile && toggleSidebar()}
+            />
+            <ClassLinks
+              isLinkActive={isLinkActive}
+              isStudent={userRole === "student"}
+              onLinkClick={() => isMobile && toggleSidebar()}
+            />
+            <ResourceLinks
+              isLinkActive={isLinkActive}
+              onLinkClick={() => isMobile && toggleSidebar()}
+            />
           </nav>
         </SidebarContent>
         {!isMobile && (
