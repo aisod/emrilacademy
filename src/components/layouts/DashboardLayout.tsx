@@ -40,7 +40,7 @@ export const DashboardLayout = ({ children, requiredRole }: DashboardLayoutProps
   }, [navigate, requiredRole]);
 
   return (
-    <SidebarProvider defaultOpen={false}>
+    <SidebarProvider defaultOpen={true}>
       <div className="min-h-screen flex w-full bg-gray-50">
         <DashboardSidebar />
         <div className="flex-1">
