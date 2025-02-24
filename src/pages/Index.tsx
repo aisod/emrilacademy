@@ -1,9 +1,14 @@
 import { LandingNavigation } from "@/components/LandingNavigation";
 import { FeatureCard } from "@/components/FeatureCard";
-import { ArrowRight, Video, BookOpen, Users, Award, GraduationCap } from "lucide-react";
+import { ArrowRight, Video, BookOpen, Users, GraduationCap } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
-  return <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 font-['Inter']">
+  const navigate = useNavigate();
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 font-['Inter']">
       <LandingNavigation />
       
       {/* Hero Section */}
@@ -17,16 +22,29 @@ const Index = () => {
               Join our interactive online classes with expert teachers and a supportive global learning community. Start your educational journey today.
             </p>
             <div className="flex gap-4">
-              <button className="px-6 py-3 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors flex items-center gap-2">
+              <Button 
+                size="lg"
+                onClick={() => navigate("/auth?mode=signup")}
+                className="flex items-center gap-2"
+              >
                 Get Started <ArrowRight className="w-4 h-4" />
-              </button>
-              <button className="px-6 py-3 border border-gray-200 rounded-md hover:bg-gray-50 transition-colors">
-                Learn More
-              </button>
+              </Button>
+              <Button 
+                variant="outline" 
+                size="lg"
+                onClick={() => navigate("/courses")}
+              >
+                Browse Courses
+              </Button>
             </div>
           </div>
           <div className="relative animate-fade-in">
-            <img alt="Video conference interface" className="rounded-lg shadow-2xl" src="/lovable-uploads/265014d0-c0a9-483b-98b2-1922c400afd1.jpg" />
+            <img 
+              alt="Video conference interface" 
+              className="rounded-lg shadow-2xl" 
+              src="/lovable-uploads/265014d0-c0a9-483b-98b2-1922c400afd1.jpg"
+              loading="eager"
+            />
           </div>
         </div>
       </section>
@@ -140,7 +158,8 @@ const Index = () => {
           </div>
         </div>
       </footer>
-    </div>;
+    </div>
+  );
 };
 
 export default Index;
