@@ -25,8 +25,14 @@ interface ClassCardProps {
 }
 
 interface ClassSession {
+  id: string;
+  class_id: string;
   is_active: boolean;
   started_at: string | null;
+  ended_at: string | null;
+  status: 'pending' | 'active' | 'ended';
+  created_at: string;
+  updated_at: string;
 }
 
 export function ClassCard({
@@ -62,20 +68,23 @@ export function ClassCard({
           table: 'class_sessions',
           filter: `class_id=eq.${id}`,
         },
-        (payload) => {
-          setClassSession(payload.new as ClassSession);
+        (payload: { new: ClassSession }) => {
+          setClassSession(payload.new);
         }
       )
       .subscribe();
 
     // Fetch initial session state
     const fetchSessionStatus = async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('class_sessions')
         .select('*')
         .eq('class_id', id)
-        .single();
-      setClassSession(data);
+        .maybeSingle();
+        
+      if (!error && data) {
+        setClassSession(data as ClassSession);
+      }
     };
 
     fetchSessionStatus();
@@ -92,6 +101,7 @@ export function ClassCard({
         .upsert({
           class_id: id,
           is_active: true,
+          status: 'active' as const,
           started_at: new Date().toISOString(),
         })
         .select()

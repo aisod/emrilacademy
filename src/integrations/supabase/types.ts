@@ -9,6 +9,47 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      class_sessions: {
+        Row: {
+          class_id: string
+          created_at: string
+          ended_at: string | null
+          id: string
+          is_active: boolean
+          started_at: string | null
+          status: Database["public"]["Enums"]["session_status"]
+          updated_at: string
+        }
+        Insert: {
+          class_id: string
+          created_at?: string
+          ended_at?: string | null
+          id?: string
+          is_active?: boolean
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["session_status"]
+          updated_at?: string
+        }
+        Update: {
+          class_id?: string
+          created_at?: string
+          ended_at?: string | null
+          id?: string
+          is_active?: boolean
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["session_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_sessions_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: true
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       classes: {
         Row: {
           capacity: number
@@ -221,6 +262,7 @@ export type Database = {
     }
     Enums: {
       class_type: "live" | "recorded"
+      session_status: "pending" | "active" | "ended"
       user_role: "student" | "teacher" | "admin"
     }
     CompositeTypes: {
