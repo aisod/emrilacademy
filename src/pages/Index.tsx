@@ -1,9 +1,10 @@
-import { Navigation } from "@/components/Navigation";
+import { LandingNavigation } from "@/components/LandingNavigation";
 import { FeatureCard } from "@/components/FeatureCard";
 import { ArrowRight, Video, BookOpen, Users, Award, GraduationCap } from "lucide-react";
+
 const Index = () => {
   return <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 font-['Inter']">
-      <Navigation />
+      <LandingNavigation />
       
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4">
@@ -141,4 +142,5 @@ const Index = () => {
       </footer>
     </div>;
 };
+
 export default Index;
