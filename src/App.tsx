@@ -10,6 +10,7 @@ import NotFound from "./pages/NotFound";
 import StudentDashboard from "./pages/StudentDashboard";
 import TeacherDashboard from "./pages/TeacherDashboard";
 import BrowseClasses from "./pages/BrowseClasses";
+import LiveClasses from "./pages/LiveClasses";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/student" element={<StudentDashboard />} />
           <Route path="/teacher" element={<TeacherDashboard />} />
           <Route path="/browse-classes" element={<BrowseClasses />} />
+          <Route path="/live-classes/:classId?" element={<LiveClasses />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
