@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
+import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 
 interface ClassCardProps {
   id: string;
@@ -80,18 +80,16 @@ export function ClassCard({
 
   useEffect(() => {
     // Subscribe to real-time updates for class sessions
-    const channel = supabase.channel(`class-${id}`);
-    
-    channel
+    const channel = supabase.channel(`class-${id}`)
       .on(
-        'postgres_changes',
+        'postgres_changes' as const,
         {
           event: '*',
           schema: 'public',
           table: 'class_sessions',
           filter: `class_id=eq.${id}`,
         },
-        (payload: { new: ClassSession }) => {
+        (payload: RealtimePostgresChangesPayload<ClassSession>) => {
           setClassSession(payload.new);
         }
       )
