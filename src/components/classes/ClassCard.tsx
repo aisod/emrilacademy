@@ -1,17 +1,14 @@
 
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { format } from "date-fns";
-import { Calendar, Clock, Users, Book, Play, Video } from "lucide-react";
-import { ResourceUpload } from "@/components/resources/ResourceUpload";
-import { ResourceList } from "@/components/resources/ResourceList";
-import { Progress } from "@/components/ui/progress";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
+import { ClassSession, isClassSession } from "./types/ClassSession";
+import { ClassCardHeader } from "./ClassCardHeader";
+import { ClassCardActions } from "./ClassCardActions";
+import { ClassResourceSection } from "./ClassResourceSection";
 
 interface ClassCardProps {
   id: string;
@@ -24,31 +21,6 @@ interface ClassCardProps {
   capacity?: number;
   teacherView?: boolean;
 }
-
-interface ClassSession {
-  id: string;
-  class_id: string;
-  is_active: boolean;
-  started_at: string | null;
-  ended_at: string | null;
-  status: 'pending' | 'active' | 'ended';
-  created_at: string;
-  updated_at: string;
-}
-
-const isClassSession = (obj: any): obj is ClassSession => {
-  return (
-    obj &&
-    typeof obj.id === 'string' &&
-    typeof obj.class_id === 'string' &&
-    typeof obj.is_active === 'boolean' &&
-    (obj.started_at === null || typeof obj.started_at === 'string') &&
-    (obj.ended_at === null || typeof obj.ended_at === 'string') &&
-    ['pending', 'active', 'ended'].includes(obj.status) &&
-    typeof obj.created_at === 'string' &&
-    typeof obj.updated_at === 'string'
-  );
-};
 
 export function ClassCard({
   id,
@@ -165,144 +137,40 @@ export function ClassCard({
     navigate(`/live-classes/${id}`);
   };
 
-  const getClassStatus = () => {
-    if (!startTime) return null;
-    
-    const now = new Date();
-    const classStart = new Date(startTime);
-    const classEnd = endTime ? new Date(endTime) : null;
-
-    if (classSession?.is_active) {
-      return <Badge variant="default">In Progress</Badge>;
-    }
-    
-    if (now < classStart) {
-      return (
-        <div className="flex items-center gap-2">
-          <Badge variant="outline">Upcoming</Badge>
-          {timeUntilClass && (
-            <span className="text-sm text-gray-500">
-              Starts in {timeUntilClass}
-            </span>
-          )}
-        </div>
-      );
-    } else if (classEnd && now > classEnd) {
-      return <Badge variant="secondary">Ended</Badge>;
-    }
-    
-    return null;
-  };
-
   return (
     <Card className="overflow-hidden">
-      <div className="p-6">
-        <div className="flex justify-between items-start mb-4">
-          <h3 className="text-xl font-semibold">{title}</h3>
-          <div className="flex items-center gap-2">
-            {classType === "live" && (
-              <Badge variant="secondary" className="flex items-center gap-1">
-                <Video className="w-3 h-3" />
-                Live
-              </Badge>
-            )}
-            {getClassStatus()}
-          </div>
-        </div>
+      <ClassCardHeader
+        title={title}
+        description={description}
+        startTime={startTime}
+        endTime={endTime}
+        classType={classType}
+        enrollmentCount={enrollmentCount}
+        capacity={capacity}
+        isActive={classSession?.is_active}
+        timeUntilClass={timeUntilClass}
+      />
 
-        {description && (
-          <p className="mt-2 text-gray-600">{description}</p>
-        )}
-
-        <div className="mt-4 space-y-2">
-          {startTime && (
-            <div className="flex items-center text-gray-500">
-              <Calendar className="w-4 h-4 mr-2" />
-              <span>{format(new Date(startTime), "MMMM d, yyyy")}</span>
-            </div>
-          )}
-          {startTime && endTime && (
-            <div className="flex items-center text-gray-500">
-              <Clock className="w-4 h-4 mr-2" />
-              <span>
-                {format(new Date(startTime), "h:mm a")} -{" "}
-                {format(new Date(endTime), "h:mm a")}
-              </span>
-            </div>
-          )}
-          <div className="flex items-center text-gray-500">
-            <Users className="w-4 h-4 mr-2" />
-            <span>{enrollmentCount} / {capacity} students enrolled</span>
-          </div>
-        </div>
-
-        <div className="mt-4">
-          <div className="space-y-1">
-            <div className="flex justify-between text-sm text-gray-500">
-              <span>Class capacity</span>
-              <span>{enrollmentCount}/{capacity}</span>
-            </div>
-            <Progress 
-              value={(enrollmentCount / capacity) * 100} 
-              className="h-2"
-            />
-          </div>
-        </div>
-
-        <div className="mt-6 flex gap-4">
-          {classType === "live" && (
-            teacherView ? (
-              <Button
-                onClick={startLiveSession}
-                disabled={classSession?.is_active}
-              >
-                <Play className="mr-2 h-4 w-4" />
-                {classSession?.is_active ? "Class in Progress" : "Start Live Session"}
-              </Button>
-            ) : (
-              classSession?.is_active && (
-                <Button onClick={joinLiveSession}>
-                  <Video className="mr-2 h-4 w-4" />
-                  Join Live Session
-                </Button>
-              )
-            )
-          )}
-          <Button
-            variant="outline"
-            onClick={() => setShowResources(!showResources)}
-          >
-            <Book className="mr-2 h-4 w-4" />
-            Resources
-          </Button>
-          {teacherView && (
-            <Button
-              variant="outline"
-              onClick={() => setShowResourceUpload(!showResourceUpload)}
-            >
-              Upload Resource
-            </Button>
-          )}
-        </div>
+      <div className="p-6 pt-0">
+        <ClassCardActions
+          classType={classType}
+          teacherView={teacherView}
+          isSessionActive={classSession?.is_active || false}
+          onStartLiveSession={startLiveSession}
+          onJoinLiveSession={joinLiveSession}
+          onToggleResources={() => setShowResources(!showResources)}
+          onToggleResourceUpload={() => setShowResourceUpload(!showResourceUpload)}
+        />
       </div>
 
-      {showResourceUpload && (
-        <div className="border-t p-6 bg-gray-50">
-          <h4 className="text-lg font-semibold mb-4">Upload New Resource</h4>
-          <ResourceUpload classId={id} onSuccess={handleResourceSuccess} />
-        </div>
-      )}
-
-      {showResources && (
-        <div className="border-t p-6">
-          <h4 className="text-lg font-semibold mb-4">Class Resources</h4>
-          <ResourceList
-            classId={id}
-            isTeacher={teacherView}
-            onDelete={() => setShowResources(true)}
-          />
-        </div>
-      )}
+      <ClassResourceSection
+        classId={id}
+        showResources={showResources}
+        showResourceUpload={showResourceUpload}
+        teacherView={teacherView}
+        onResourceSuccess={handleResourceSuccess}
+        onDelete={() => setShowResources(true)}
+      />
     </Card>
   );
 }
