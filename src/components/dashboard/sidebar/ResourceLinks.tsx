@@ -1,5 +1,5 @@
 
-import { Video, FileText, BookOpen } from "lucide-react";
+import { PlayCircle, FileText, BookOpen } from "lucide-react";
 import { SidebarLink } from "../SidebarLink";
 
 interface ResourceLinksProps {
@@ -12,7 +12,7 @@ export function ResourceLinks({ isLinkActive, onLinkClick }: ResourceLinksProps)
     <>
       <SidebarLink
         to="/live-classes"
-        icon={Video}
+        icon={PlayCircle}
         label="Live Classes"
         isActive={isLinkActive("/live-classes")}
         onClick={onLinkClick}
