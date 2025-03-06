@@ -3,7 +3,15 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-export function NoActiveSessionAlert() {
+interface NoActiveSessionAlertProps {
+  redirectPath?: string;
+  redirectLabel?: string;
+}
+
+export function NoActiveSessionAlert({ 
+  redirectPath = '/browse-classes',
+  redirectLabel = 'Browse Classes'
+}: NoActiveSessionAlertProps) {
   const navigate = useNavigate();
 
   return (
@@ -15,11 +23,11 @@ export function NoActiveSessionAlert() {
         </AlertDescription>
       </Alert>
       <Button 
-        onClick={() => navigate('/browse-classes')}
+        onClick={() => navigate(redirectPath)}
         className="mt-4"
         variant="outline"
       >
-        Browse Classes
+        {redirectLabel}
       </Button>
     </div>
   );
