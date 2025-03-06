@@ -4,13 +4,15 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { Play, Video } from "lucide-react";
 import type { Class } from "./types";
 
 interface EnrollmentActionsProps {
   class_: Class;
+  isSessionActive?: boolean;
 }
 
-export function EnrollmentActions({ class_ }: EnrollmentActionsProps) {
+export function EnrollmentActions({ class_, isSessionActive = false }: EnrollmentActionsProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -51,29 +53,51 @@ export function EnrollmentActions({ class_ }: EnrollmentActionsProps) {
     }
   };
 
-  const isClassInProgress = (startTime: string | null, endTime: string | null) => {
-    if (!startTime || !endTime) return false;
-    const now = new Date();
-    const classStart = new Date(startTime);
-    const classEnd = new Date(endTime);
-    return now >= classStart && now <= classEnd;
-  };
-
   const handleJoinLiveClass = (classId: string) => {
     navigate(`/live-classes/${classId}`);
+  };
+
+  const startLiveSession = async (classId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('class_sessions')
+        .upsert({
+          class_id: classId,
+          is_active: true,
+          status: 'active',
+          started_at: new Date().toISOString(),
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      toast({
+        title: "Live session started",
+        description: "Students can now join your class.",
+      });
+      
+      navigate(`/live-classes/${classId}`);
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Could not start live session",
+      });
+    }
   };
 
   return (
     <div className="space-y-2">
       {class_.isEnrolled ? (
         <>
-          {class_.class_type === "live" && 
-           isClassInProgress(class_.start_time, class_.end_time) && (
+          {class_.class_type === "live" && isSessionActive && (
             <Button 
               onClick={() => handleJoinLiveClass(class_.id)}
               className="w-full"
               variant="default"
             >
+              <Video className="mr-2 h-4 w-4" />
               Join Live Class
             </Button>
           )}
@@ -82,16 +106,28 @@ export function EnrollmentActions({ class_ }: EnrollmentActionsProps) {
           </Button>
         </>
       ) : (
-        <Button
-          onClick={() => handleEnroll(class_.id)}
-          className="w-full"
-          disabled={(class_.enrollments[0]?.count || 0) >= class_.capacity}
-        >
-          {(class_.enrollments[0]?.count || 0) >= class_.capacity
-            ? "Class Full"
-            : "Enroll Now"
-          }
-        </Button>
+        <>
+          {class_.class_type === "live" && !class_.isEnrolled && isSessionActive && (
+            <Button 
+              onClick={() => handleJoinLiveClass(class_.id)}
+              className="w-full mb-2"
+              variant="default"
+            >
+              <Video className="mr-2 h-4 w-4" />
+              Join as Guest
+            </Button>
+          )}
+          <Button
+            onClick={() => handleEnroll(class_.id)}
+            className="w-full"
+            disabled={(class_.enrollments[0]?.count || 0) >= class_.capacity}
+          >
+            {(class_.enrollments[0]?.count || 0) >= class_.capacity
+              ? "Class Full"
+              : "Enroll Now"
+            }
+          </Button>
+        </>
       )}
     </div>
   );

@@ -6,14 +6,69 @@ import { ClassDetails } from "./ClassDetails";
 import { EnrollmentActions } from "./EnrollmentActions";
 import type { ClassListProps } from "./types";
 import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
+import { ClassSession, isClassSession } from "./types/ClassSession";
 
 export function ClassList({ classes, isLoading }: ClassListProps) {
   const [classTimers, setClassTimers] = useState<Record<string, string | null>>({});
+  const [activeSessions, setActiveSessions] = useState<Record<string, boolean>>({});
+
+  // Subscribe to active sessions
+  useEffect(() => {
+    if (!classes.length) return;
+
+    // Get initial active sessions
+    const fetchActiveSessions = async () => {
+      const { data } = await supabase
+        .from('class_sessions')
+        .select('class_id, is_active')
+        .in('class_id', classes.map(c => c.id))
+        .eq('is_active', true);
+
+      if (data) {
+        const sessionsMap: Record<string, boolean> = {};
+        data.forEach(session => {
+          sessionsMap[session.class_id] = session.is_active;
+        });
+        setActiveSessions(sessionsMap);
+      }
+    };
+
+    fetchActiveSessions();
+
+    // Subscribe to changes
+    const channel = supabase.channel('active-sessions')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'class_sessions',
+          filter: `class_id=in.(${classes.map(c => c.id).join(',')})`,
+        },
+        (payload: RealtimePostgresChangesPayload<ClassSession>) => {
+          if (payload.new && isClassSession(payload.new)) {
+            setActiveSessions(prev => ({
+              ...prev,
+              [payload.new.class_id]: payload.new.is_active
+            }));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [classes]);
 
   // Calculate time until class starts for each class
   useEffect(() => {
     if (classes.length) {
       const timers: Record<string, string | null> = {};
+      
+      const intervals: number[] = [];
       
       classes.forEach(class_ => {
         if (class_.start_time) {
@@ -29,17 +84,21 @@ export function ClassList({ classes, isLoading }: ClassListProps) {
               const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
               timers[class_.id] = `${hours}h ${minutes}m`;
             }
+            
+            setClassTimers(prev => ({ ...prev, [class_.id]: timers[class_.id] }));
           };
           
           updateTimer();
-          setClassTimers(prevTimers => ({ ...prevTimers, [class_.id]: timers[class_.id] }));
           
-          // Set up interval to update the timer - in a real app, you'd need to clean this up
+          // Set up interval to update the timer
           const interval = setInterval(updateTimer, 60000);
-          return () => clearInterval(interval);
+          intervals.push(interval);
         }
-        return undefined;
       });
+      
+      return () => {
+        intervals.forEach(interval => clearInterval(interval));
+      };
     }
   }, [classes]);
 
@@ -85,7 +144,7 @@ export function ClassList({ classes, isLoading }: ClassListProps) {
               </div>
               <ClassStatusBadge
                 classType={class_.class_type}
-                isActive={false} // This should ideally be determined based on active session status
+                isActive={activeSessions[class_.id] || false}
                 timeUntilClass={classTimers[class_.id]}
               />
             </div>
@@ -95,7 +154,7 @@ export function ClassList({ classes, isLoading }: ClassListProps) {
               <p className="text-gray-600 text-sm">{class_.description}</p>
             )}
             <ClassDetails class_={class_} />
-            <EnrollmentActions class_={class_} />
+            <EnrollmentActions class_={class_} isSessionActive={activeSessions[class_.id] || false} />
           </CardContent>
         </Card>
       ))}

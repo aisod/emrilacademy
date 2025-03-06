@@ -8,6 +8,17 @@ export interface ClassSession {
   status: 'pending' | 'active' | 'ended';
   created_at: string;
   updated_at: string;
+  participant_count?: number;
+  duration_seconds?: number;
+}
+
+export interface SessionParticipant {
+  id: string;
+  session_id: string;
+  user_id: string;
+  join_time: string;
+  leave_time?: string | null;
+  created_at: string;
 }
 
 export const isClassSession = (obj: any): obj is ClassSession => {
@@ -20,6 +31,5 @@ export const isClassSession = (obj: any): obj is ClassSession => {
     (obj.ended_at === null || typeof obj.ended_at === 'string') &&
     ['pending', 'active', 'ended'].includes(obj.status) &&
     typeof obj.created_at === 'string' &&
-    typeof obj.updated_at === 'string'
-  );
+    typeof obj.updated_at === 'string')
 };
