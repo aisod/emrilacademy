@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { formatDuration } from "@/lib/format-utils";
 
 interface SessionAnalyticsPanelProps {
   sessionId: string;
@@ -54,17 +55,6 @@ export function SessionAnalyticsPanel({
     enabled: !!sessionId,
     refetchInterval: 30000, // Refetch every 30 seconds
   });
-
-  const formatDuration = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const remainingSeconds = seconds % 60;
-    
-    if (hours > 0) {
-      return `${hours}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
-    }
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-  };
 
   return (
     <Card className="bg-black/70 text-white border-gray-600 w-72">
