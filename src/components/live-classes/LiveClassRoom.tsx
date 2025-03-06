@@ -74,12 +74,12 @@ export function LiveClassRoom({
   const addParticipant = useMutation({
     mutationFn: async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
+      if (!session || !sessionInfo) return;
 
       return supabase
         .from("session_participants")
         .upsert({
-          session_id: sessionInfo?.id,
+          session_id: sessionInfo.id,
           user_id: session.user.id,
           join_time: new Date().toISOString(),
         })
@@ -128,7 +128,7 @@ export function LiveClassRoom({
           participant_count: participantCount,
           duration_seconds: sessionDuration
         })
-        .eq('class_id', classId);
+        .eq('id', sessionInfo?.id);
 
       if (error) throw error;
       

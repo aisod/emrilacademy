@@ -4,13 +4,13 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
-import Index from "./pages/Index";
-import Auth from "./pages/Auth";
-import NotFound from "./pages/NotFound";
-import StudentDashboard from "./pages/StudentDashboard";
-import TeacherDashboard from "./pages/TeacherDashboard";
-import BrowseClasses from "./pages/BrowseClasses";
-import LiveClasses from "./pages/LiveClasses";
+import Index from "./Index";
+import Auth from "./Auth";
+import NotFound from "./NotFound";
+import StudentDashboard from "./StudentDashboard";
+import TeacherDashboard from "./TeacherDashboard";
+import BrowseClasses from "./BrowseClasses";
+import LiveClasses from "./LiveClasses";
 
 const queryClient = new QueryClient({
   defaultOptions: {

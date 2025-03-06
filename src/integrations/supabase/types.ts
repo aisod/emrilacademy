@@ -13,9 +13,11 @@ export type Database = {
         Row: {
           class_id: string
           created_at: string
+          duration_seconds: number | null
           ended_at: string | null
           id: string
           is_active: boolean
+          participant_count: number | null
           started_at: string | null
           status: Database["public"]["Enums"]["session_status"]
           updated_at: string
@@ -23,9 +25,11 @@ export type Database = {
         Insert: {
           class_id: string
           created_at?: string
+          duration_seconds?: number | null
           ended_at?: string | null
           id?: string
           is_active?: boolean
+          participant_count?: number | null
           started_at?: string | null
           status?: Database["public"]["Enums"]["session_status"]
           updated_at?: string
@@ -33,9 +37,11 @@ export type Database = {
         Update: {
           class_id?: string
           created_at?: string
+          duration_seconds?: number | null
           ended_at?: string | null
           id?: string
           is_active?: boolean
+          participant_count?: number | null
           started_at?: string | null
           status?: Database["public"]["Enums"]["session_status"]
           updated_at?: string
@@ -249,6 +255,41 @@ export type Database = {
             columns: ["class_id"]
             isOneToOne: false
             referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      session_participants: {
+        Row: {
+          created_at: string
+          id: string
+          join_time: string
+          leave_time: string | null
+          session_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          join_time?: string
+          leave_time?: string | null
+          session_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          join_time?: string
+          leave_time?: string | null
+          session_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_participants_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "class_sessions"
             referencedColumns: ["id"]
           },
         ]

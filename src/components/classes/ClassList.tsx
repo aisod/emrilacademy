@@ -47,7 +47,7 @@ export function ClassList({ classes, isLoading }: ClassListProps) {
           table: 'class_sessions',
           filter: `class_id=in.(${classes.map(c => c.id).join(',')})`,
         },
-        (payload: RealtimePostgresChangesPayload<ClassSession>) => {
+        (payload: RealtimePostgresChangesPayload<any>) => {
           if (payload.new && isClassSession(payload.new)) {
             setActiveSessions(prev => ({
               ...prev,
@@ -68,7 +68,7 @@ export function ClassList({ classes, isLoading }: ClassListProps) {
     if (classes.length) {
       const timers: Record<string, string | null> = {};
       
-      const intervals: number[] = [];
+      const intervals: NodeJS.Timeout[] = [];
       
       classes.forEach(class_ => {
         if (class_.start_time) {
