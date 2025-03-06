@@ -3,8 +3,19 @@ import { User } from "lucide-react";
 import { format } from "date-fns";
 import { formatDuration } from "@/lib/format-utils";
 
+interface Participant {
+  id: string;
+  join_time: string;
+  leave_time: string | null;
+  user_id: string;
+  profiles?: {
+    first_name: string;
+    last_name: string;
+  };
+}
+
 interface ParticipantTableProps {
-  participants: any[];
+  participants: Participant[];
   calculateAttendanceTime: (join: string, leave: string | null) => number;
 }
 
@@ -25,20 +36,22 @@ export function ParticipantTable({
         </thead>
         <tbody className="divide-y divide-gray-200">
           {participants && participants.length > 0 ? (
-            participants.map((participant: any) => {
+            participants.map((participant) => {
               const attendanceTime = calculateAttendanceTime(
                 participant.join_time, 
                 participant.leave_time
               );
+              
+              const fullName = participant.profiles 
+                ? `${participant.profiles.first_name} ${participant.profiles.last_name}`
+                : 'Unknown User';
               
               return (
                 <tr key={participant.id}>
                   <td className="px-2 py-2 whitespace-nowrap">
                     <div className="flex items-center">
                       <User className="h-4 w-4 text-gray-400 mr-2" />
-                      <span>
-                        {participant.profiles?.first_name} {participant.profiles?.last_name}
-                      </span>
+                      <span>{fullName}</span>
                     </div>
                   </td>
                   <td className="px-2 py-2 whitespace-nowrap">

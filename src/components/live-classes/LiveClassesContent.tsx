@@ -38,9 +38,10 @@ export function LiveClassesContent() {
     `${session.class.teacher.first_name} ${session.class.teacher.last_name}`.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const filteredHistorySessions = sessionHistory?.filter(session =>
-    session.classes?.title?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredHistorySessions = sessionHistory?.filter(session => {
+    // Safely check if session has classes property with title
+    return session.classes?.title?.toLowerCase().includes(searchQuery.toLowerCase()) || false;
+  });
 
   return (
     <div className="container max-w-7xl mx-auto p-6">
