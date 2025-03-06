@@ -1,161 +1,186 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle2 } from "lucide-react";
-import { format } from "date-fns";
-import { SessionHistoryFilter } from "./SessionHistoryFilter";
-
-interface SessionHistoryItem {
-  id: string;
-  class_id: string;
-  started_at: string | null;
-  ended_at: string | null;
-  participant_count: number;
-  duration_seconds: number;
-  class: {
-    title: string;
-    teacher: {
-      first_name: string;
-      last_name: string;
-    };
-  };
-}
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { SessionHistoryFilter, SessionFilters } from "./SessionHistoryFilter";
+import { SessionAnalytics } from "./SessionAnalytics";
+import { Clock, Calendar, Users, ChevronDown, ChevronUp, Eye } from "lucide-react";
+import { format, isWithinInterval, startOfDay, endOfDay } from "date-fns";
 
 interface SessionHistoryListProps {
-  sessionHistory: SessionHistoryItem[] | undefined;
+  sessionHistory: any[];
 }
 
 export function SessionHistoryList({ sessionHistory }: SessionHistoryListProps) {
-  const [filteredSessions, setFilteredSessions] = useState<SessionHistoryItem[]>([]);
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<SessionFilters>({
     searchTerm: "",
-    dateFrom: null as Date | null,
-    dateTo: null as Date | null,
-    sortBy: "date" as "date" | "duration" | "participants",
+    startDate: undefined,
+    endDate: undefined,
+    sortBy: "recent"
   });
-
-  useEffect(() => {
-    if (!sessionHistory) {
-      setFilteredSessions([]);
-      return;
-    }
-
-    let filtered = [...sessionHistory];
-
-    // Apply search filter
-    if (filters.searchTerm) {
-      const searchLower = filters.searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (session) => session.class.title.toLowerCase().includes(searchLower)
-      );
-    }
-
-    // Apply date range filter
-    if (filters.dateFrom) {
-      filtered = filtered.filter(
-        (session) => session.ended_at && new Date(session.ended_at) >= filters.dateFrom!
-      );
-    }
-
-    if (filters.dateTo) {
-      const nextDay = new Date(filters.dateTo);
-      nextDay.setDate(nextDay.getDate() + 1);
-      filtered = filtered.filter(
-        (session) => session.ended_at && new Date(session.ended_at) < nextDay
-      );
-    }
-
-    // Apply sorting
-    filtered.sort((a, b) => {
-      switch (filters.sortBy) {
-        case "date":
-          return (
-            new Date(b.ended_at || Date.now()).getTime() -
-            new Date(a.ended_at || Date.now()).getTime()
-          );
-        case "duration":
+  
+  const [expandedSession, setExpandedSession] = useState<string | null>(null);
+  
+  // Filter and sort sessions based on user selections
+  const filteredSessions = sessionHistory
+    ? sessionHistory.filter(session => {
+        // Filter by search term
+        if (filters.searchTerm && !session.classes?.title.toLowerCase().includes(filters.searchTerm.toLowerCase())) {
+          return false;
+        }
+        
+        // Filter by date range
+        if (filters.startDate || filters.endDate) {
+          const sessionDate = session.started_at ? new Date(session.started_at) : null;
+          
+          if (!sessionDate) return false;
+          
+          // Check against start date
+          if (filters.startDate && sessionDate < startOfDay(filters.startDate)) {
+            return false;
+          }
+          
+          // Check against end date
+          if (filters.endDate && sessionDate > endOfDay(filters.endDate)) {
+            return false;
+          }
+        }
+        
+        return true;
+      })
+      .sort((a, b) => {
+        // Sort by selected criteria
+        if (filters.sortBy === "recent") {
+          return new Date(b.started_at || 0).getTime() - new Date(a.started_at || 0).getTime();
+        } else if (filters.sortBy === "duration") {
           return (b.duration_seconds || 0) - (a.duration_seconds || 0);
-        case "participants":
+        } else if (filters.sortBy === "participants") {
           return (b.participant_count || 0) - (a.participant_count || 0);
-        default:
-          return 0;
-      }
-    });
-
-    setFilteredSessions(filtered);
-  }, [sessionHistory, filters]);
-
+        }
+        return 0;
+      })
+    : [];
+    
+  if (!sessionHistory || sessionHistory.length === 0) {
+    return (
+      <div className="space-y-4">
+        <SessionHistoryFilter onFilterChange={setFilters} />
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center py-12">
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No session history available</h3>
+              <p className="text-gray-500">
+                You haven't conducted any class sessions yet.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+  
+  // Format duration in HH:MM:SS format
   const formatDuration = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
     
     if (hours > 0) {
-      return `${hours}h ${minutes}m`;
+      return `${hours}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
     }
-    return `${minutes}m`;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
-  if (!sessionHistory || sessionHistory.length === 0) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>No Session History</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p>You don't have any past class sessions. When you participate in a class, it will be shown here.</p>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
-    <div>
+    <div className="space-y-4">
       <SessionHistoryFilter onFilterChange={setFilters} />
       
-      {filteredSessions.length === 0 ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>No matching sessions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p>No sessions match your current filters. Try adjusting your search criteria.</p>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredSessions.map((session) => (
+      <div className="grid gap-4">
+        {filteredSessions.length > 0 ? (
+          filteredSessions.map((session) => (
             <Card key={session.id} className="overflow-hidden">
-              <CardHeader>
-                <CardTitle>{session.class.title}</CardTitle>
-                <p className="text-sm text-gray-500">
-                  by {session.class.teacher.first_name} {session.class.teacher.last_name}
-                </p>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div className="flex items-center text-sm">
-                    <CheckCircle2 className="h-4 w-4 text-green-500 mr-2" />
-                    <span>Completed</span>
+              <div className="p-4 sm:p-6">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="text-lg font-medium">
+                      {session.classes?.title || "Untitled Class"}
+                    </h3>
+                    <div className="flex flex-wrap gap-4 mt-1 text-sm text-gray-500">
+                      <div className="flex items-center">
+                        <Calendar className="h-4 w-4 mr-1" />
+                        {session.started_at 
+                          ? format(new Date(session.started_at), "MMM d, yyyy") 
+                          : "Unknown date"}
+                      </div>
+                      <div className="flex items-center">
+                        <Clock className="h-4 w-4 mr-1" />
+                        {session.duration_seconds 
+                          ? formatDuration(session.duration_seconds) 
+                          : "Unknown duration"}
+                      </div>
+                      <div className="flex items-center">
+                        <Users className="h-4 w-4 mr-1" />
+                        {session.participant_count || 0} participants
+                      </div>
+                    </div>
                   </div>
-                  {session.started_at && session.ended_at && (
-                    <p className="text-sm text-gray-600">
-                      {format(new Date(session.started_at), "MMM d, yyyy · h:mm a")}
-                    </p>
-                  )}
-                  <div className="flex justify-between text-sm text-gray-600 mt-2">
-                    <div>
-                      <span className="font-medium">Duration:</span> {formatDuration(session.duration_seconds || 0)}
-                    </div>
-                    <div>
-                      <span className="font-medium">Participants:</span> {session.participant_count || 0}
-                    </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Badge variant="outline">{session.status}</Badge>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => setExpandedSession(expandedSession === session.id ? null : session.id)}
+                    >
+                      {expandedSession === session.id ? (
+                        <>
+                          <ChevronUp className="h-4 w-4 mr-1" />
+                          Hide Details
+                        </>
+                      ) : (
+                        <>
+                          <ChevronDown className="h-4 w-4 mr-1" />
+                          Show Details
+                        </>
+                      )}
+                    </Button>
                   </div>
                 </div>
-              </CardContent>
+
+                {expandedSession === session.id && (
+                  <div className="mt-4 pt-4 border-t">
+                    <SessionAnalytics sessionId={session.id} />
+                  </div>
+                )}
+              </div>
             </Card>
-          ))}
-        </div>
-      )}
+          ))
+        ) : (
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-center py-12">
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No matching sessions found</h3>
+                <p className="text-gray-500">
+                  Try adjusting your filters to find what you're looking for.
+                </p>
+                <Button 
+                  variant="outline" 
+                  className="mt-4"
+                  onClick={() => setFilters({
+                    searchTerm: "",
+                    startDate: undefined,
+                    endDate: undefined,
+                    sortBy: "recent"
+                  })}
+                >
+                  Clear All Filters
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
     </div>
   );
 }

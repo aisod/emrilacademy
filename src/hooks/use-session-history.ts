@@ -2,79 +2,104 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { useUserRole } from "@/hooks/use-user-role";
 
 export function useSessionHistory() {
   const { toast } = useToast();
-  const { data: userRole } = useUserRole();
-  
+
   return useQuery({
     queryKey: ["session-history"],
     queryFn: async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return [];
       
-      let query = supabase
-        .from("class_sessions")
-        .select(`
-          id,
-          class_id,
-          started_at,
-          ended_at,
-          participant_count,
-          duration_seconds,
-          class:classes(
-            title,
-            teacher:profiles!teacher_id(
-              first_name,
-              last_name
-            )
-          )
-        `)
-        .eq("is_active", false)
-        .eq("status", "ended")
-        .order("ended_at", { ascending: false });
-      
-      // If teacher, get sessions for classes they teach
-      if (userRole === "teacher") {
-        const { data: teacherClasses } = await supabase
-          .from("classes")
-          .select("id")
-          .eq("teacher_id", session.user.id);
-        
-        if (teacherClasses && teacherClasses.length > 0) {
-          query = query.in("class_id", teacherClasses.map(c => c.id));
-        } else {
-          return [];
-        }
-      } 
-      // If student, get sessions they participated in
-      else if (userRole === "student") {
-        const { data: enrollments } = await supabase
-          .from("enrollments")
-          .select("class_id")
-          .eq("student_id", session.user.id);
-        
-        if (enrollments && enrollments.length > 0) {
-          query = query.in("class_id", enrollments.map(e => e.class_id));
-        } else {
-          return [];
-        }
-      }
-
-      const { data, error } = await query.limit(10);
-
-      if (error) {
-        toast({
-          title: "Error fetching session history",
-          description: error.message,
-          variant: "destructive",
-        });
+      if (!session) {
         return [];
       }
 
-      return data;
+      // Fetch class sessions
+      const { data: userProfile } = await supabase
+        .from("profiles")
+        .select("id, role")
+        .eq("id", session.user.id)
+        .single();
+
+      // Different queries for teachers and students
+      if (userProfile?.role === "teacher") {
+        // For teachers, show all sessions for classes they teach
+        const { data, error } = await supabase
+          .from("class_sessions")
+          .select(`
+            id, 
+            started_at, 
+            ended_at, 
+            duration_seconds, 
+            participant_count,
+            status,
+            classes:class_id (
+              id, 
+              title,
+              teacher_id
+            )
+          `)
+          .eq("classes.teacher_id", session.user.id)
+          .order("started_at", { ascending: false });
+
+        if (error) {
+          toast({
+            title: "Error fetching session history",
+            description: error.message,
+            variant: "destructive",
+          });
+          return [];
+        }
+
+        return data || [];
+      } else {
+        // For students, show sessions they've participated in
+        const { data, error } = await supabase
+          .from("session_participants")
+          .select(`
+            session_id,
+            join_time,
+            leave_time,
+            class_sessions:session_id (
+              id,
+              started_at,
+              ended_at,
+              duration_seconds,
+              participant_count,
+              status,
+              classes:class_id (
+                id,
+                title
+              )
+            )
+          `)
+          .eq("user_id", session.user.id)
+          .order("join_time", { ascending: false });
+
+        if (error) {
+          toast({
+            title: "Error fetching session history",
+            description: error.message,
+            variant: "destructive",
+          });
+          return [];
+        }
+
+        // Transform the data to match the teacher format
+        return (data || []).map(item => ({
+          id: item.class_sessions?.id,
+          started_at: item.class_sessions?.started_at,
+          ended_at: item.class_sessions?.ended_at,
+          duration_seconds: item.class_sessions?.duration_seconds,
+          participant_count: item.class_sessions?.participant_count,
+          status: item.class_sessions?.status,
+          classes: item.class_sessions?.classes,
+          // Add student-specific fields
+          join_time: item.join_time,
+          leave_time: item.leave_time
+        })).filter(item => item.id); // Filter out any sessions with no ID
+      }
     },
-    enabled: !!userRole,
   });
 }
