@@ -2,12 +2,15 @@
 import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 export function useJitsiMeeting(classId: string, sessionInfo: any, isJoined: boolean) {
   const [jitsiApi, setJitsiApi] = useState<any>(null);
   const [participantCount, setParticipantCount] = useState(0);
   const [sessionDuration, setSessionDuration] = useState(0);
   const [sessionStartTime, setSessionStartTime] = useState<Date | null>(null);
+  const [participantId, setParticipantId] = useState<string | null>(null);
+  const { toast } = useToast();
 
   // Set session start time when session info is available
   useEffect(() => {
@@ -39,9 +42,9 @@ export function useJitsiMeeting(classId: string, sessionInfo: any, isJoined: boo
   const addParticipant = useMutation({
     mutationFn: async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session || !sessionInfo) return;
+      if (!session || !sessionInfo) return null;
 
-      return supabase
+      const { data, error } = await supabase
         .from("session_participants")
         .upsert({
           session_id: sessionInfo.id,
@@ -49,9 +52,40 @@ export function useJitsiMeeting(classId: string, sessionInfo: any, isJoined: boo
           join_time: new Date().toISOString(),
         })
         .select();
+
+      if (error) {
+        throw error;
+      }
+      
+      return data?.[0]?.id || null;
+    },
+    onSuccess: (id) => {
+      console.log("Participant added to session");
+      setParticipantId(id);
+    },
+    onError: (error) => {
+      toast({
+        title: "Error tracking attendance",
+        description: "We couldn't record your attendance in this session.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Mutation to update leave time when leaving
+  const updateLeaveTime = useMutation({
+    mutationFn: async () => {
+      if (!participantId) return;
+
+      return supabase
+        .from("session_participants")
+        .update({
+          leave_time: new Date().toISOString(),
+        })
+        .eq("id", participantId);
     },
     onSuccess: () => {
-      console.log("Participant added to session");
+      console.log("Participant leave time updated");
     },
   });
 
@@ -61,6 +95,32 @@ export function useJitsiMeeting(classId: string, sessionInfo: any, isJoined: boo
       addParticipant.mutate();
     }
   }, [isJoined, sessionInfo?.id]);
+
+  // Update leave time when component unmounts or when user leaves
+  useEffect(() => {
+    return () => {
+      if (participantId) {
+        updateLeaveTime.mutate();
+      }
+    };
+  }, [participantId]);
+
+  // Also update leave time when user manually leaves
+  useEffect(() => {
+    if (jitsiApi) {
+      const handleUserLeft = () => {
+        if (participantId) {
+          updateLeaveTime.mutate();
+        }
+      };
+
+      jitsiApi.addEventListener('videoConferenceLeft', handleUserLeft);
+
+      return () => {
+        jitsiApi.removeEventListener('videoConferenceLeft', handleUserLeft);
+      };
+    }
+  }, [jitsiApi, participantId]);
 
   return {
     jitsiApi,
