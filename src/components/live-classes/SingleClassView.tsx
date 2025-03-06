@@ -1,12 +1,16 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LiveClassRoom } from "@/components/live-classes/LiveClassRoom";
 import { useClassDetails } from "@/hooks/use-class-details";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Clock, Calendar, Users } from "lucide-react";
+import { Clock, Calendar, Users, AlertTriangle } from "lucide-react";
 import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+import { useSupabaseSubscription } from "@/hooks/use-supabase-subscription";
 
 interface SingleClassViewProps {
   classId: string;
@@ -14,7 +18,28 @@ interface SingleClassViewProps {
 
 export function SingleClassView({ classId }: SingleClassViewProps) {
   const [isJoined, setIsJoined] = useState(false);
-  const { data: classDetails, isLoading, error } = useClassDetails(classId);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const { 
+    data: classDetails, 
+    isLoading, 
+    error, 
+    refetch 
+  } = useClassDetails(classId);
+
+  // Subscribe to any changes in the class details
+  useSupabaseSubscription('classes', refetch, { filter: `id=eq.${classId}` });
+
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: "Error loading class",
+        description: "We couldn't load the class details. Please try again.",
+        variant: "destructive",
+      });
+    }
+  }, [error, toast]);
 
   if (isLoading) {
     return (
@@ -41,11 +66,22 @@ export function SingleClassView({ classId }: SingleClassViewProps) {
       <div className="p-6">
         <Card>
           <CardHeader>
-            <CardTitle>Error Loading Class</CardTitle>
+            <CardTitle className="flex items-center">
+              <AlertTriangle className="h-5 w-5 mr-2 text-amber-500" />
+              Error Loading Class
+            </CardTitle>
             <CardDescription>
               We couldn't load the class details. Please try again later.
             </CardDescription>
           </CardHeader>
+          <CardContent>
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/live-classes')}
+            >
+              Back to Live Classes
+            </Button>
+          </CardContent>
         </Card>
       </div>
     );

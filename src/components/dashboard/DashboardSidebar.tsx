@@ -21,7 +21,18 @@ export function DashboardSidebar() {
   const isMobile = useIsMobile();
   const { data: userRole } = useUserRole();
 
-  const isLinkActive = (path: string) => location.pathname === path;
+  // Check if a path is active, including for paths with parameters
+  const isLinkActive = (path: string) => {
+    // For exact matches
+    if (location.pathname === path) return true;
+    
+    // For parameterized routes
+    // For example, /live-classes/123 should match /live-classes
+    if (path !== '/' && location.pathname.startsWith(path + '/')) return true;
+    
+    return false;
+  };
+  
   const dashboardPath = userRole === "teacher" ? "/teacher" : "/student";
 
   return (

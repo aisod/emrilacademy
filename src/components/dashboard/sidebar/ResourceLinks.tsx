@@ -14,7 +14,7 @@ export function ResourceLinks({ isLinkActive, onLinkClick }: ResourceLinksProps)
         to="/live-classes"
         icon={PlayCircle}
         label="Live Classes"
-        isActive={isLinkActive("/live-classes")}
+        isActive={(path: string) => path.startsWith("/live-classes")}
         onClick={onLinkClick}
       />
       <SidebarLink

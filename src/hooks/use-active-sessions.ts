@@ -9,35 +9,42 @@ export function useActiveSessions() {
   return useQuery({
     queryKey: ["active-class-sessions"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("class_sessions")
-        .select(`
-          id,
-          class_id,
-          is_active,
-          started_at,
-          status,
-          class:classes(
-            title,
-            teacher:profiles!teacher_id(
-              first_name,
-              last_name
+      try {
+        const { data, error } = await supabase
+          .from("class_sessions")
+          .select(`
+            id,
+            class_id,
+            is_active,
+            started_at,
+            status,
+            class:classes(
+              id,
+              title,
+              teacher:profiles!teacher_id(
+                first_name,
+                last_name
+              )
             )
-          )
-        `)
-        .eq("is_active", true)
-        .eq("status", "active");
+          `)
+          .eq("is_active", true)
+          .eq("status", "active");
 
-      if (error) {
+        if (error) {
+          throw error;
+        }
+
+        return data || [];
+      } catch (error: any) {
         toast({
           title: "Error fetching active classes",
-          description: error.message,
+          description: error?.message || "Something went wrong",
           variant: "destructive",
         });
-        return [];
+        throw error;
       }
-
-      return data;
     },
+    refetchInterval: 30000, // Refetch every 30 seconds to keep session list updated
+    retry: 2,
   });
 }
