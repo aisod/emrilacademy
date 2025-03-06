@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -12,6 +13,7 @@ import BrowseClasses from "./pages/BrowseClasses";
 import LiveClasses from "./pages/LiveClasses";
 import Dashboard from "./pages/Dashboard";
 import Messages from "./pages/Messages";
+import Courses from "./pages/Courses";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +33,7 @@ function App() {
             <Route path="/browse-classes" element={<BrowseClasses />} />
             <Route path="/live-classes/:classId" element={<LiveClasses />} />
             <Route path="/messages" element={<Messages />} />
+            <Route path="/courses" element={<Courses />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>

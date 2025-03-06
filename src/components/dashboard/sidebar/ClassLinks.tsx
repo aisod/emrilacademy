@@ -1,5 +1,5 @@
 
-import { Search, GraduationCap } from "lucide-react";
+import { Search, GraduationCap, BookOpen } from "lucide-react";
 import { SidebarLink } from "../SidebarLink";
 
 interface ClassLinksProps {
