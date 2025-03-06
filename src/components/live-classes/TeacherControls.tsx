@@ -63,7 +63,7 @@ export function TeacherControls({
         return [];
       }
 
-      return data;
+      return data || [];
     },
     enabled: !!sessionInfo?.id,
     refetchInterval: 30000, // Refetch every 30 seconds
@@ -180,9 +180,9 @@ export function TeacherControls({
               <div className="text-sm mt-2">
                 <p className="mb-1">Recent participants:</p>
                 <div className="max-h-24 overflow-y-auto">
-                  {participants.slice(0, 5).map((p) => (
+                  {participants.slice(0, 5).map((p: any) => (
                     <div key={p.id} className="text-xs py-1 border-t border-gray-700">
-                      {p.profiles.first_name} {p.profiles.last_name}
+                      {p.profiles?.first_name} {p.profiles?.last_name}
                     </div>
                   ))}
                 </div>
