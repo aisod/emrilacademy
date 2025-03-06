@@ -62,30 +62,50 @@ export function SessionAnalytics({ sessionId }: SessionAnalyticsProps) {
   const { data: participants, isLoading: isLoadingParticipants } = useQuery({
     queryKey: ["session-participants", sessionId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("session_participants")
-        .select(`
-          id,
-          join_time,
-          leave_time,
-          user_id,
-          profiles:user_id(
-            first_name,
-            last_name
-          )
-        `)
-        .eq("session_id", sessionId);
+      try {
+        // First, get the session participants
+        const { data: participantsData, error: participantsError } = await supabase
+          .from("session_participants")
+          .select(`
+            id,
+            join_time,
+            leave_time,
+            user_id
+          `)
+          .eq("session_id", sessionId);
 
-      if (error) {
+        if (participantsError) {
+          throw participantsError;
+        }
+
+        // Then, for each participant, fetch their profile information separately
+        const participantsWithProfiles = await Promise.all(
+          (participantsData || []).map(async (participant) => {
+            // Fetch user profile data
+            const { data: profileData, error: profileError } = await supabase
+              .from("profiles")
+              .select("first_name, last_name")
+              .eq("id", participant.user_id)
+              .maybeSingle();
+
+            // Return combined data
+            return {
+              ...participant,
+              // Use null coalescence to handle the case where profile data isn't available
+              profiles: profileError ? undefined : profileData
+            };
+          })
+        );
+
+        return participantsWithProfiles || [];
+      } catch (error) {
         toast({
           title: "Error fetching participants",
-          description: error.message,
+          description: error instanceof Error ? error.message : "Unknown error occurred",
           variant: "destructive",
         });
         return [];
       }
-
-      return data || [];
     },
     enabled: !!sessionId,
   });

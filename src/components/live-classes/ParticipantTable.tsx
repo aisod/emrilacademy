@@ -9,9 +9,9 @@ interface Participant {
   leave_time: string | null;
   user_id: string;
   profiles?: {
-    first_name: string;
-    last_name: string;
-  };
+    first_name?: string;
+    last_name?: string;
+  } | null;
 }
 
 interface ParticipantTableProps {
@@ -43,7 +43,7 @@ export function ParticipantTable({
               );
               
               const fullName = participant.profiles 
-                ? `${participant.profiles.first_name} ${participant.profiles.last_name}`
+                ? `${participant.profiles.first_name || ''} ${participant.profiles.last_name || ''}`.trim() || 'Unknown User'
                 : 'Unknown User';
               
               return (
