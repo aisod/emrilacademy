@@ -4,18 +4,35 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Download, Trash2 } from "lucide-react";
+import { Download, Trash2, FileText, File } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+
+interface Resource {
+  id: string;
+  title: string;
+  description: string | null;
+  file_url: string;
+  created_at: string;
+}
 
 interface ResourceListProps {
   classId: string;
   isTeacher?: boolean;
   onDelete?: () => void;
+  resources?: Resource[];
+  isLoading?: boolean;
 }
 
-export function ResourceList({ classId, isTeacher, onDelete }: ResourceListProps) {
+export function ResourceList({ 
+  classId, 
+  isTeacher, 
+  onDelete,
+  resources: externalResources,
+  isLoading: externalLoading
+}: ResourceListProps) {
   const { toast } = useToast();
 
+  // Only fetch resources if they're not provided externally
   const { data: resources, isLoading } = useQuery({
     queryKey: ["resources", classId],
     queryFn: async () => {
@@ -28,14 +45,33 @@ export function ResourceList({ classId, isTeacher, onDelete }: ResourceListProps
       if (error) throw error;
       return data;
     },
+    enabled: !externalResources && !!classId,
   });
+
+  // Use external resources if provided, otherwise use fetched resources
+  const resourcesData = externalResources || resources;
+  const loadingState = externalLoading !== undefined ? externalLoading : isLoading;
+
+  const getFileIcon = (fileUrl: string) => {
+    const extension = fileUrl.split('.').pop()?.toLowerCase();
+    switch (extension) {
+      case 'pdf':
+        return <FileText className="h-4 w-4" />;
+      default:
+        return <File className="h-4 w-4" />;
+    }
+  };
 
   const handleDelete = async (id: string, filePath: string) => {
     try {
+      // Extract the path from the full URL
+      const filePathParts = filePath.split('/');
+      const bucketPath = filePathParts.slice(filePathParts.indexOf('resources')).join('/');
+
       // Delete from storage
       const { error: storageError } = await supabase.storage
         .from("resources")
-        .remove([filePath]);
+        .remove([bucketPath]);
 
       if (storageError) throw storageError;
 
@@ -62,7 +98,7 @@ export function ResourceList({ classId, isTeacher, onDelete }: ResourceListProps
     }
   };
 
-  if (isLoading) {
+  if (loadingState) {
     return (
       <div className="space-y-4">
         {[1, 2, 3].map((i) => (
@@ -75,7 +111,7 @@ export function ResourceList({ classId, isTeacher, onDelete }: ResourceListProps
     );
   }
 
-  if (!resources?.length) {
+  if (!resourcesData?.length) {
     return (
       <Card className="p-6">
         <p className="text-center text-gray-500">No resources available</p>
@@ -85,11 +121,14 @@ export function ResourceList({ classId, isTeacher, onDelete }: ResourceListProps
 
   return (
     <div className="space-y-4">
-      {resources.map((resource) => (
+      {resourcesData.map((resource) => (
         <Card key={resource.id} className="p-4">
           <div className="flex items-start justify-between">
             <div className="space-y-1">
-              <h3 className="font-semibold">{resource.title}</h3>
+              <div className="flex items-center gap-2">
+                {getFileIcon(resource.file_url)}
+                <h3 className="font-semibold">{resource.title}</h3>
+              </div>
               {resource.description && (
                 <p className="text-sm text-gray-500">{resource.description}</p>
               )}

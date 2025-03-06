@@ -20,7 +20,7 @@ export function ResourceLinks({ isLinkActive, onLinkClick }: ResourceLinksProps)
       <SidebarLink
         to="/resources"
         icon={FileText}
-        label="My Resources"
+        label="Resources"
         isActive={isLinkActive("/resources")}
         onClick={onLinkClick}
       />
