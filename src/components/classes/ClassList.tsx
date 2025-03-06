@@ -5,8 +5,44 @@ import { ClassStatusBadge } from "./ClassStatusBadge";
 import { ClassDetails } from "./ClassDetails";
 import { EnrollmentActions } from "./EnrollmentActions";
 import type { ClassListProps } from "./types";
+import { useState, useEffect } from "react";
 
 export function ClassList({ classes, isLoading }: ClassListProps) {
+  const [classTimers, setClassTimers] = useState<Record<string, string | null>>({});
+
+  // Calculate time until class starts for each class
+  useEffect(() => {
+    if (classes.length) {
+      const timers: Record<string, string | null> = {};
+      
+      classes.forEach(class_ => {
+        if (class_.start_time) {
+          const updateTimer = () => {
+            const now = new Date();
+            const start = new Date(class_.start_time);
+            const diff = start.getTime() - now.getTime();
+            
+            if (diff <= 0) {
+              timers[class_.id] = null;
+            } else {
+              const hours = Math.floor(diff / (1000 * 60 * 60));
+              const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+              timers[class_.id] = `${hours}h ${minutes}m`;
+            }
+          };
+          
+          updateTimer();
+          setClassTimers(prevTimers => ({ ...prevTimers, [class_.id]: timers[class_.id] }));
+          
+          // Set up interval to update the timer - in a real app, you'd need to clean this up
+          const interval = setInterval(updateTimer, 60000);
+          return () => clearInterval(interval);
+        }
+        return undefined;
+      });
+    }
+  }, [classes]);
+
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -49,8 +85,8 @@ export function ClassList({ classes, isLoading }: ClassListProps) {
               </div>
               <ClassStatusBadge
                 classType={class_.class_type}
-                startTime={class_.start_time}
-                endTime={class_.end_time}
+                isActive={false} // This should ideally be determined based on active session status
+                timeUntilClass={classTimers[class_.id]}
               />
             </div>
           </CardHeader>
