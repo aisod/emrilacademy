@@ -51,12 +51,14 @@ export function SessionAnalyticsPanel({
     },
     enabled: !!sessionId,
     refetchInterval: 30000, // Refetch every 30 seconds
-    onError: (error) => {
-      toast({
-        title: "Error fetching participants",
-        description: error instanceof Error ? error.message : "Unknown error occurred",
-        variant: "destructive",
-      });
+    meta: {
+      onError: (error: Error) => {
+        toast({
+          title: "Error fetching participants",
+          description: error instanceof Error ? error.message : "Unknown error occurred",
+          variant: "destructive",
+        });
+      }
     }
   });
 
