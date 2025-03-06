@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -7,12 +6,14 @@ import { SessionHistoryFilter, SessionFilters } from "./SessionHistoryFilter";
 import { SessionAnalytics } from "./SessionAnalytics";
 import { Clock, Calendar, Users, ChevronDown, ChevronUp, Eye } from "lucide-react";
 import { format, isWithinInterval, startOfDay, endOfDay } from "date-fns";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface SessionHistoryListProps {
   sessionHistory: any[];
+  isLoading?: boolean;
 }
 
-export function SessionHistoryList({ sessionHistory }: SessionHistoryListProps) {
+export function SessionHistoryList({ sessionHistory, isLoading = false }: SessionHistoryListProps) {
   const [filters, setFilters] = useState<SessionFilters>({
     searchTerm: "",
     startDate: undefined,
@@ -22,26 +23,45 @@ export function SessionHistoryList({ sessionHistory }: SessionHistoryListProps) 
   
   const [expandedSession, setExpandedSession] = useState<string | null>(null);
   
-  // Filter and sort sessions based on user selections
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <SessionHistoryFilter onFilterChange={setFilters} />
+        <div className="grid gap-4">
+          {[1, 2, 3].map((i) => (
+            <Card key={i} className="overflow-hidden">
+              <div className="p-6">
+                <Skeleton className="h-6 w-3/4 mb-2" />
+                <Skeleton className="h-4 w-1/2 mb-4" />
+                <div className="flex gap-4 mb-4">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-4 w-28" />
+                  <Skeleton className="h-4 w-24" />
+                </div>
+                <Skeleton className="h-10 w-36" />
+              </div>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
+  
   const filteredSessions = sessionHistory
     ? sessionHistory.filter(session => {
-        // Filter by search term
         if (filters.searchTerm && !session.classes?.title.toLowerCase().includes(filters.searchTerm.toLowerCase())) {
           return false;
         }
         
-        // Filter by date range
         if (filters.startDate || filters.endDate) {
           const sessionDate = session.started_at ? new Date(session.started_at) : null;
           
           if (!sessionDate) return false;
           
-          // Check against start date
           if (filters.startDate && sessionDate < startOfDay(filters.startDate)) {
             return false;
           }
           
-          // Check against end date
           if (filters.endDate && sessionDate > endOfDay(filters.endDate)) {
             return false;
           }
@@ -50,7 +70,6 @@ export function SessionHistoryList({ sessionHistory }: SessionHistoryListProps) 
         return true;
       })
       .sort((a, b) => {
-        // Sort by selected criteria
         if (filters.sortBy === "recent") {
           return new Date(b.started_at || 0).getTime() - new Date(a.started_at || 0).getTime();
         } else if (filters.sortBy === "duration") {
@@ -80,7 +99,6 @@ export function SessionHistoryList({ sessionHistory }: SessionHistoryListProps) 
     );
   }
   
-  // Format duration in HH:MM:SS format
   const formatDuration = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);

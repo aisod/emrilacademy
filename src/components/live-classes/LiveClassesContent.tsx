@@ -77,7 +77,7 @@ export function LiveClassesContent() {
         
         <TabsContent value="history">
           <SessionHistoryList 
-            sessionHistory={filteredHistorySessions} 
+            sessionHistory={filteredHistorySessions || []} 
             isLoading={historyLoading}
           />
           {historyError && (
