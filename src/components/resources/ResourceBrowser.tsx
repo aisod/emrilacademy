@@ -53,7 +53,7 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
     { id: "reference", name: "Reference" }
   ];
 
-  // Fix the TypeScript error by using a more explicit approach and avoiding complex type inference
+  // Explicitly define the fetchResources function with proper return type
   const fetchResources = async (): Promise<Resource[]> => {
     if (!selectedClassId) return [];
     
@@ -76,7 +76,8 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
     return data as Resource[];
   };
 
-  const { data: resources, isLoading, refetch } = useQuery<Resource[]>({
+  // Use the explicitly typed function and generic parameter for useQuery
+  const { data: resources, isLoading, refetch } = useQuery({
     queryKey: ["resources", selectedClassId, searchTerm, selectedCategory],
     queryFn: fetchResources,
     enabled: !!selectedClassId,
