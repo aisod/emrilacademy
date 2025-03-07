@@ -52,11 +52,12 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
     { id: "reading", name: "Reading Material" },
     { id: "reference", name: "Reference" }
   ];
-  
-  const { data: resources, isLoading, refetch } = useQuery<Resource[], Error, Resource[], [string, string, string, string]>({
-    queryKey: ["resources", selectedClassId, searchTerm, selectedCategory],
-    queryFn: async (): Promise<Resource[]> => {
-      if (!selectedClassId) return [];
+
+  // Fix the query typing to avoid excessive type instantiation
+  const { data: resources, isLoading, refetch } = useQuery({
+    queryKey: ["resources", selectedClassId, searchTerm, selectedCategory] as const,
+    queryFn: async () => {
+      if (!selectedClassId) return [] as Resource[];
       
       let query = supabase
         .from("resources")
@@ -74,7 +75,7 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
       const { data, error } = await query.order("created_at", { ascending: false });
       
       if (error) throw error;
-      return data || [];
+      return (data || []) as Resource[];
     },
     enabled: !!selectedClassId,
   });
