@@ -1,7 +1,5 @@
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { 
   Select, 
@@ -15,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { ResourceList } from "@/components/resources/ResourceList";
 import { Search, RefreshCw, Filter } from "lucide-react";
 import { Resource } from "./ResourceItem";
+import { useResources } from "@/hooks/use-resources";
 
 interface ClassOption {
   id: string;
@@ -43,37 +42,10 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
     { id: "reference", name: "Reference" }
   ];
 
-  // Define the function with explicit return type to avoid deep type instantiation
-  const fetchResources = async (): Promise<Resource[]> => {
-    if (!selectedClassId) return [];
-    
-    // Build the query
-    const query = supabase
-      .from("resources")
-      .select("*")
-      .eq("class_id", selectedClassId);
-    
-    // Apply search filter if needed
-    const filteredQuery = searchTerm 
-      ? query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`) 
-      : query;
-    
-    // Apply category filter if needed
-    const finalQuery = selectedCategory 
-      ? filteredQuery.eq("category", selectedCategory) 
-      : filteredQuery;
-    
-    // Execute the query
-    const { data, error } = await finalQuery.order("created_at", { ascending: false });
-    
-    if (error) throw error;
-    return data as Resource[];
-  };
-
-  const { data: resources, isLoading, refetch } = useQuery({
-    queryKey: ["resources", selectedClassId, searchTerm, selectedCategory],
-    queryFn: fetchResources,
-    enabled: !!selectedClassId,
+  const { data: resources, isLoading, refetch } = useResources({
+    classId: selectedClassId,
+    searchTerm: searchTerm,
+    category: selectedCategory
   });
 
   const handleRefresh = () => {
