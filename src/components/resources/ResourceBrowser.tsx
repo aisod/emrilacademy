@@ -43,39 +43,37 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
     { id: "reference", name: "Reference" }
   ];
 
-  // Extract the query function to avoid excessive type instantiation
-  const fetchResources = async () => {
-    if (!selectedClassId) return [];
-    
-    let query = supabase
-      .from("resources")
-      .select("*")
-      .eq("class_id", selectedClassId);
-    
-    if (searchTerm) {
-      query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
-    }
-    
-    if (selectedCategory) {
-      query = query.eq("category", selectedCategory);
-    }
-    
-    const { data, error } = await query.order("created_at", { ascending: false });
-    
-    if (error) throw error;
-    return data as Resource[];
+  // Create a function that returns the query function to avoid excessive type instantiation
+  const createFetchResources = () => {
+    return async () => {
+      if (!selectedClassId) return [];
+      
+      let query = supabase
+        .from("resources")
+        .select("*")
+        .eq("class_id", selectedClassId);
+      
+      if (searchTerm) {
+        query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
+      }
+      
+      if (selectedCategory) {
+        query = query.eq("category", selectedCategory);
+      }
+      
+      const { data, error } = await query.order("created_at", { ascending: false });
+      
+      if (error) throw error;
+      return data as Resource[];
+    };
   };
 
-  // Use the extracted query function
-  const result = useQuery({
+  // Use the function that returns the query function
+  const { data: resources, isLoading, refetch } = useQuery({
     queryKey: ["resources", selectedClassId, searchTerm, selectedCategory],
-    queryFn: fetchResources,
+    queryFn: createFetchResources(),
     enabled: !!selectedClassId,
   });
-
-  const resources = result.data;
-  const isLoading = result.isLoading;
-  const refetch = result.refetch;
 
   const handleRefresh = () => {
     refetch();
