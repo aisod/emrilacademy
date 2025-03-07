@@ -15,10 +15,10 @@ export function useResources({ classId, searchTerm, category }: ResourceQueryOpt
     queryFn: async (): Promise<Resource[]> => {
       if (!classId) return [];
       
-      // Start building our query with the base select and class_id filter
+      // Start building our query
       let query = supabase
         .from("resources")
-        .select("id, title, description, file_url, created_at, class_id, category");
+        .select("id, title, description, file_url, created_at, class_id");
       
       // Add the class_id filter
       query = query.eq("class_id", classId);
@@ -29,12 +29,7 @@ export function useResources({ classId, searchTerm, category }: ResourceQueryOpt
         query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
       }
       
-      // Apply category filter if provided
-      if (category) {
-        query = query.eq("category", category);
-      }
-      
-      // Add ordering
+      // Execute the query with sorting
       const { data, error } = await query.order("created_at", { ascending: false });
       
       if (error) throw error;
@@ -46,7 +41,6 @@ export function useResources({ classId, searchTerm, category }: ResourceQueryOpt
         description: item.description,
         file_url: item.file_url,
         created_at: item.created_at,
-        category: item.category as string | undefined,
         class_id: item.class_id
       }));
     },
