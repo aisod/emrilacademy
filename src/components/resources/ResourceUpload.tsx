@@ -10,10 +10,11 @@ import { Upload } from "lucide-react";
 
 interface ResourceUploadProps {
   classId: string;
+  category: string;
   onSuccess: () => void;
 }
 
-export function ResourceUpload({ classId, onSuccess }: ResourceUploadProps) {
+export function ResourceUpload({ classId, category, onSuccess }: ResourceUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -70,6 +71,7 @@ export function ResourceUpload({ classId, onSuccess }: ResourceUploadProps) {
           description,
           file_url: publicUrl,
           class_id: classId,
+          category: category
         })
         .select()
         .single();

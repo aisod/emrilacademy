@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ResourceList } from "@/components/resources/ResourceList";
-import { Search, RefreshCw } from "lucide-react";
+import { Search, RefreshCw, Filter } from "lucide-react";
 
 interface ClassOption {
   id: string;
@@ -31,9 +31,19 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
     classes.length > 0 ? classes[0].id : ""
   );
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  
+  const categories = [
+    { id: "", name: "All Categories" },
+    { id: "general", name: "General" },
+    { id: "lecture", name: "Lecture Notes" },
+    { id: "assignment", name: "Assignment" },
+    { id: "reading", name: "Reading Material" },
+    { id: "reference", name: "Reference" }
+  ];
   
   const { data: resources, isLoading, refetch } = useQuery({
-    queryKey: ["resources", selectedClassId, searchTerm],
+    queryKey: ["resources", selectedClassId, searchTerm, selectedCategory],
     queryFn: async () => {
       if (!selectedClassId) return [];
       
@@ -44,6 +54,10 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
       
       if (searchTerm) {
         query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
+      }
+      
+      if (selectedCategory) {
+        query = query.eq("category", selectedCategory);
       }
       
       const { data, error } = await query.order("created_at", { ascending: false });
@@ -67,44 +81,66 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
     <div className="space-y-6">
       <Card>
         <CardContent className="pt-6">
-          <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
-            <div className="w-full md:w-1/3">
-              <Select 
-                value={selectedClassId} 
-                onValueChange={setSelectedClassId}
-                disabled={classes.length === 0}
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
+              <div className="w-full md:w-1/3">
+                <Select 
+                  value={selectedClassId} 
+                  onValueChange={setSelectedClassId}
+                  disabled={classes.length === 0}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a class" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {classes.map((classItem) => (
+                      <SelectItem key={classItem.id} value={classItem.id}>
+                        {classItem.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="w-full md:flex-1 relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Search resources..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              
+              <Button 
+                variant="outline" 
+                size="icon" 
+                onClick={handleRefresh}
+                className="hidden md:flex"
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a class" />
+                <RefreshCw className="h-4 w-4" />
+              </Button>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <Filter className="h-4 w-4 text-gray-400" />
+              <span className="text-sm font-medium">Filter by:</span>
+              <Select
+                value={selectedCategory}
+                onValueChange={setSelectedCategory}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
                 <SelectContent>
-                  {classes.map((classItem) => (
-                    <SelectItem key={classItem.id} value={classItem.id}>
-                      {classItem.title}
+                  {categories.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-            
-            <div className="w-full md:flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                placeholder="Search resources..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            
-            <Button 
-              variant="outline" 
-              size="icon" 
-              onClick={handleRefresh}
-              className="hidden md:flex"
-            >
-              <RefreshCw className="h-4 w-4" />
-            </Button>
           </div>
         </CardContent>
       </Card>

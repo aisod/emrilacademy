@@ -4,8 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Download, Trash2, FileText, File } from "lucide-react";
+import { Download, Trash2, FileText, File, Image, Music, Video, Archive, Code } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
 
 interface Resource {
   id: string;
@@ -13,6 +14,7 @@ interface Resource {
   description: string | null;
   file_url: string;
   created_at: string;
+  category?: string;
 }
 
 interface ResourceListProps {
@@ -52,11 +54,71 @@ export function ResourceList({
   const resourcesData = externalResources || resources;
   const loadingState = externalLoading !== undefined ? externalLoading : isLoading;
 
+  const getCategoryLabel = (category?: string) => {
+    switch (category) {
+      case "lecture":
+        return "Lecture Notes";
+      case "assignment":
+        return "Assignment";
+      case "reading":
+        return "Reading Material";
+      case "reference":
+        return "Reference";
+      default:
+        return "General";
+    }
+  };
+
+  const getCategoryColor = (category?: string) => {
+    switch (category) {
+      case "lecture":
+        return "blue";
+      case "assignment":
+        return "yellow";
+      case "reading":
+        return "green";
+      case "reference":
+        return "purple";
+      default:
+        return "gray";
+    }
+  };
+
   const getFileIcon = (fileUrl: string) => {
     const extension = fileUrl.split('.').pop()?.toLowerCase();
     switch (extension) {
       case 'pdf':
         return <FileText className="h-4 w-4" />;
+      case 'jpg':
+      case 'jpeg':
+      case 'png':
+      case 'gif':
+      case 'svg':
+      case 'webp':
+        return <Image className="h-4 w-4" />;
+      case 'mp3':
+      case 'wav':
+      case 'ogg':
+        return <Music className="h-4 w-4" />;
+      case 'mp4':
+      case 'webm':
+      case 'avi':
+      case 'mov':
+        return <Video className="h-4 w-4" />;
+      case 'zip':
+      case 'rar':
+      case '7z':
+      case 'tar':
+        return <Archive className="h-4 w-4" />;
+      case 'js':
+      case 'jsx':
+      case 'ts':
+      case 'tsx':
+      case 'html':
+      case 'css':
+      case 'py':
+      case 'java':
+        return <Code className="h-4 w-4" />;
       default:
         return <File className="h-4 w-4" />;
     }
@@ -66,7 +128,7 @@ export function ResourceList({
     try {
       // Extract the path from the full URL
       const filePathParts = filePath.split('/');
-      const bucketPath = filePathParts.slice(filePathParts.indexOf('resources')).join('/');
+      const bucketPath = filePathParts.slice(filePathParts.indexOf('resources') + 1).join('/');
 
       // Delete from storage
       const { error: storageError } = await supabase.storage
@@ -128,6 +190,11 @@ export function ResourceList({
               <div className="flex items-center gap-2">
                 {getFileIcon(resource.file_url)}
                 <h3 className="font-semibold">{resource.title}</h3>
+                {resource.category && (
+                  <Badge variant="outline" className={`text-${getCategoryColor(resource.category)}-500 border-${getCategoryColor(resource.category)}-200 bg-${getCategoryColor(resource.category)}-50`}>
+                    {getCategoryLabel(resource.category)}
+                  </Badge>
+                )}
               </div>
               {resource.description && (
                 <p className="text-sm text-gray-500">{resource.description}</p>
