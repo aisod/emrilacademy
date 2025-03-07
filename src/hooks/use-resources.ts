@@ -16,11 +16,11 @@ export function useResources({ classId, searchTerm, category }: ResourceQueryOpt
     queryFn: async (): Promise<Resource[]> => {
       if (!classId) return [];
       
-      // Build the base query - using type assertion to avoid deep instantiation
+      // Build the base query with explicit type assertion
       let query = supabase
         .from("resources")
         .select("*")
-        .eq("class_id", classId);
+        .eq("class_id", classId) as PostgrestFilterBuilder<any, any, any>;
       
       // Apply search filter if needed
       if (searchTerm) {
