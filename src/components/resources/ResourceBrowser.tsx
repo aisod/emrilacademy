@@ -26,17 +26,6 @@ interface ResourceBrowserProps {
   onResourceChange: () => void;
 }
 
-// Define the resource type explicitly to prevent infinite type instantiation
-interface Resource {
-  id: string;
-  title: string;
-  description: string | null;
-  file_url: string;
-  created_at: string;
-  category?: string;
-  class_id: string;
-}
-
 export function ResourceBrowser({ classes, isTeacher, onResourceChange }: ResourceBrowserProps) {
   const [selectedClassId, setSelectedClassId] = useState<string>(
     classes.length > 0 ? classes[0].id : ""
@@ -53,9 +42,10 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
     { id: "reference", name: "Reference" }
   ];
 
-  // Completely separate function declaration to break type inference chain
-  function fetchResourcesFn(): Promise<Resource[]> {
-    return async () => {
+  // Fetch resources with fixed query function
+  const { data: resources, isLoading, refetch } = useQuery({
+    queryKey: ["resources", selectedClassId, searchTerm, selectedCategory],
+    queryFn: async () => {
       if (!selectedClassId) return [];
       
       let query = supabase
@@ -74,24 +64,10 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
       const { data, error } = await query.order("created_at", { ascending: false });
       
       if (error) throw error;
-      return data as Resource[];
-    };
-  }
-
-  // Create the query function separately to avoid complex type inference
-  const queryFn = fetchResourcesFn();
-
-  // Using a very simple type structure for useQuery
-  const queryResult = useQuery({
-    queryKey: ["resources", selectedClassId, searchTerm, selectedCategory],
-    queryFn,
+      return data || [];
+    },
     enabled: !!selectedClassId,
   });
-
-  // Destructure without complex inference
-  const resources = queryResult.data;
-  const isLoading = queryResult.isLoading;
-  const refetch = queryResult.refetch;
 
   const handleRefresh = () => {
     refetch();
