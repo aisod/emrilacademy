@@ -52,11 +52,11 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
     { id: "reference", name: "Reference" }
   ];
 
-  // Fix both TypeScript errors by simplifying the typing approach
-  const { data: resources, isLoading, refetch } = useQuery({
+  // Fix the TypeScript error by explicitly typing the result and simplifying the query function
+  const { data: resources, isLoading, refetch } = useQuery<Resource[]>({
     queryKey: ["resources", selectedClassId, searchTerm, selectedCategory],
     queryFn: async () => {
-      if (!selectedClassId) return [] as Resource[];
+      if (!selectedClassId) return [];
       
       let query = supabase
         .from("resources")
@@ -74,7 +74,7 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
       const { data, error } = await query.order("created_at", { ascending: false });
       
       if (error) throw error;
-      return (data || []) as Resource[];
+      return data || [];
     },
     enabled: !!selectedClassId,
   });
