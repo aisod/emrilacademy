@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -53,9 +52,9 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
     { id: "reference", name: "Reference" }
   ];
   
-  const { data: resources, isLoading, refetch } = useQuery<Resource[]>({
+  const { data: resources, isLoading, refetch } = useQuery({
     queryKey: ["resources", selectedClassId, searchTerm, selectedCategory],
-    queryFn: async () => {
+    queryFn: async (): Promise<Resource[]> => {
       if (!selectedClassId) return [];
       
       let query = supabase
