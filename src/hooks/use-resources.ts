@@ -42,6 +42,7 @@ export function useResources({ classId, searchTerm, category }: ResourceQueryOpt
         throw error;
       }
       
+      // Explicitly cast the result to ensure type safety
       return (data || []) as Resource[];
     },
     enabled: !!classId,

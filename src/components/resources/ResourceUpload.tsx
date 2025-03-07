@@ -63,7 +63,7 @@ export function ResourceUpload({ classId, category, onSuccess }: ResourceUploadP
 
       console.log('Generated public URL:', publicUrl);
 
-      // Create resource record
+      // Create resource record with explicit category handling
       const { error: dbError, data: resourceData } = await supabase
         .from('resources')
         .insert({
