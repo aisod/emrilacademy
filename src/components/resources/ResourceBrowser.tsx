@@ -26,6 +26,17 @@ interface ResourceBrowserProps {
   onResourceChange: () => void;
 }
 
+// Define the resource type explicitly to prevent infinite type instantiation
+interface Resource {
+  id: string;
+  title: string;
+  description: string | null;
+  file_url: string;
+  created_at: string;
+  category?: string;
+  class_id: string;
+}
+
 export function ResourceBrowser({ classes, isTeacher, onResourceChange }: ResourceBrowserProps) {
   const [selectedClassId, setSelectedClassId] = useState<string>(
     classes.length > 0 ? classes[0].id : ""
@@ -42,8 +53,7 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
     { id: "reference", name: "Reference" }
   ];
   
-  // Fix for the TypeScript error - add explicit type annotation
-  const { data: resources, isLoading, refetch } = useQuery({
+  const { data: resources, isLoading, refetch } = useQuery<Resource[]>({
     queryKey: ["resources", selectedClassId, searchTerm, selectedCategory],
     queryFn: async () => {
       if (!selectedClassId) return [];
