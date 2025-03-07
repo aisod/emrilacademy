@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -52,39 +53,45 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
     { id: "reference", name: "Reference" }
   ];
 
-  // Define the fetchResources function without making it part of the component's type inference chain
-  async function fetchResources(): Promise<Resource[]> {
-    if (!selectedClassId) return [];
-    
-    let query = supabase
-      .from("resources")
-      .select("*")
-      .eq("class_id", selectedClassId);
-    
-    if (searchTerm) {
-      query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
-    }
-    
-    if (selectedCategory) {
-      query = query.eq("category", selectedCategory);
-    }
-    
-    const { data, error } = await query.order("created_at", { ascending: false });
-    
-    if (error) throw error;
-    return data as Resource[];
+  // Completely separate function declaration to break type inference chain
+  function fetchResourcesFn(): Promise<Resource[]> {
+    return async () => {
+      if (!selectedClassId) return [];
+      
+      let query = supabase
+        .from("resources")
+        .select("*")
+        .eq("class_id", selectedClassId);
+      
+      if (searchTerm) {
+        query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
+      }
+      
+      if (selectedCategory) {
+        query = query.eq("category", selectedCategory);
+      }
+      
+      const { data, error } = await query.order("created_at", { ascending: false });
+      
+      if (error) throw error;
+      return data as Resource[];
+    };
   }
 
-  // Break the complex type inference chain by using a simpler type annotation
-  const resourceQuery = useQuery({
+  // Create the query function separately to avoid complex type inference
+  const queryFn = fetchResourcesFn();
+
+  // Using a very simple type structure for useQuery
+  const queryResult = useQuery({
     queryKey: ["resources", selectedClassId, searchTerm, selectedCategory],
-    queryFn: fetchResources,
+    queryFn,
     enabled: !!selectedClassId,
   });
 
-  const resources = resourceQuery.data;
-  const isLoading = resourceQuery.isLoading;
-  const refetch = resourceQuery.refetch;
+  // Destructure without complex inference
+  const resources = queryResult.data;
+  const isLoading = queryResult.isLoading;
+  const refetch = queryResult.refetch;
 
   const handleRefresh = () => {
     refetch();
