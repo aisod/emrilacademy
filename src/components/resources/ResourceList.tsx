@@ -1,9 +1,10 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { ResourceItem, Resource } from "./ResourceItem";
+import { ResourceItem } from "./ResourceItem";
 import { ResourceListState } from "./ResourceListState";
 import { useResourceDeletion } from "@/hooks/use-resource-deletion";
+import { Resource } from "@/types/resources";
 
 interface ResourceListProps {
   classId: string;
@@ -33,7 +34,7 @@ export function ResourceList({
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data;
+      return data as Resource[];
     },
     enabled: !externalResources && !!classId,
   });

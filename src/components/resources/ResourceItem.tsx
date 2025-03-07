@@ -4,15 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Download, Trash2 } from "lucide-react";
 import { getCategoryLabel, getCategoryColor, getFileIcon } from "./utils/resourceUtils";
-
-export interface Resource {
-  id: string;
-  title: string;
-  description: string | null;
-  file_url: string;
-  created_at: string;
-  category?: string;
-}
+import { Resource } from "@/types/resources";
 
 interface ResourceItemProps {
   resource: Resource;

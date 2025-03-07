@@ -12,7 +12,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ResourceList } from "@/components/resources/ResourceList";
 import { Search, RefreshCw, Filter } from "lucide-react";
-import { Resource } from "./ResourceItem";
 import { useResources } from "@/hooks/use-resources";
 
 interface ClassOption {
