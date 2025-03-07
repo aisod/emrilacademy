@@ -2,6 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Resource } from "@/types/resources";
+import { PostgrestFilterBuilder } from "@supabase/postgrest-js";
 
 interface ResourceQueryOptions {
   classId: string;
@@ -15,27 +16,28 @@ export function useResources({ classId, searchTerm, category }: ResourceQueryOpt
     queryFn: async (): Promise<Resource[]> => {
       if (!classId) return [];
       
-      // Start with a basic query
+      // Create an explicitly typed query builder to avoid deep type inference
       let query = supabase
         .from("resources")
         .select("*")
         .eq("class_id", classId);
       
-      // Apply search filter if needed
+      // Apply filters separately to avoid complex type chaining
       if (searchTerm) {
         query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
       }
       
-      // Apply category filter if needed
       if (category) {
         query = query.eq("category", category);
       }
       
-      // Execute the query with sorting
+      // Execute the final query
       const { data, error } = await query.order("created_at", { ascending: false });
       
       if (error) throw error;
-      return data || [];
+      
+      // Explicitly cast the result to our Resource type
+      return (data || []) as Resource[];
     },
     enabled: !!classId,
   });
