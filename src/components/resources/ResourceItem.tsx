@@ -38,7 +38,7 @@ export function ResourceItem({ resource, isTeacher, onDelete }: ResourceItemProp
   };
 
   // Get color classes based on category
-  const getCategoryColorClasses = (category?: string) => {
+  const getCategoryColorClasses = (category?: string | null) => {
     const colorName = getCategoryColor(category);
     return {
       badge: `border-${colorName}-200 bg-${colorName}-50 text-${colorName}-700`,

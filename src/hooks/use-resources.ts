@@ -37,18 +37,12 @@ export function useResources({ classId, searchTerm, category }: ResourceQueryOpt
       // Execute the query with sorting
       const { data, error } = await query.order("created_at", { ascending: false });
       
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching resources:", error);
+        throw error;
+      }
       
-      // Map the results to ensure type safety - explicitly construct Resource objects
-      return (data || []).map(item => ({
-        id: item.id,
-        title: item.title,
-        description: item.description,
-        file_url: item.file_url,
-        created_at: item.created_at,
-        category: item.category,
-        class_id: item.class_id
-      }));
+      return (data || []) as Resource[];
     },
     enabled: !!classId,
   });
