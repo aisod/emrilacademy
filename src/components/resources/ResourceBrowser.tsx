@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -56,20 +55,22 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
   // Fix the query typing to avoid excessive type instantiation
   const { data: resources, isLoading, refetch } = useQuery({
     queryKey: ["resources", selectedClassId, searchTerm, selectedCategory] as const,
-    queryFn: async () => {
-      if (!selectedClassId) return [] as Resource[];
+    queryFn: async ({ queryKey }) => {
+      const [_key, classId, search, category] = queryKey;
+      
+      if (!classId) return [] as Resource[];
       
       let query = supabase
         .from("resources")
         .select("*")
-        .eq("class_id", selectedClassId);
+        .eq("class_id", classId);
       
-      if (searchTerm) {
-        query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
+      if (search) {
+        query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
       }
       
-      if (selectedCategory) {
-        query = query.eq("category", selectedCategory);
+      if (category) {
+        query = query.eq("category", category);
       }
       
       const { data, error } = await query.order("created_at", { ascending: false });
