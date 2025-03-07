@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -43,35 +42,31 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
     { id: "reference", name: "Reference" }
   ];
 
-  // Create a function that returns the query function to avoid excessive type instantiation
-  const createFetchResources = () => {
-    return async () => {
-      if (!selectedClassId) return [];
-      
-      let query = supabase
-        .from("resources")
-        .select("*")
-        .eq("class_id", selectedClassId);
-      
-      if (searchTerm) {
-        query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
-      }
-      
-      if (selectedCategory) {
-        query = query.eq("category", selectedCategory);
-      }
-      
-      const { data, error } = await query.order("created_at", { ascending: false });
-      
-      if (error) throw error;
-      return data as Resource[];
-    };
-  };
+  async function fetchResources(): Promise<Resource[]> {
+    if (!selectedClassId) return [];
+    
+    let query = supabase
+      .from("resources")
+      .select("*")
+      .eq("class_id", selectedClassId);
+    
+    if (searchTerm) {
+      query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
+    }
+    
+    if (selectedCategory) {
+      query = query.eq("category", selectedCategory);
+    }
+    
+    const { data, error } = await query.order("created_at", { ascending: false });
+    
+    if (error) throw error;
+    return data as Resource[];
+  }
 
-  // Use the function that returns the query function
   const { data: resources, isLoading, refetch } = useQuery({
     queryKey: ["resources", selectedClassId, searchTerm, selectedCategory],
-    queryFn: createFetchResources(),
+    queryFn: fetchResources,
     enabled: !!selectedClassId,
   });
 
