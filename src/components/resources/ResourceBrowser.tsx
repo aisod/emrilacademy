@@ -42,7 +42,7 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
     { id: "reference", name: "Reference" }
   ];
 
-  async function fetchResources(): Promise<Resource[]> {
+  const fetchResources = async (): Promise<Resource[]> => {
     if (!selectedClassId) return [];
     
     let query = supabase
@@ -62,7 +62,7 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
     
     if (error) throw error;
     return data as Resource[];
-  }
+  };
 
   const { data: resources, isLoading, refetch } = useQuery({
     queryKey: ["resources", selectedClassId, searchTerm, selectedCategory],
