@@ -1,5 +1,5 @@
 
-import { PlayCircle, FileText, BookOpen } from "lucide-react";
+import { PlayCircle, FileText, BookOpen, GraduationCap } from "lucide-react";
 import { SidebarLink } from "../SidebarLink";
 
 interface ResourceLinksProps {
@@ -26,7 +26,7 @@ export function ResourceLinks({ isLinkActive, onLinkClick }: ResourceLinksProps)
       />
       <SidebarLink
         to="/teachers"
-        icon={BookOpen}
+        icon={GraduationCap}
         label="Teachers"
         isActive={isLinkActive("/teachers")}
         onClick={onLinkClick}
