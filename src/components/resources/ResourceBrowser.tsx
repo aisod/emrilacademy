@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -53,8 +52,8 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
     { id: "reference", name: "Reference" }
   ];
 
-  // Explicitly define the fetchResources function with proper return type
-  const fetchResources = async (): Promise<Resource[]> => {
+  // Define the fetchResources function without making it part of the component's type inference chain
+  async function fetchResources(): Promise<Resource[]> {
     if (!selectedClassId) return [];
     
     let query = supabase
@@ -74,14 +73,18 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
     
     if (error) throw error;
     return data as Resource[];
-  };
+  }
 
-  // Use the explicitly typed function and generic parameter for useQuery
-  const { data: resources, isLoading, refetch } = useQuery({
+  // Break the complex type inference chain by using a simpler type annotation
+  const resourceQuery = useQuery({
     queryKey: ["resources", selectedClassId, searchTerm, selectedCategory],
     queryFn: fetchResources,
     enabled: !!selectedClassId,
   });
+
+  const resources = resourceQuery.data;
+  const isLoading = resourceQuery.isLoading;
+  const refetch = resourceQuery.refetch;
 
   const handleRefresh = () => {
     refetch();
