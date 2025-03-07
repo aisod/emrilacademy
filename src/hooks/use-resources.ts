@@ -18,7 +18,7 @@ export function useResources({ classId, searchTerm, category }: ResourceQueryOpt
       // Start building our query
       let query = supabase
         .from("resources")
-        .select("id, title, description, file_url, created_at, class_id");
+        .select("id, title, description, file_url, created_at, class_id, category");
       
       // Add the class_id filter
       query = query.eq("class_id", classId);
@@ -27,6 +27,11 @@ export function useResources({ classId, searchTerm, category }: ResourceQueryOpt
       if (searchTerm) {
         // Use ilike for case-insensitive searching on title and description
         query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
+      }
+      
+      // Apply category filter if provided
+      if (category) {
+        query = query.eq("category", category);
       }
       
       // Execute the query with sorting
@@ -41,6 +46,7 @@ export function useResources({ classId, searchTerm, category }: ResourceQueryOpt
         description: item.description,
         file_url: item.file_url,
         created_at: item.created_at,
+        category: item.category,
         class_id: item.class_id
       }));
     },

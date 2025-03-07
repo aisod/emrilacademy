@@ -29,7 +29,7 @@ export function ResourceList({
     queryFn: async () => {
       const { data, error } = await supabase
         .from("resources")
-        .select("id, title, description, file_url, created_at, class_id")
+        .select("id, title, description, file_url, created_at, class_id, category")
         .eq("class_id", classId)
         .order("created_at", { ascending: false });
 
