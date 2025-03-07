@@ -42,6 +42,7 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
     { id: "reference", name: "Reference" }
   ];
   
+  // Fix for the TypeScript error - add explicit type annotation
   const { data: resources, isLoading, refetch } = useQuery({
     queryKey: ["resources", selectedClassId, searchTerm, selectedCategory],
     queryFn: async () => {
