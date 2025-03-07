@@ -1,9 +1,9 @@
 
-import { Button } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { Download, Trash2, FileText, File, Image, Music, Video, Archive, Code } from "lucide-react";
-import { getCategoryLabel, getCategoryColor } from "./utils/resourceUtils";
+import { Download, Trash2 } from "lucide-react";
+import { getCategoryLabel, getCategoryColor, getFileIcon } from "./utils/resourceUtils";
 
 export interface Resource {
   id: string;
@@ -21,75 +21,68 @@ interface ResourceItemProps {
 }
 
 export function ResourceItem({ resource, isTeacher, onDelete }: ResourceItemProps) {
-  const renderIcon = () => {
-    const iconName = getFileIconComponent(resource.file_url);
-    return iconName;
-  };
-
-  const getFileIconComponent = (fileUrl: string) => {
-    const extension = fileUrl.split('.').pop()?.toLowerCase();
-    switch (extension) {
-      case 'pdf':
+  const iconName = getFileIcon(resource.file_url);
+  
+  // Import icons dynamically based on the file type
+  const getIconComponent = () => {
+    const { FileText, File, Image, Music, Video, Archive, Code } = require("lucide-react");
+    
+    switch (iconName) {
+      case 'file-text':
         return <FileText className="h-4 w-4" />;
-      case 'jpg':
-      case 'jpeg':
-      case 'png':
-      case 'gif':
-      case 'svg':
-      case 'webp':
+      case 'image':
         return <Image className="h-4 w-4" />;
-      case 'mp3':
-      case 'wav':
-      case 'ogg':
+      case 'music':
         return <Music className="h-4 w-4" />;
-      case 'mp4':
-      case 'webm':
-      case 'avi':
-      case 'mov':
+      case 'video':
         return <Video className="h-4 w-4" />;
-      case 'zip':
-      case 'rar':
-      case '7z':
-      case 'tar':
+      case 'archive':
         return <Archive className="h-4 w-4" />;
-      case 'js':
-      case 'jsx':
-      case 'ts':
-      case 'tsx':
-      case 'html':
-      case 'css':
-      case 'py':
-      case 'java':
+      case 'code':
         return <Code className="h-4 w-4" />;
       default:
         return <File className="h-4 w-4" />;
     }
   };
 
+  // Get color classes based on category
+  const getCategoryColorClasses = (category?: string) => {
+    const colorName = getCategoryColor(category);
+    return {
+      badge: `border-${colorName}-200 bg-${colorName}-50 text-${colorName}-700`,
+    };
+  };
+
+  const colorClasses = getCategoryColorClasses(resource.category);
+
   return (
-    <Card className="p-4">
-      <div className="flex items-start justify-between">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            {renderIcon()}
-            <h3 className="font-semibold">{resource.title}</h3>
+    <Card className="p-4 transition-all hover:shadow-md">
+      <div className="flex items-start justify-between gap-4">
+        <div className="space-y-1 min-w-0 flex-1">
+          <div className="flex items-center gap-2 flex-wrap">
+            {getIconComponent()}
+            <h3 className="font-semibold text-gray-900 break-words">{resource.title}</h3>
             {resource.category && (
-              <Badge variant="outline" className={`text-${getCategoryColor(resource.category)}-500 border-${getCategoryColor(resource.category)}-200 bg-${getCategoryColor(resource.category)}-50`}>
+              <Badge 
+                variant="outline" 
+                className={colorClasses.badge}
+              >
                 {getCategoryLabel(resource.category)}
               </Badge>
             )}
           </div>
           {resource.description && (
-            <p className="text-sm text-gray-500">{resource.description}</p>
+            <p className="text-sm text-gray-500 break-words">{resource.description}</p>
           )}
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 shrink-0">
           <Button
             variant="secondary"
             size="sm"
             asChild
+            className="h-8 px-2"
           >
-            <a href={resource.file_url} target="_blank" rel="noopener noreferrer">
+            <a href={resource.file_url} target="_blank" rel="noopener noreferrer" aria-label="Download">
               <Download className="h-4 w-4" />
             </a>
           </Button>
@@ -98,6 +91,8 @@ export function ResourceItem({ resource, isTeacher, onDelete }: ResourceItemProp
               variant="destructive"
               size="sm"
               onClick={() => onDelete(resource.id, resource.file_url)}
+              className="h-8 px-2"
+              aria-label="Delete"
             >
               <Trash2 className="h-4 w-4" />
             </Button>

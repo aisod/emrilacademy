@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ResourceList } from "@/components/resources/ResourceList";
 import { Search, RefreshCw, Filter } from "lucide-react";
+import { Resource } from "./ResourceItem";
 
 interface ClassOption {
   id: string;
@@ -42,32 +43,39 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
     { id: "reference", name: "Reference" }
   ];
 
-  // Fetch resources with fixed query function
-  const { data: resources, isLoading, refetch } = useQuery({
+  // Extract the query function to avoid excessive type instantiation
+  const fetchResources = async () => {
+    if (!selectedClassId) return [];
+    
+    let query = supabase
+      .from("resources")
+      .select("*")
+      .eq("class_id", selectedClassId);
+    
+    if (searchTerm) {
+      query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
+    }
+    
+    if (selectedCategory) {
+      query = query.eq("category", selectedCategory);
+    }
+    
+    const { data, error } = await query.order("created_at", { ascending: false });
+    
+    if (error) throw error;
+    return data as Resource[];
+  };
+
+  // Use the extracted query function
+  const result = useQuery({
     queryKey: ["resources", selectedClassId, searchTerm, selectedCategory],
-    queryFn: async () => {
-      if (!selectedClassId) return [];
-      
-      let query = supabase
-        .from("resources")
-        .select("*")
-        .eq("class_id", selectedClassId);
-      
-      if (searchTerm) {
-        query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
-      }
-      
-      if (selectedCategory) {
-        query = query.eq("category", selectedCategory);
-      }
-      
-      const { data, error } = await query.order("created_at", { ascending: false });
-      
-      if (error) throw error;
-      return data || [];
-    },
+    queryFn: fetchResources,
     enabled: !!selectedClassId,
   });
+
+  const resources = result.data;
+  const isLoading = result.isLoading;
+  const refetch = result.refetch;
 
   const handleRefresh = () => {
     refetch();
