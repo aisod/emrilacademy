@@ -10,11 +10,10 @@ import { Upload } from "lucide-react";
 
 interface ResourceUploadProps {
   classId: string;
-  category: string;
   onSuccess: () => void;
 }
 
-export function ResourceUpload({ classId, category, onSuccess }: ResourceUploadProps) {
+export function ResourceUpload({ classId, onSuccess }: ResourceUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -63,7 +62,7 @@ export function ResourceUpload({ classId, category, onSuccess }: ResourceUploadP
 
       console.log('Generated public URL:', publicUrl);
 
-      // Create resource record with explicit category handling
+      // Create resource record
       const { error: dbError, data: resourceData } = await supabase
         .from('resources')
         .insert({
@@ -71,7 +70,6 @@ export function ResourceUpload({ classId, category, onSuccess }: ResourceUploadP
           description,
           file_url: publicUrl,
           class_id: classId,
-          category: category || 'general' // Ensure we always have a category
         })
         .select()
         .single();

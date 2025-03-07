@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ResourceList } from "@/components/resources/ResourceList";
-import { Search, RefreshCw, Filter } from "lucide-react";
+import { Search, RefreshCw } from "lucide-react";
 import { useResources } from "@/hooks/use-resources";
 import { useToast } from "@/hooks/use-toast";
 
@@ -31,28 +31,16 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
     classes.length > 0 ? classes[0].id : ""
   );
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
   const { toast } = useToast();
   
-  // Reset search and category when class changes
+  // Reset search when class changes
   useEffect(() => {
     setSearchTerm("");
-    setSelectedCategory("");
   }, [selectedClassId]);
-  
-  const categories = [
-    { id: "", name: "All Categories" },
-    { id: "general", name: "General" },
-    { id: "lecture", name: "Lecture Notes" },
-    { id: "assignment", name: "Assignment" },
-    { id: "reading", name: "Reading Material" },
-    { id: "reference", name: "Reference" }
-  ];
 
   const { data: resources, isLoading, refetch, isError } = useResources({
     classId: selectedClassId,
-    searchTerm: searchTerm,
-    category: selectedCategory
+    searchTerm: searchTerm
   });
 
   // Show error toast if query fails
@@ -129,29 +117,6 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
                   <RefreshCw className="h-4 w-4" />
                 </Button>
               </form>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-gray-400" />
-              <span className="text-sm font-medium">Filter by:</span>
-              <Select
-                value={selectedCategory}
-                onValueChange={(value) => {
-                  setSelectedCategory(value);
-                  refetch();
-                }}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="All Categories" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
           </div>
         </CardContent>

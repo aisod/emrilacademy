@@ -25,8 +25,7 @@ export function ClassResourceSection({
         <div className="border-t p-6 bg-gray-50">
           <h4 className="text-lg font-semibold mb-4">Upload New Resource</h4>
           <ResourceUpload 
-            classId={classId} 
-            category="general" 
+            classId={classId}
             onSuccess={onResourceSuccess} 
           />
         </div>

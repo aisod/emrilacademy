@@ -6,19 +6,18 @@ import { Resource } from "@/types/resources";
 interface ResourceQueryOptions {
   classId: string;
   searchTerm?: string;
-  category?: string;
 }
 
-export function useResources({ classId, searchTerm, category }: ResourceQueryOptions) {
+export function useResources({ classId, searchTerm }: ResourceQueryOptions) {
   return useQuery({
-    queryKey: ["resources", classId, searchTerm, category],
+    queryKey: ["resources", classId, searchTerm],
     queryFn: async (): Promise<Resource[]> => {
       if (!classId) return [];
       
       // Start building our query
       let query = supabase
         .from("resources")
-        .select("id, title, description, file_url, created_at, class_id, category");
+        .select("id, title, description, file_url, created_at, class_id");
       
       // Add the class_id filter
       query = query.eq("class_id", classId);
@@ -29,11 +28,6 @@ export function useResources({ classId, searchTerm, category }: ResourceQueryOpt
         query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
       }
       
-      // Apply category filter if provided
-      if (category) {
-        query = query.eq("category", category);
-      }
-      
       // Execute the query with sorting
       const { data, error } = await query.order("created_at", { ascending: false });
       
@@ -42,7 +36,6 @@ export function useResources({ classId, searchTerm, category }: ResourceQueryOpt
         throw error;
       }
       
-      // Explicitly cast the result to ensure type safety
       return (data || []) as Resource[];
     },
     enabled: !!classId,
