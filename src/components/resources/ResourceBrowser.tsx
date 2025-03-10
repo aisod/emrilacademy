@@ -1,7 +1,5 @@
 
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { 
   Select, 
@@ -14,6 +12,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ResourceList } from "@/components/resources/ResourceList";
 import { Search, RefreshCw, Filter } from "lucide-react";
+import { useResources } from "@/hooks/use-resources";
+import { useToast } from "@/hooks/use-toast";
 
 interface ClassOption {
   id: string;
@@ -32,6 +32,13 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
   );
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const { toast } = useToast();
+  
+  // Reset search and category when class changes
+  useEffect(() => {
+    setSearchTerm("");
+    setSelectedCategory("");
+  }, [selectedClassId]);
   
   const categories = [
     { id: "", name: "All Categories" },
@@ -42,32 +49,22 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
     { id: "reference", name: "Reference" }
   ];
 
-  // Fetch resources with fixed query function
-  const { data: resources, isLoading, refetch } = useQuery({
-    queryKey: ["resources", selectedClassId, searchTerm, selectedCategory],
-    queryFn: async () => {
-      if (!selectedClassId) return [];
-      
-      let query = supabase
-        .from("resources")
-        .select("*")
-        .eq("class_id", selectedClassId);
-      
-      if (searchTerm) {
-        query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
-      }
-      
-      if (selectedCategory) {
-        query = query.eq("category", selectedCategory);
-      }
-      
-      const { data, error } = await query.order("created_at", { ascending: false });
-      
-      if (error) throw error;
-      return data || [];
-    },
-    enabled: !!selectedClassId,
+  const { data: resources, isLoading, refetch, isError } = useResources({
+    classId: selectedClassId,
+    searchTerm: searchTerm,
+    category: selectedCategory
   });
+
+  // Show error toast if query fails
+  useEffect(() => {
+    if (isError) {
+      toast({
+        variant: "destructive",
+        title: "Error loading resources",
+        description: "Failed to load resources. Please try again."
+      });
+    }
+  }, [isError, toast]);
 
   const handleRefresh = () => {
     refetch();
@@ -76,6 +73,11 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
 
   const handleDelete = () => {
     handleRefresh();
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    refetch();
   };
 
   return (
@@ -103,24 +105,30 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
                 </Select>
               </div>
               
-              <div className="w-full md:flex-1 relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Search resources..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              
-              <Button 
-                variant="outline" 
-                size="icon" 
-                onClick={handleRefresh}
-                className="hidden md:flex"
-              >
-                <RefreshCw className="h-4 w-4" />
-              </Button>
+              <form onSubmit={handleSearch} className="w-full md:flex-1 flex gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search resources..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+                <Button type="submit" variant="secondary" className="hidden md:flex">
+                  Search
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  onClick={handleRefresh}
+                  type="button"
+                  className="hidden md:flex"
+                  title="Refresh resources"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                </Button>
+              </form>
             </div>
             
             <div className="flex items-center gap-2">
@@ -128,7 +136,10 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
               <span className="text-sm font-medium">Filter by:</span>
               <Select
                 value={selectedCategory}
-                onValueChange={setSelectedCategory}
+                onValueChange={(value) => {
+                  setSelectedCategory(value);
+                  refetch();
+                }}
               >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="All Categories" />

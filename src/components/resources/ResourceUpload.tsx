@@ -71,7 +71,7 @@ export function ResourceUpload({ classId, category, onSuccess }: ResourceUploadP
           description,
           file_url: publicUrl,
           class_id: classId,
-          category: category
+          category: category || 'general' // Ensure we always have a category
         })
         .select()
         .single();
