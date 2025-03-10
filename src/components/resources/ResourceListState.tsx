@@ -1,13 +1,15 @@
 
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AlertCircle } from "lucide-react";
 
 interface ResourceListStateProps {
   isLoading: boolean;
   isEmpty: boolean;
+  isError?: boolean;
 }
 
-export function ResourceListState({ isLoading, isEmpty }: ResourceListStateProps) {
+export function ResourceListState({ isLoading, isEmpty, isError }: ResourceListStateProps) {
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -18,6 +20,18 @@ export function ResourceListState({ isLoading, isEmpty }: ResourceListStateProps
           </Card>
         ))}
       </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Card className="p-6 border-destructive/20 bg-destructive/5">
+        <div className="flex flex-col items-center justify-center text-center gap-2">
+          <AlertCircle className="h-8 w-8 text-destructive" />
+          <p className="text-destructive font-medium">Failed to load resources</p>
+          <p className="text-muted-foreground text-sm">Please try again later</p>
+        </div>
+      </Card>
     );
   }
 
