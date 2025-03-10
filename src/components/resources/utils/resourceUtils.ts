@@ -3,7 +3,7 @@
  * Utility functions for resources
  */
 
-export function getCategoryLabel(category?: string | null) {
+export function getCategoryLabel(category?: string) {
   switch (category) {
     case "lecture":
       return "Lecture Notes";
@@ -18,7 +18,7 @@ export function getCategoryLabel(category?: string | null) {
   }
 }
 
-export function getCategoryColor(category?: string | null) {
+export function getCategoryColor(category?: string) {
   switch (category) {
     case "lecture":
       return "blue";

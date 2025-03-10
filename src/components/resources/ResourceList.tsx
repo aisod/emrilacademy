@@ -1,10 +1,9 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { ResourceItem } from "./ResourceItem";
+import { ResourceItem, Resource } from "./ResourceItem";
 import { ResourceListState } from "./ResourceListState";
 import { useResourceDeletion } from "@/hooks/use-resource-deletion";
-import { Resource } from "@/types/resources";
 
 interface ResourceListProps {
   classId: string;
@@ -29,12 +28,12 @@ export function ResourceList({
     queryFn: async () => {
       const { data, error } = await supabase
         .from("resources")
-        .select("id, title, description, file_url, created_at, class_id")
+        .select("*")
         .eq("class_id", classId)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data as Resource[];
+      return data;
     },
     enabled: !externalResources && !!classId,
   });

@@ -223,7 +223,6 @@ export type Database = {
       }
       resources: {
         Row: {
-          category: string | null
           class_id: string | null
           created_at: string
           description: string | null
@@ -233,7 +232,6 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          category?: string | null
           class_id?: string | null
           created_at?: string
           description?: string | null
@@ -243,7 +241,6 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-          category?: string | null
           class_id?: string | null
           created_at?: string
           description?: string | null

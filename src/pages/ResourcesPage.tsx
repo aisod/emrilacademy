@@ -56,7 +56,7 @@ export default function ResourcesPage() {
   });
 
   const handleResourceChange = () => {
-    // This function can be expanded later if needed
+    // Refresh the resource list when changes are made
   };
 
   if (isLoadingClasses) {
