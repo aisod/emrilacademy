@@ -33,13 +33,23 @@ export function useCourses() {
   });
 
   const createCourse = useMutation({
-    mutationFn: async (data: Partial<Course>) => {
+    mutationFn: async (data: Omit<Course, "id" | "created_at" | "updated_at">) => {
       const { data: session } = await supabase.auth.getSession();
       if (!session.session) throw new Error("Not authenticated");
 
+      // Make sure required fields are provided
+      if (!data.title || !data.slug) {
+        throw new Error("Title and slug are required");
+      }
+
+      const courseData = {
+        ...data,
+        teacher_id: session.session.user.id
+      };
+
       const { error } = await supabase
         .from("courses")
-        .insert([{ ...data, teacher_id: session.session.user.id }]);
+        .insert([courseData]);
 
       if (error) throw error;
     },

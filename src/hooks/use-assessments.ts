@@ -32,13 +32,24 @@ export function useAssessments(courseId: string) {
       if (error) throw error;
       return data as Assessment[];
     },
+    enabled: Boolean(courseId),
   });
 
   const createAssessment = useMutation({
-    mutationFn: async (data: Partial<Assessment>) => {
+    mutationFn: async (data: Omit<Assessment, "id" | "created_at">) => {
+      // Make sure required fields are provided
+      if (!data.title || !data.type || !data.due_date) {
+        throw new Error("Title, type, and due date are required");
+      }
+
+      const assessmentData = {
+        ...data,
+        course_id: courseId
+      };
+
       const { error } = await supabase
         .from("assessments")
-        .insert([{ ...data, course_id: courseId }]);
+        .insert([assessmentData]);
 
       if (error) throw error;
     },

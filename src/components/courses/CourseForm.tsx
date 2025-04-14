@@ -12,23 +12,36 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useCourses } from "@/hooks/use-courses";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 
-interface CourseFormData {
-  title: string;
-  description: string;
-  duration_weeks: number;
-  slug: string;
-}
+const formSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().optional(),
+  duration_weeks: z.coerce.number().min(1, "Duration must be at least 1 week"),
+  slug: z.string().min(1, "URL slug is required"),
+});
+
+type CourseFormData = z.infer<typeof formSchema>;
 
 export function CourseForm() {
-  const form = useForm<CourseFormData>();
+  const form = useForm<CourseFormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      duration_weeks: 1,
+      slug: "",
+    },
+  });
+
   const { createCourse } = useCourses();
 
   const onSubmit = (data: CourseFormData) => {
     createCourse.mutate({
       ...data,
       status: "draft",
-      duration_weeks: Number(data.duration_weeks),
+      thumbnail_url: null,
     });
   };
 
@@ -91,7 +104,9 @@ export function CourseForm() {
           )}
         />
 
-        <Button type="submit">Create Course</Button>
+        <Button type="submit" disabled={createCourse.isPending}>
+          {createCourse.isPending ? "Creating..." : "Create Course"}
+        </Button>
       </form>
     </Form>
   );
