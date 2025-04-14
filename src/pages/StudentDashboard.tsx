@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
@@ -62,11 +61,15 @@ export default function StudentDashboard() {
 
       const { data, error } = await supabase
         .from("classes")
-        .select("*")
+        .select(`
+          *,
+          enrollments!inner(student_id)
+        `)
+        .eq('enrollments.student_id', session.user.id)
         .gte("start_time", new Date().toISOString())
         .order("start_time", { ascending: true })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (error && error.code !== "PGRST116") throw error;
       return data;

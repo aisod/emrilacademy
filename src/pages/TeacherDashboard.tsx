@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { CreateClassForm } from "@/components/classes/CreateClassForm";
@@ -8,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { RecentMessages } from "@/components/dashboard/RecentMessages";
+import { EnrolledStudentsList } from "@/components/dashboard/EnrolledStudentsList";
 import { Plus, Users, Book, MessageSquare, Calendar } from "lucide-react";
 
 export default function TeacherDashboard() {
@@ -87,7 +87,6 @@ export default function TeacherDashboard() {
   return (
     <DashboardLayout requiredRole="teacher">
       <div className="animate-fade-up space-y-8">
-        {/* Welcome Section */}
         <div className="space-y-2">
           <h1 className="text-3xl font-bold">
             Welcome back, {profile?.first_name}
@@ -97,7 +96,6 @@ export default function TeacherDashboard() {
           </p>
         </div>
 
-        {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatsCard
             title="Total Classes"
@@ -125,10 +123,8 @@ export default function TeacherDashboard() {
           />
         </div>
 
-        {/* Recent Messages */}
         <RecentMessages />
 
-        {/* Classes Section */}
         <div className="space-y-6">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-semibold">Your Classes</h2>
@@ -152,16 +148,20 @@ export default function TeacherDashboard() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
             {classes?.map((class_) => (
-              <ClassCard
-                key={class_.id}
-                id={class_.id}
-                title={class_.title}
-                description={class_.description}
-                startTime={class_.start_time}
-                endTime={class_.end_time}
-                classType={class_.class_type}
-                teacherView
-              />
+              <div key={class_.id} className="space-y-6">
+                <ClassCard
+                  id={class_.id}
+                  title={class_.title}
+                  description={class_.description}
+                  startTime={class_.start_time}
+                  endTime={class_.end_time}
+                  classType={class_.class_type}
+                  enrollmentCount={class_.enrollments[0]?.count || 0}
+                  capacity={class_.capacity}
+                  teacherView={true}
+                />
+                <EnrolledStudentsList classId={class_.id} />
+              </div>
             ))}
           </div>
         </div>
