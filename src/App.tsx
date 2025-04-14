@@ -14,6 +14,7 @@ import Dashboard from "./pages/Dashboard";
 import Messages from "./pages/Messages";
 import Courses from "./pages/Courses";
 import ResourcesPage from "./pages/ResourcesPage";
+import Course from "./pages/Course";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ function App() {
             <Route path="/messages" element={<Messages />} />
             <Route path="/courses" element={<Courses />} />
             <Route path="/resources" element={<ResourcesPage />} />
+            <Route path="/courses/:slug" element={<Course />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
