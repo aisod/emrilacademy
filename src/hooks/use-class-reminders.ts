@@ -53,10 +53,14 @@ export function useClassReminders(classId: string) {
           break;
       }
 
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("No authenticated user");
+
       const { error } = await supabase
         .from("class_reminders")
         .insert({
           class_id: classId,
+          user_id: session.user.id,
           reminder_time: reminderTime.toISOString(),
           interval,
         });

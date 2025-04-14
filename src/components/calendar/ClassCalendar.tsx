@@ -6,6 +6,17 @@ import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { Bell } from "lucide-react";
+import { useClassReminders, ReminderInterval } from "@/hooks/use-class-reminders";
+import { useSupabaseSubscription } from "@/hooks/use-supabase-subscription";
 
 interface ClassCalendarProps {
   role: "student" | "teacher";
@@ -13,8 +24,9 @@ interface ClassCalendarProps {
 
 export function ClassCalendar({ role }: ClassCalendarProps) {
   const [date, setDate] = useState<Date>(new Date());
+  const { toast } = useToast();
 
-  const { data: classes = [] } = useQuery({
+  const { data: classes = [], refetch } = useQuery({
     queryKey: ["calendar-classes", role, date],
     queryFn: async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -51,9 +63,71 @@ export function ClassCalendar({ role }: ClassCalendarProps) {
     },
   });
 
+  useSupabaseSubscription(
+    'class_reminders',
+    () => {
+      refetch();
+    }
+  );
+
   const classesForSelectedDate = classes.filter(
     (c) => c.start_time && format(new Date(c.start_time), "yyyy-MM-dd") === format(date, "yyyy-MM-dd")
   );
+
+  function ClassCard({ classItem }: { classItem: any }) {
+    const { reminders, createReminder } = useClassReminders(classItem.id);
+    
+    const handleSetReminder = async (interval: ReminderInterval) => {
+      try {
+        await createReminder.mutateAsync(interval);
+      } catch (error) {
+        console.error("Error setting reminder:", error);
+      }
+    };
+
+    const hasReminder = reminders.some(r => !r.sent_at);
+
+    return (
+      <div key={classItem.id} className="p-4 rounded-lg border space-y-2">
+        <div className="flex items-center justify-between">
+          <h4 className="font-medium">{classItem.title}</h4>
+          <div className="flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant={hasReminder ? "default" : "outline"} 
+                  size="sm"
+                  className="flex items-center gap-1"
+                >
+                  <Bell className="h-4 w-4" />
+                  {hasReminder ? "Reminder Set" : "Set Reminder"}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => handleSetReminder("15_minutes")}>
+                  15 minutes before
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleSetReminder("30_minutes")}>
+                  30 minutes before
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleSetReminder("1_hour")}>
+                  1 hour before
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Badge variant="outline">
+              {format(new Date(classItem.start_time), "h:mm a")}
+            </Badge>
+          </div>
+        </div>
+        {role === "student" && (
+          <p className="text-sm text-muted-foreground">
+            Teacher: {classItem.teacher.first_name} {classItem.teacher.last_name}
+          </p>
+        )}
+      </div>
+    );
+  }
 
   return (
     <Card className="flex-1">
@@ -78,22 +152,7 @@ export function ClassCalendar({ role }: ClassCalendarProps) {
             ) : (
               <div className="space-y-4">
                 {classesForSelectedDate.map((class_) => (
-                  <div
-                    key={class_.id}
-                    className="p-4 rounded-lg border space-y-2"
-                  >
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-medium">{class_.title}</h4>
-                      <Badge variant="outline">
-                        {format(new Date(class_.start_time), "h:mm a")}
-                      </Badge>
-                    </div>
-                    {role === "student" && (
-                      <p className="text-sm text-muted-foreground">
-                        Teacher: {class_.teacher.first_name} {class_.teacher.last_name}
-                      </p>
-                    )}
-                  </div>
+                  <ClassCard key={class_.id} classItem={class_} />
                 ))}
               </div>
             )}
