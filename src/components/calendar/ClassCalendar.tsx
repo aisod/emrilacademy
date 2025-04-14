@@ -32,32 +32,32 @@ export function ClassCalendar({ role }: ClassCalendarProps) {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("No session");
 
-      let query = supabase
-        .from("classes")
-        .select(`
+      // Fixed: using proper Supabase query construction
+      // First create the base query
+      const query = supabase.from("classes").select(`
+        *,
+        teacher:profiles!teacher_id(
+          first_name,
+          last_name
+        )
+      `);
+
+      // Then apply filters based on role
+      let filteredQuery;
+      if (role === "teacher") {
+        filteredQuery = query.eq("teacher_id", session.user.id);
+      } else {
+        filteredQuery = query.select(`
           *,
           teacher:profiles!teacher_id(
             first_name,
             last_name
-          )
-        `);
-
-      if (role === "teacher") {
-        query = query.eq("teacher_id", session.user.id);
-      } else {
-        query = query
-          .select(`
-            *,
-            teacher:profiles!teacher_id(
-              first_name,
-              last_name
-            ),
-            enrolled:enrollments!inner(student_id)
-          `)
-          .eq("enrolled.student_id", session.user.id);
+          ),
+          enrolled:enrollments!inner(student_id)
+        `).eq("enrolled.student_id", session.user.id);
       }
 
-      const { data, error } = await query;
+      const { data, error } = await filteredQuery;
       if (error) throw error;
       return data;
     },

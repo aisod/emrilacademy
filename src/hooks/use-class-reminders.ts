@@ -20,7 +20,6 @@ export function useClassReminders(classId: string) {
   const { data: reminders = [], isLoading } = useQuery({
     queryKey: ["class-reminders", classId],
     queryFn: async () => {
-      // Fixed query structure to properly chain methods
       const { data, error } = await supabase
         .from("class_reminders")
         .select("*")
