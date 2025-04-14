@@ -32,34 +32,39 @@ export function ClassCalendar({ role }: ClassCalendarProps) {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("No session");
 
-      // Fixed: using proper Supabase query construction
-      // First create the base query
-      const query = supabase.from("classes").select(`
-        *,
-        teacher:profiles!teacher_id(
-          first_name,
-          last_name
-        )
-      `);
-
-      // Then apply filters based on role
-      let filteredQuery;
+      // Fixed query construction to properly chain methods
       if (role === "teacher") {
-        filteredQuery = query.eq("teacher_id", session.user.id);
-      } else {
-        filteredQuery = query.select(`
-          *,
-          teacher:profiles!teacher_id(
-            first_name,
-            last_name
-          ),
-          enrolled:enrollments!inner(student_id)
-        `).eq("enrolled.student_id", session.user.id);
-      }
+        // Query for teacher
+        const { data, error } = await supabase
+          .from("classes")
+          .select(`
+            *,
+            teacher:profiles!teacher_id(
+              first_name,
+              last_name
+            )
+          `)
+          .eq("teacher_id", session.user.id);
 
-      const { data, error } = await filteredQuery;
-      if (error) throw error;
-      return data;
+        if (error) throw error;
+        return data;
+      } else {
+        // Query for student
+        const { data, error } = await supabase
+          .from("classes")
+          .select(`
+            *,
+            teacher:profiles!teacher_id(
+              first_name,
+              last_name
+            ),
+            enrolled:enrollments!inner(student_id)
+          `)
+          .eq("enrolled.student_id", session.user.id);
+
+        if (error) throw error;
+        return data;
+      }
     },
   });
 
