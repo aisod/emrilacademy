@@ -356,6 +356,33 @@ export type Database = {
         }
         Relationships: []
       }
+      email_templates: {
+        Row: {
+          body: string
+          created_at: string | null
+          id: string
+          name: string
+          subject: string
+          updated_at: string | null
+        }
+        Insert: {
+          body: string
+          created_at?: string | null
+          id?: string
+          name: string
+          subject: string
+          updated_at?: string | null
+        }
+        Update: {
+          body?: string
+          created_at?: string | null
+          id?: string
+          name?: string
+          subject?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       enrollments: {
         Row: {
           class_id: string
@@ -511,6 +538,50 @@ export type Database = {
             columns: ["class_id"]
             isOneToOne: false
             referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sent_emails: {
+        Row: {
+          body: string
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          recipient: string
+          sent_by: string | null
+          status: string
+          subject: string
+          template_id: string | null
+        }
+        Insert: {
+          body: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          recipient: string
+          sent_by?: string | null
+          status?: string
+          subject: string
+          template_id?: string | null
+        }
+        Update: {
+          body?: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          recipient?: string
+          sent_by?: string | null
+          status?: string
+          subject?: string
+          template_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sent_emails_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "email_templates"
             referencedColumns: ["id"]
           },
         ]
