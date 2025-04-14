@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useCourses } from "@/hooks/use-courses";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { Course } from "@/hooks/use-courses"; // Import Course type
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -39,9 +40,11 @@ export function CourseForm() {
 
   const onSubmit = (data: CourseFormData) => {
     createCourse.mutate({
-      ...data,
+      title: data.title,
+      description: data.description || null,
+      duration_weeks: data.duration_weeks,
+      slug: data.slug,
       status: "draft",
-      description: data.description || null, // Convert empty string to null if needed
       thumbnail_url: null,
     });
   };
