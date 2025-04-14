@@ -9,6 +9,8 @@ import { StatsCard } from "@/components/dashboard/StatsCard";
 import { RecentMessages } from "@/components/dashboard/RecentMessages";
 import { EnrolledStudentsList } from "@/components/dashboard/EnrolledStudentsList";
 import { Plus, Users, Book, MessageSquare, Calendar } from "lucide-react";
+import { NextClassCard } from "@/components/dashboard/NextClassCard";
+import { ClassCalendar } from "@/components/calendar/ClassCalendar";
 
 export default function TeacherDashboard() {
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -84,10 +86,33 @@ export default function TeacherDashboard() {
     enabled: !!classes?.length,
   });
 
+  const { data: nextClass, isLoading: isLoadingNextClass } = useQuery({
+    queryKey: ["next-class"],
+    queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("No authenticated user");
+
+      const { data, error } = await supabase
+        .from("classes")
+        .select(`
+          *,
+          enrollments!inner(student_id)
+        `)
+        .eq('enrollments.student_id', session.user.id)
+        .gte("start_time", new Date().toISOString())
+        .order("start_time", { ascending: true })
+        .limit(1)
+        .maybeSingle();
+
+      if (error && error.code !== "PGRST116") throw error;
+      return data;
+    },
+  });
+
   return (
     <DashboardLayout requiredRole="teacher">
       <div className="animate-fade-up space-y-8">
-        <div className="space-y-2">
+        <div>
           <h1 className="text-3xl font-bold">
             Welcome back, {profile?.first_name}
           </h1>
@@ -123,48 +148,17 @@ export default function TeacherDashboard() {
           />
         </div>
 
-        <RecentMessages />
-
-        <div className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-semibold">Your Classes</h2>
-            <Button onClick={() => setShowCreateForm(!showCreateForm)}>
-              <Plus className="mr-2 h-4 w-4" />
-              Create Class
-            </Button>
-          </div>
-
-          {showCreateForm && (
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-xl font-semibold mb-4">Create New Class</h3>
-              <CreateClassForm
-                onSuccess={() => {
-                  setShowCreateForm(false);
-                  refetchClasses();
-                }}
-              />
-            </div>
-          )}
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            {classes?.map((class_) => (
-              <div key={class_.id} className="space-y-6">
-                <ClassCard
-                  id={class_.id}
-                  title={class_.title}
-                  description={class_.description}
-                  startTime={class_.start_time}
-                  endTime={class_.end_time}
-                  classType={class_.class_type}
-                  enrollmentCount={class_.enrollments[0]?.count || 0}
-                  capacity={class_.capacity}
-                  teacherView={true}
-                />
-                <EnrolledStudentsList classId={class_.id} />
-              </div>
-            ))}
-          </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <NextClassCard
+            title={nextClass?.title}
+            startTime={nextClass?.start_time}
+            endTime={nextClass?.end_time}
+            isLoading={isLoadingNextClass}
+          />
+          <RecentMessages />
         </div>
+
+        <ClassCalendar role="teacher" />
       </div>
     </DashboardLayout>
   );

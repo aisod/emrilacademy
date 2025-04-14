@@ -1,9 +1,11 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { NextClassCard } from "@/components/dashboard/NextClassCard";
 import { RecentMessages } from "@/components/dashboard/RecentMessages";
+import { ClassCalendar } from "@/components/calendar/ClassCalendar";
 import { Book, MessageSquare, FileText } from "lucide-react";
 
 export default function StudentDashboard() {
@@ -116,6 +118,8 @@ export default function StudentDashboard() {
           />
           <RecentMessages />
         </div>
+
+        <ClassCalendar role="student" />
       </div>
     </DashboardLayout>
   );

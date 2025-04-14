@@ -9,6 +9,44 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      class_reminders: {
+        Row: {
+          class_id: string | null
+          created_at: string | null
+          id: string
+          interval: Database["public"]["Enums"]["reminder_interval"]
+          reminder_time: string
+          sent_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          class_id?: string | null
+          created_at?: string | null
+          id?: string
+          interval: Database["public"]["Enums"]["reminder_interval"]
+          reminder_time: string
+          sent_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          class_id?: string | null
+          created_at?: string | null
+          id?: string
+          interval?: Database["public"]["Enums"]["reminder_interval"]
+          reminder_time?: string
+          sent_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_reminders_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       class_sessions: {
         Row: {
           class_id: string
@@ -306,6 +344,7 @@ export type Database = {
     }
     Enums: {
       class_type: "live" | "recorded"
+      reminder_interval: "1_hour" | "30_minutes" | "15_minutes"
       session_status: "pending" | "active" | "ended"
       user_role: "student" | "teacher" | "admin"
     }
@@ -424,6 +463,7 @@ export const Constants = {
   public: {
     Enums: {
       class_type: ["live", "recorded"],
+      reminder_interval: ["1_hour", "30_minutes", "15_minutes"],
       session_status: ["pending", "active", "ended"],
       user_role: ["student", "teacher", "admin"],
     },
