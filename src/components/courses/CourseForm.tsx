@@ -41,6 +41,7 @@ export function CourseForm() {
     createCourse.mutate({
       ...data,
       status: "draft",
+      description: data.description || null, // Convert empty string to null if needed
       thumbnail_url: null,
     });
   };
