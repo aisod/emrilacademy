@@ -76,7 +76,7 @@ const Index = () => {
       <section className="py-20 px-4 bg-secondary">
         <div className="container mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4">Why Choose Emmadex?</h2>
+            <h2 className="text-3xl font-bold mb-4">Why Choose EmRil Academy?</h2>
             <p className="text-gray-600">Discover the features that make our platform unique</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -91,7 +91,7 @@ const Index = () => {
       {/* How It Works Section */}
       <section className="py-20 px-4">
         <div className="container mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-16">How Emmadex Works</h2>
+          <h2 className="text-3xl font-bold text-center mb-16">How EmRil Academy Works</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {[{
             step: "1",
