@@ -15,6 +15,15 @@ export interface Course {
   updated_at: string;
 }
 
+export interface CreateCourseDto {
+  title: string;
+  description?: string | null;
+  status?: string;
+  slug: string;
+  duration_weeks?: number;
+  thumbnail_url?: string | null;
+}
+
 export function useCourses() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -33,13 +42,16 @@ export function useCourses() {
   });
 
   const createCourse = useMutation({
-    mutationFn: async (data: Partial<Course>) => {
+    mutationFn: async (data: CreateCourseDto) => {
       const { data: session } = await supabase.auth.getSession();
       if (!session.session) throw new Error("Not authenticated");
 
       const { error } = await supabase
         .from("courses")
-        .insert([{ ...data, teacher_id: session.session.user.id }]);
+        .insert({
+          ...data,
+          teacher_id: session.session.user.id,
+        });
 
       if (error) throw error;
     },

@@ -16,6 +16,14 @@ export interface Assessment {
   created_at: string;
 }
 
+export interface CreateAssessmentDto {
+  title: string;
+  description?: string | null;
+  type: AssessmentType;
+  due_date: string;
+  total_points?: number;
+}
+
 export function useAssessments(courseId: string) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -35,10 +43,13 @@ export function useAssessments(courseId: string) {
   });
 
   const createAssessment = useMutation({
-    mutationFn: async (data: Partial<Assessment>) => {
+    mutationFn: async (data: CreateAssessmentDto) => {
       const { error } = await supabase
         .from("assessments")
-        .insert([{ ...data, course_id: courseId }]);
+        .insert({
+          ...data,
+          course_id: courseId,
+        });
 
       if (error) throw error;
     },
