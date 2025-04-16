@@ -64,7 +64,7 @@ export function LandingNavigation() {
           className="flex items-center space-x-3"
           aria-label="Go to homepage"
         >
-          <span className="self-center text-2xl font-semibold">Emmadex</span>
+          <span className="self-center text-2xl font-semibold">EmRil Academy</span>
         </Link>
         
         <Button

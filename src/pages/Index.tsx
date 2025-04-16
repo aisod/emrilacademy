@@ -1,4 +1,3 @@
-
 import { LandingNavigation } from "@/components/LandingNavigation";
 import { FeatureCard } from "@/components/FeatureCard";
 import { ArrowRight, Video, BookOpen, Users, GraduationCap } from "lucide-react";
@@ -140,7 +139,7 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <h3 className="text-white font-bold mb-4">Emmadex</h3>
+              <h3 className="text-white font-bold mb-4">EmRil Academy</h3>
               <p className="text-sm">
                 Transforming online education through interactive live learning experiences.
               </p>
@@ -174,7 +173,7 @@ const Index = () => {
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center">
             <p className="text-sm">
-              © 2024 Emmadex. All rights reserved. | Developed By{" "}
+              © 2024 EmRil Academy. All rights reserved. | Developed By{" "}
               <a href="https://www.aisod.tech" className="text-primary hover:text-primary/80 transition-colors">
                 AISOD
               </a>

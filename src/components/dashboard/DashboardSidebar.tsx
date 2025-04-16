@@ -51,7 +51,7 @@ export function DashboardSidebar() {
         <SidebarHeader className="p-4 border-b">
           <Link to="/" className="text-2xl font-bold text-primary flex items-center gap-2">
             <LayoutDashboard className="h-6 w-6" />
-            <span>Emmadex</span>
+            <span>EmRil Academy</span>
           </Link>
         </SidebarHeader>
         <SidebarContent>
