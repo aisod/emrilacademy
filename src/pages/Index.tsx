@@ -165,9 +165,9 @@ const Index = () => {
             <div>
               <h4 className="text-white font-semibold mb-4">Contact Us</h4>
               <ul className="space-y-2">
-                <li>Email: info@emmadex.com</li>
+                <li>Email: info@emrilacademy.com</li>
                 <li>Phone: +44 7849 389090</li>
-                <li>Address: 123 Learning Street</li>
+                <li>Address: 52 Peartree Close, South Ockendon, United Kingdom</li>
               </ul>
             </div>
           </div>
