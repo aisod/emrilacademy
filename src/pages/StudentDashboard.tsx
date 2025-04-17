@@ -80,15 +80,15 @@ export default function StudentDashboard() {
 
   return (
     <DashboardLayout requiredRole="student">
-      <div className="animate-fade-up space-y-8">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+      <div className="animate-fade-up space-y-6">
+        <div className="bg-white dark:bg-gray-800 p-5 sm:p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
             Welcome, {profile?.first_name || "Student"}!
           </h1>
-          <p className="text-gray-600 dark:text-gray-300 mt-1">Here's an overview of your learning journey</p>
+          <p className="text-gray-600 dark:text-gray-300 mt-1 text-sm sm:text-base">Here's an overview of your learning journey</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
           <StatsCard
             title="Upcoming Classes"
             value={stats?.upcomingClasses}
@@ -119,9 +119,11 @@ export default function StudentDashboard() {
           <RecentMessages />
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Class Schedule</h2>
-          <ClassCalendar role="student" />
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold mb-4 text-gray-900 dark:text-white">Class Schedule</h2>
+          <div className="overflow-x-auto">
+            <ClassCalendar role="student" />
+          </div>
         </div>
       </div>
     </DashboardLayout>

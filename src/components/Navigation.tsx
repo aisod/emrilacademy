@@ -103,23 +103,27 @@ export function Navigation() {
   if (!user) return null;
 
   return (
-    <div className="fixed top-0 right-0 p-4 z-50">
+    <div className="fixed top-0 right-0 p-3 md:p-4 z-40">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-            <Avatar className="h-10 w-10">
+          <Button variant="ghost" className="relative h-9 w-9 md:h-10 md:w-10 rounded-full p-0">
+            <Avatar className="h-full w-full">
               <AvatarImage src={userProfile?.avatar_url} alt="Profile" />
-              <AvatarFallback className="bg-primary text-white">
+              <AvatarFallback className="bg-primary text-white text-xs md:text-sm">
                 {userProfile?.first_name?.charAt(0)}{userProfile?.last_name?.charAt(0)}
               </AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
+        <DropdownMenuContent align="end" className="w-56">
           <DropdownMenuItem className="font-medium">
-            {userProfile?.first_name} {userProfile?.last_name}
+            <div className="flex flex-col">
+              <span>{userProfile?.first_name} {userProfile?.last_name}</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">{userProfile?.email}</span>
+            </div>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => navigate(userProfile?.role === 'teacher' ? '/teacher' : '/student')}>
+            <UserIcon className="w-4 h-4 mr-2" />
             Dashboard
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleSignOut} className="text-red-500">
