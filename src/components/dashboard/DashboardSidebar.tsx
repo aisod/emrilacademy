@@ -41,20 +41,20 @@ export function DashboardSidebar() {
         <Button
           variant="ghost"
           size="icon"
-          className="fixed left-4 top-4 z-50 md:hidden"
+          className="fixed left-4 top-4 z-50 md:hidden text-white bg-sidebar hover:bg-sidebar-hover"
           onClick={toggleSidebar}
         >
           <Menu className="h-6 w-6" />
         </Button>
       )}
       <Sidebar>
-        <SidebarHeader className="p-4 border-b">
-          <Link to="/" className="text-2xl font-bold text-primary flex items-center gap-2">
+        <SidebarHeader className="p-4 bg-sidebar border-b border-sidebar-hover">
+          <Link to="/" className="text-2xl font-bold text-white flex items-center gap-2">
             <LayoutDashboard className="h-6 w-6" />
             <span>EmRil Academy</span>
           </Link>
         </SidebarHeader>
-        <SidebarContent>
+        <SidebarContent className="bg-sidebar text-sidebar-text">
           <nav className="space-y-2 p-4">
             <MainLinks
               dashboardPath={dashboardPath}
@@ -73,7 +73,7 @@ export function DashboardSidebar() {
           </nav>
         </SidebarContent>
         {!isMobile && (
-          <SidebarTrigger className="absolute right-0 top-4 translate-x-full bg-white p-2 rounded-r-lg border border-l-0">
+          <SidebarTrigger className="absolute right-0 top-4 translate-x-full bg-white dark:bg-gray-800 p-2 rounded-r-lg border border-l-0 border-gray-200 dark:border-gray-700 shadow-sm">
             <ChevronLeft className="h-5 w-5" />
           </SidebarTrigger>
         )}

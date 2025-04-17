@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { CreateClassForm } from "@/components/classes/CreateClassForm";
@@ -112,11 +113,11 @@ export default function TeacherDashboard() {
   return (
     <DashboardLayout requiredRole="teacher">
       <div className="animate-fade-up space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
             Welcome back, {profile?.first_name}
           </h1>
-          <p className="text-gray-500">
+          <p className="text-gray-600 dark:text-gray-300 mt-1">
             Here's an overview of your teaching dashboard
           </p>
         </div>
@@ -158,7 +159,10 @@ export default function TeacherDashboard() {
           <RecentMessages />
         </div>
 
-        <ClassCalendar role="teacher" />
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Class Schedule</h2>
+          <ClassCalendar role="teacher" />
+        </div>
       </div>
     </DashboardLayout>
   );

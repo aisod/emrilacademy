@@ -27,10 +27,13 @@ export default {
         foreground: "hsl(var(--foreground))",
         primary: {
           DEFAULT: "#0288D1",
+          light: "#B3E5FC",
+          dark: "#01579B",
           foreground: "#FFFFFF",
         },
         secondary: {
           DEFAULT: "#F5F7FA",
+          dark: "#E1E5EB",
           foreground: "#1A1A1A",
         },
         destructive: {
@@ -44,6 +47,18 @@ export default {
         accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
+        },
+        sidebar: {
+          DEFAULT: "#1A1F2C",
+          hover: "#2A3042", 
+          active: "#3A4155",
+          text: "#FFFFFF",
+          muted: "#8E9196",
+        },
+        card: {
+          DEFAULT: "#FFFFFF",
+          hover: "#F8FAFC",
+          border: "#E2E8F0",
         },
       },
       borderRadius: {

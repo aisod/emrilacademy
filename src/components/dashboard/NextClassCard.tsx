@@ -14,11 +14,11 @@ interface NextClassProps {
 export function NextClassCard({ title, startTime, endTime, isLoading }: NextClassProps) {
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Next Class</CardTitle>
+      <Card className="border border-card-border shadow-sm bg-white dark:bg-gray-800">
+        <CardHeader className="border-b border-gray-100 dark:border-gray-700">
+          <CardTitle className="text-gray-900 dark:text-white">Next Class</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 pt-4">
           <Skeleton className="h-6 w-3/4" />
           <div className="space-y-2">
             <Skeleton className="h-4 w-1/2" />
@@ -31,31 +31,31 @@ export function NextClassCard({ title, startTime, endTime, isLoading }: NextClas
 
   if (!title || !startTime) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Next Class</CardTitle>
+      <Card className="border border-card-border shadow-sm bg-white dark:bg-gray-800">
+        <CardHeader className="border-b border-gray-100 dark:border-gray-700">
+          <CardTitle className="text-gray-900 dark:text-white">Next Class</CardTitle>
         </CardHeader>
-        <CardContent>
-          <p className="text-gray-500">No upcoming classes</p>
+        <CardContent className="pt-4">
+          <p className="text-gray-500 dark:text-gray-400">No upcoming classes</p>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Next Class</CardTitle>
+    <Card className="border border-card-border shadow-sm bg-white dark:bg-gray-800">
+      <CardHeader className="border-b border-gray-100 dark:border-gray-700">
+        <CardTitle className="text-gray-900 dark:text-white">Next Class</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <h3 className="text-xl font-semibold">{title}</h3>
+      <CardContent className="space-y-4 pt-4">
+        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{title}</h3>
         <div className="space-y-2">
-          <div className="flex items-center text-gray-500">
-            <Calendar className="w-4 h-4 mr-2" />
+          <div className="flex items-center text-gray-700 dark:text-gray-300">
+            <Calendar className="w-4 h-4 mr-2 text-primary dark:text-primary-light" />
             <span>{format(new Date(startTime), "MMMM d, yyyy")}</span>
           </div>
-          <div className="flex items-center text-gray-500">
-            <Clock className="w-4 h-4 mr-2" />
+          <div className="flex items-center text-gray-700 dark:text-gray-300">
+            <Clock className="w-4 h-4 mr-2 text-primary dark:text-primary-light" />
             <span>
               {format(new Date(startTime), "h:mm a")} -{" "}
               {endTime && format(new Date(endTime), "h:mm a")}
