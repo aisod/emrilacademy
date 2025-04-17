@@ -37,7 +37,7 @@ export const useSignup = () => {
         throw new Error("Please enter a valid email address");
       }
 
-      // Sign up the user with Supabase
+      // Sign up the user with Supabase - email confirmation is already enabled
       const { error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
@@ -47,11 +47,12 @@ export const useSignup = () => {
             last_name: data.lastName,
             role: data.role
           },
+          // No need to explicitly set emailRedirectTo as Supabase will use the site URL from the project settings
         },
       });
 
       if (error) throw error;
-
+      
       return { error: null };
     } catch (error: any) {
       console.error("Signup error:", error);

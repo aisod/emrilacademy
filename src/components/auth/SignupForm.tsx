@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Mail, Lock, User, ArrowRight, BookOpen, GraduationCap } from "lucide-react";
+import { Mail, Lock, User, ArrowRight, GraduationCap, BookOpen } from "lucide-react";
 import { FormInput } from "./FormInput";
 import { useSignup } from "@/hooks/useSignup";
 import { useToast } from "@/components/ui/use-toast";
@@ -10,9 +10,10 @@ import { Label } from "@/components/ui/label";
 
 interface SignupFormProps {
   onToggleMode: () => void;
+  onSignupSuccess: (email: string) => void;
 }
 
-export const SignupForm = ({ onToggleMode }: SignupFormProps) => {
+export const SignupForm = ({ onToggleMode, onSignupSuccess }: SignupFormProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -42,17 +43,16 @@ export const SignupForm = ({ onToggleMode }: SignupFormProps) => {
     });
     
     if (!result.error) {
-      toast({
-        title: "Account created",
-        description: "Please check your email to confirm your account.",
-      });
+      // Pass the email to the confirmation page
+      onSignupSuccess(email);
     }
   };
 
   return (
     <div className="w-full max-w-md space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-semibold text-gray-800">Sign up to start learning</h2>
+        <h2 className="text-2xl font-semibold text-gray-800">Create Account</h2>
+        <p className="mt-2 text-gray-600">Sign up to start learning</p>
       </div>
 
       <form onSubmit={handleSignup} className="space-y-4">

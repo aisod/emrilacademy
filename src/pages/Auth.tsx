@@ -1,12 +1,14 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { SignupForm } from "@/components/auth/SignupForm";
+import { EmailConfirmation } from "@/components/auth/EmailConfirmation";
 import { useSearchParams } from "react-router-dom";
 
 const Auth = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const mode = searchParams.get("mode") || "signin";
+  const [confirmedEmail, setConfirmedEmail] = useState<string | null>(null);
 
   const toggleMode = () => {
     setSearchParams({ mode: mode === "signin" ? "signup" : "signin" });
@@ -22,10 +24,17 @@ const Auth = () => {
     }
   }, [searchParams]);
 
+  // Function to handle successful signup and show email confirmation page
+  const handleSignupSuccess = (email: string) => {
+    setConfirmedEmail(email);
+  };
+
   return (
     <div className="min-h-screen bg-white flex items-center justify-center px-4">
-      {mode === "signup" ? (
-        <SignupForm onToggleMode={toggleMode} />
+      {confirmedEmail ? (
+        <EmailConfirmation email={confirmedEmail} />
+      ) : mode === "signup" ? (
+        <SignupForm onToggleMode={toggleMode} onSignupSuccess={handleSignupSuccess} />
       ) : (
         <LoginForm onToggleMode={toggleMode} />
       )}
