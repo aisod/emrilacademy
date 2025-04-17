@@ -21,11 +21,15 @@ export const EmailConfirmation = ({ email }: EmailConfirmationProps) => {
     
     setResending(true);
     try {
+      // Make sure redirectTo has the full URL with origin
+      const redirectTo = `${window.location.origin}/auth`;
+      console.log("EmailConfirmation: Redirect URL set to:", redirectTo);
+      
       const { error } = await supabase.auth.resend({
         type: 'signup',
         email,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth`
+          emailRedirectTo: redirectTo
         }
       });
       

@@ -27,6 +27,8 @@ const Auth = () => {
         const type = searchParams.get("type");
         const refreshToken = searchParams.get("refresh_token");
         
+        console.log("Auth params:", { accessToken, type, refreshToken });
+        
         if (accessToken && type === "recovery") {
           const { error } = await supabase.auth.setSession({
             access_token: accessToken,
@@ -48,6 +50,21 @@ const Auth = () => {
         // For email confirmation link from Supabase
         if ((accessToken || searchParams.get("token")) && type === "signup") {
           // Email confirmation token exists
+          console.log("Processing email confirmation with token");
+          
+          // If we have both access_token and refresh_token, try to set the session directly
+          if (accessToken && refreshToken) {
+            const { error } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken,
+            });
+            
+            if (error) {
+              console.error("Error setting session:", error);
+              throw error;
+            }
+          }
+          
           toast({
             title: "Email confirmed successfully",
             description: "Your email has been verified. You can now sign in.",
