@@ -3,22 +3,41 @@ import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import type { User } from "@supabase/supabase-js";
 import { useToast } from "@/components/ui/use-toast";
-import { LogOut } from "lucide-react";
+import { LogOut, User as UserIcon } from "lucide-react";
 import { Button } from "./ui/button";
+import { useNavigate } from "react-router-dom";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export function Navigation() {
   const [user, setUser] = useState<User | null>(null);
+  const [userProfile, setUserProfile] = useState<any>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
+    // Set up the auth listener first
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      
+      // Fetch profile information if user is logged in
+      if (currentUser) {
+        fetchUserProfile(currentUser.id);
+      } else {
+        setUserProfile(null);
+      }
     });
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+    // Then check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      
+      // Fetch profile information if user is logged in
+      if (currentUser) {
+        fetchUserProfile(currentUser.id);
+      }
     });
 
     const handleStorageChange = async (event: StorageEvent) => {
@@ -26,6 +45,7 @@ export function Navigation() {
         try {
           await supabase.auth.signOut();
           setUser(null);
+          setUserProfile(null);
           localStorage.clear();
           window.location.reload();
         } catch (error) {
@@ -43,6 +63,21 @@ export function Navigation() {
     };
   }, []);
 
+  const fetchUserProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .maybeSingle();
+
+      if (error) throw error;
+      setUserProfile(data);
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+    }
+  };
+
   const handleSignOut = async () => {
     try {
       localStorage.clear();
@@ -50,29 +85,49 @@ export function Navigation() {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       setUser(null);
-      window.location.reload();
+      setUserProfile(null);
+      navigate('/');
+      toast({
+        title: "Signed out successfully",
+        description: "You have been signed out of your account."
+      });
     } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Error signing out",
         description: error.message,
       });
-      window.location.reload();
     }
   };
 
+  if (!user) return null;
+
   return (
     <div className="fixed top-0 right-0 p-4 z-50">
-      {user && (
-        <Button
-          onClick={handleSignOut}
-          variant="outline"
-          className="bg-white shadow-sm"
-        >
-          <LogOut className="w-4 h-4 mr-2" />
-          Sign Out
-        </Button>
-      )}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+            <Avatar className="h-10 w-10">
+              <AvatarImage src={userProfile?.avatar_url} alt="Profile" />
+              <AvatarFallback className="bg-primary text-white">
+                {userProfile?.first_name?.charAt(0)}{userProfile?.last_name?.charAt(0)}
+              </AvatarFallback>
+            </Avatar>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem className="font-medium">
+            {userProfile?.first_name} {userProfile?.last_name}
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => navigate(userProfile?.role === 'teacher' ? '/teacher' : '/student')}>
+            Dashboard
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleSignOut} className="text-red-500">
+            <LogOut className="w-4 h-4 mr-2" />
+            Sign Out
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }

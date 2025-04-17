@@ -21,11 +21,27 @@ export const useSignup = () => {
     setLoading(true);
 
     try {
+      // Check for required fields
+      if (!data.email || !data.password || !data.firstName || !data.lastName) {
+        throw new Error("All fields are required");
+      }
+
+      // Check password strength (at least 8 characters)
+      if (data.password.length < 8) {
+        throw new Error("Password must be at least 8 characters long");
+      }
+
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(data.email)) {
+        throw new Error("Please enter a valid email address");
+      }
+
+      // Sign up the user with Supabase
       const { error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth`,
           data: {
             first_name: data.firstName,
             last_name: data.lastName,
@@ -36,11 +52,6 @@ export const useSignup = () => {
 
       if (error) throw error;
 
-      toast({
-        title: "Success!",
-        description: "Please check your email to confirm your account.",
-      });
-      
       return { error: null };
     } catch (error: any) {
       console.error("Signup error:", error);
