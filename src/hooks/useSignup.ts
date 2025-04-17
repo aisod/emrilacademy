@@ -47,7 +47,7 @@ export const useSignup = () => {
             last_name: data.lastName,
             role: data.role
           },
-          // No need to explicitly set emailRedirectTo as Supabase will use the site URL from the project settings
+          emailRedirectTo: window.location.origin + '/auth',
         },
       });
 

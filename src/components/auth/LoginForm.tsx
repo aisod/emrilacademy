@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Mail, Lock, ArrowRight } from "lucide-react";
+import { Mail, Lock, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 
@@ -14,6 +14,7 @@ export const LoginForm = ({ onToggleMode }: LoginFormProps) => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -66,6 +67,10 @@ export const LoginForm = ({ onToggleMode }: LoginFormProps) => {
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <div className="w-full max-w-md space-y-6">
       <div className="text-center">
@@ -94,13 +99,20 @@ export const LoginForm = ({ onToggleMode }: LoginFormProps) => {
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="pl-10 w-full p-3 bg-gray-800 text-white border-none rounded-md focus:ring-2 focus:ring-primary"
               placeholder="••••••••"
             />
+            <button 
+              type="button"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 hover:text-white"
+              onClick={togglePasswordVisibility}
+            >
+              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            </button>
           </div>
         </div>
 

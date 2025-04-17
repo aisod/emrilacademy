@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Mail, AlertCircle, ArrowRight, CheckCircle } from "lucide-react";
+import { Mail, AlertCircle, ArrowRight, CheckCircle, Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
@@ -22,6 +22,9 @@ export const EmailConfirmation = ({ email }: EmailConfirmationProps) => {
       const { error } = await supabase.auth.resend({
         type: 'signup',
         email,
+        options: {
+          emailRedirectTo: window.location.origin + '/auth?mode=signin',
+        }
       });
       
       if (error) throw error;
@@ -76,7 +79,9 @@ export const EmailConfirmation = ({ email }: EmailConfirmationProps) => {
           className="w-full flex gap-2 justify-center items-center border-blue-500 text-blue-600 hover:bg-blue-50"
         >
           {resending ? (
-            "Sending..."
+            <>
+              <Loader className="h-4 w-4 animate-spin mr-2" /> Sending...
+            </>
           ) : resent ? (
             <>
               <CheckCircle className="h-5 w-5" /> Email Sent
