@@ -37,6 +37,10 @@ export const useSignup = () => {
         throw new Error("Please enter a valid email address");
       }
 
+      // Make sure redirectTo has the full URL with origin
+      const redirectTo = `${window.location.origin}/auth`;
+      console.log("Redirect URL set to:", redirectTo);
+
       // Sign up the user with Supabase - email confirmation is already enabled
       const { error } = await supabase.auth.signUp({
         email: data.email,
@@ -47,7 +51,7 @@ export const useSignup = () => {
             last_name: data.lastName,
             role: data.role
           },
-          emailRedirectTo: window.location.origin + '/auth',
+          emailRedirectTo: redirectTo,
         },
       });
 

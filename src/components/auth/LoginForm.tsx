@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Mail, Lock, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
+import { FormInput } from "@/components/auth/FormInput";
 
 interface LoginFormProps {
   onToggleMode: () => void;
@@ -88,7 +89,7 @@ export const LoginForm = ({ onToggleMode }: LoginFormProps) => {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="pl-10 w-full p-3 bg-gray-200/80 border-none rounded-md focus:ring-2 focus:ring-primary focus:bg-gray-100"
+              className="pl-10 w-full p-3 bg-gray-100 border-none rounded-md focus:ring-2 focus:ring-primary focus:bg-gray-100"
               placeholder="youremail@example.com"
             />
           </div>
@@ -103,12 +104,12 @@ export const LoginForm = ({ onToggleMode }: LoginFormProps) => {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="pl-10 w-full p-3 bg-gray-800 text-white border-none rounded-md focus:ring-2 focus:ring-primary"
+              className="pl-10 w-full p-3 bg-gray-100 border-none rounded-md focus:ring-2 focus:ring-primary"
               placeholder="••••••••"
             />
             <button 
               type="button"
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 hover:text-white"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
               onClick={togglePasswordVisibility}
             >
               {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}

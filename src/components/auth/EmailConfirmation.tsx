@@ -4,6 +4,7 @@ import { Mail, AlertCircle, ArrowRight, CheckCircle, Loader } from "lucide-react
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface EmailConfirmationProps {
   email: string;
@@ -13,6 +14,7 @@ export const EmailConfirmation = ({ email }: EmailConfirmationProps) => {
   const [resending, setResending] = useState(false);
   const [resent, setResent] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleResendEmail = async () => {
     if (resending) return;
@@ -23,7 +25,7 @@ export const EmailConfirmation = ({ email }: EmailConfirmationProps) => {
         type: 'signup',
         email,
         options: {
-          emailRedirectTo: window.location.origin + '/auth?mode=signin',
+          emailRedirectTo: `${window.location.origin}/auth`
         }
       });
       
@@ -35,6 +37,7 @@ export const EmailConfirmation = ({ email }: EmailConfirmationProps) => {
         description: "Please check your inbox for the confirmation link",
       });
     } catch (error: any) {
+      console.error("Resend error:", error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -42,6 +45,11 @@ export const EmailConfirmation = ({ email }: EmailConfirmationProps) => {
       });
     } finally {
       setResending(false);
+      
+      // Reset the "Email Sent" state after 30 seconds so user can try again if needed
+      setTimeout(() => {
+        setResent(false);
+      }, 30000);
     }
   };
 
@@ -92,7 +100,7 @@ export const EmailConfirmation = ({ email }: EmailConfirmationProps) => {
         </Button>
 
         <Button
-          onClick={() => window.location.href = "/auth?mode=signin"}
+          onClick={() => navigate("/auth?mode=signin")}
           variant="ghost"
           className="w-full flex gap-2 justify-center items-center"
         >
