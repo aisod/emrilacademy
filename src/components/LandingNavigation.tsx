@@ -87,18 +87,18 @@ export function LandingNavigation() {
           className={cn(
             "w-full md:block md:w-auto transition-all duration-200 ease-in-out",
             isOpen 
-              ? "block opacity-100 max-h-[80vh] overflow-y-auto" 
+              ? "block opacity-100 max-h-[80vh] overflow-y-auto bg-white dark:bg-gray-900 rounded-md shadow-lg absolute top-full left-0 right-0 mt-2 z-50" 
               : "hidden md:opacity-100 opacity-0 max-h-0 md:max-h-none"
           )}
         >
           <div className="flex flex-col md:flex-row md:space-x-8 mt-4 md:mt-0">
-            <div className="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-6 mb-4 md:mb-0">
+            <div className="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-6 mb-4 md:mb-0 px-4 md:px-0">
               <NavLink to="/about" onClick={closeMenu}>About</NavLink>
               <NavLink to="/courses" onClick={closeMenu}>Courses</NavLink>
               <NavLink to="/teachers" onClick={closeMenu}>Teachers</NavLink>
               <NavLink to="/contact" onClick={closeMenu}>Contact</NavLink>
             </div>
-            <div className="flex flex-col md:flex-row gap-3 md:items-center mt-4 md:mt-0">
+            <div className="flex flex-col md:flex-row gap-3 md:items-center mt-4 md:mt-0 p-4 border-t md:border-none border-gray-200 dark:border-gray-700 md:p-0">
               <Link to="/auth?mode=signin" className="w-full md:w-auto" onClick={closeMenu}>
                 <Button 
                   variant="outline" 

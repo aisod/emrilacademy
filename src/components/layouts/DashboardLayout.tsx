@@ -59,7 +59,7 @@ export const DashboardLayout = ({ children, requiredRole }: DashboardLayoutProps
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="p-0 max-w-[280px] border-none">
+            <SheetContent side="left" className="p-0 max-w-[280px] border-none bg-white dark:bg-gray-900 shadow-lg">
               <DashboardSidebar onMobileClose={() => setIsMobileMenuOpen(false)} />
             </SheetContent>
           </Sheet>
@@ -79,4 +79,4 @@ export const DashboardLayout = ({ children, requiredRole }: DashboardLayoutProps
       </div>
     </SidebarProvider>
   );
-};
+}

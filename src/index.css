@@ -71,6 +71,10 @@
   .mobile-card {
     @apply bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 sm:p-6;
   }
+  
+  .mobile-menu {
+    @apply bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg rounded-lg;
+  }
 }
 
 .fade-in {
@@ -101,11 +105,18 @@
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
   }
+  
+  /* Fix for mobile dropdown menus */
+  .mobile-dropdown {
+    @apply bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg !important;
+    width: calc(100% - 2rem) !important;
+    max-width: 100% !important;
+    left: 1rem !important;
+    right: 1rem !important;
+  }
 }
 
-/* Dropdown Menu Mobile Fixes */
-.mobile-dropdown {
-  width: 100%;
-  max-width: 100%;
-  left: 0 !important;
+/* Dashboard Mobile Menu Styles */
+.dashboard-mobile-menu {
+  @apply bg-white dark:bg-gray-900 border-none shadow-lg;
 }
