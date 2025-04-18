@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
@@ -7,10 +7,11 @@ import { StatsCard } from "@/components/dashboard/StatsCard";
 import { NextClassCard } from "@/components/dashboard/NextClassCard";
 import { RecentMessages } from "@/components/dashboard/RecentMessages";
 import { ClassCalendar } from "@/components/calendar/ClassCalendar";
-import { Book, MessageSquare, FileText, RefreshCcw } from "lucide-react";
+import { Book, MessageSquare, FileText, RefreshCcw, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "@/components/ui/use-toast";
 
 export default function StudentDashboard() {
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -95,7 +96,7 @@ export default function StudentDashboard() {
     },
   });
 
-  const refreshData = async () => {
+  const refreshData = useCallback(async () => {
     setIsRefreshing(true);
     try {
       await Promise.all([
@@ -103,10 +104,21 @@ export default function StudentDashboard() {
         queryClient.invalidateQueries({ queryKey: ["student-stats"] }),
         queryClient.invalidateQueries({ queryKey: ["next-class"] }),
       ]);
+      toast({
+        title: "Dashboard refreshed",
+        description: "Your dashboard data has been updated.",
+      });
+    } catch (error) {
+      console.error("Error refreshing data:", error);
+      toast({
+        variant: "destructive",
+        title: "Refresh failed",
+        description: "Unable to refresh your dashboard data. Please try again later.",
+      });
     } finally {
       setTimeout(() => setIsRefreshing(false), 500);  // Ensure user sees refresh animation
     }
-  };
+  }, [queryClient]);
   
   // Check for any errors
   const hasErrors = profileError || statsError || nextClassError;
@@ -129,8 +141,11 @@ export default function StudentDashboard() {
               onClick={refreshData}
               disabled={isRefreshing || isLoadingStats || isLoadingNextClass}
               className="h-8 w-8 p-1"
+              aria-label="Refresh dashboard data"
             >
-              <RefreshCcw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              <RefreshCcw 
+                className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} 
+              />
               <span className="sr-only">Refresh data</span>
             </Button>
           </div>
@@ -141,10 +156,22 @@ export default function StudentDashboard() {
 
         {hasErrors && (
           <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 p-4 rounded-lg text-red-700 dark:text-red-300">
-            <h3 className="font-medium mb-1">Error loading dashboard data</h3>
+            <div className="flex items-center gap-2 mb-1">
+              <AlertTriangle className="h-5 w-5" />
+              <h3 className="font-medium">Error loading dashboard data</h3>
+            </div>
             <p className="text-sm">
               Please try refreshing the page. If the problem persists, contact support.
             </p>
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="mt-2 border-red-300 hover:bg-red-100 dark:border-red-800 dark:hover:bg-red-900/50"
+              onClick={refreshData}
+            >
+              <RefreshCcw className="h-3.5 w-3.5 mr-1" />
+              Retry
+            </Button>
           </div>
         )}
 

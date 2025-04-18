@@ -1,21 +1,47 @@
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
 
+export interface LoginResult {
+  success: boolean;
+  error?: string | null;
+  session?: any;
+}
+
 export const useLogin = () => {
   const [loading, setLoading] = useState(false);
+  const [loginAttempts, setLoginAttempts] = useState(0);
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const login = async (email: string, password: string) => {
+  const login = useCallback(async (email: string, password: string): Promise<LoginResult> => {
+    if (loginAttempts >= 5) {
+      toast({
+        variant: "destructive",
+        title: "Too many attempts",
+        description: "Please try again later or reset your password",
+      });
+      return { success: false, error: "Too many login attempts" };
+    }
+    
     setLoading(true);
     
     try {
       // Validate inputs
-      if (!email || !password) {
-        throw new Error("Email and password are required");
+      if (!email) {
+        throw new Error("Email is required");
+      }
+      
+      if (!password) {
+        throw new Error("Password is required");
+      }
+      
+      // Email format validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        throw new Error("Please enter a valid email address");
       }
       
       console.log("Attempting login for:", email);
@@ -26,12 +52,18 @@ export const useLogin = () => {
         password
       });
 
-      if (error) throw error;
+      if (error) {
+        setLoginAttempts(prev => prev + 1);
+        throw error;
+      }
       
       console.log("Login successful:", {
         user: data.user?.id,
         hasSession: !!data.session
       });
+      
+      // Reset login attempts on successful login
+      setLoginAttempts(0);
       
       // Get the user's role from profiles table
       const { data: profile, error: profileError } = await supabase
@@ -69,6 +101,8 @@ export const useLogin = () => {
         errorMessage = "Invalid email or password. Please try again.";
       } else if (error.message.includes("Email not confirmed")) {
         errorMessage = "Please check your email to confirm your account before logging in.";
+      } else if (error.message.includes("rate limit")) {
+        errorMessage = "Too many login attempts. Please try again later.";
       }
       
       toast({
@@ -80,7 +114,36 @@ export const useLogin = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [navigate, toast, loginAttempts]);
 
-  return { login, loading };
+  const logout = useCallback(async () => {
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Signed out successfully",
+        description: "You have been logged out.",
+      });
+      
+      navigate('/auth');
+      return { success: true };
+    } catch (error: any) {
+      console.error("Logout error:", error);
+      
+      toast({
+        variant: "destructive",
+        title: "Error signing out",
+        description: error.message,
+      });
+      
+      return { success: false, error: error.message };
+    } finally {
+      setLoading(false);
+    }
+  }, [navigate, toast]);
+
+  return { login, logout, loading };
 };

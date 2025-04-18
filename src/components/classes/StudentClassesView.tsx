@@ -1,30 +1,43 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ClassList } from "./ClassList";
 import { Button } from "@/components/ui/button";
-import { Calendar, ChevronLeft, ChevronRight, Search, SlidersHorizontal } from "lucide-react";
+import { Calendar, ChevronLeft, ChevronRight, Search, SlidersHorizontal, RefreshCw } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import { usePagination } from "@/hooks/usePagination";
+import { debounce } from "lodash";
 
 interface StudentClassesViewProps {
   type: "enrolled" | "completed" | "saved";
 }
 
-const ITEMS_PER_PAGE = 6;
+const PAGE_SIZE_OPTIONS = [4, 8, 12, 16];
+const DEFAULT_PAGE_SIZE = 8;
 
 export function StudentClassesView({ type }: StudentClassesViewProps) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [sort, setSort] = useState<string>("newest");
-  const [currentPage, setCurrentPage] = useState(1);
   const { toast } = useToast();
 
-  const { data, isLoading, error, isFetching } = useQuery({
-    queryKey: ["student-classes", type, sort],
+  // Set up debounced search term
+  useEffect(() => {
+    const debouncedSearch = debounce(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300);
+    
+    debouncedSearch();
+    return () => debouncedSearch.cancel();
+  }, [searchTerm]);
+  
+  const { data, isLoading, error, isFetching, refetch } = useQuery({
+    queryKey: ["student-classes", type, sort, debouncedSearchTerm],
     queryFn: async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
@@ -69,12 +82,14 @@ export function StudentClassesView({ type }: StudentClassesViewProps) {
         if (error) throw error;
 
         // Set isEnrolled flag for each class
+        const classes = data.map(item => ({
+          ...item,
+          isEnrolled: true,
+        }));
+
         return {
-          classes: data.map(item => ({
-            ...item,
-            isEnrolled: true,
-          })),
-          totalCount: data.length
+          classes,
+          totalCount: classes.length
         };
       } catch (error: any) {
         console.error("Error fetching classes:", error);
@@ -90,6 +105,48 @@ export function StudentClassesView({ type }: StudentClassesViewProps) {
     refetchOnWindowFocus: true,
   });
 
+  // Apply search filter
+  const filteredClasses = data?.classes
+    ? data.classes.filter(cls => 
+        cls.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        cls.description?.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        `${cls.teacher.first_name} ${cls.teacher.last_name}`.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+      )
+    : [];
+  
+  // Set up pagination
+  const { 
+    currentPage,
+    nextPage,
+    prevPage,
+    paginatedData,
+    totalPages,
+    pageSize,
+    changePageSize,
+    resetPagination
+  } = usePagination({
+    initialPage: 1,
+    initialPageSize: DEFAULT_PAGE_SIZE,
+    totalItems: filteredClasses.length
+  });
+  
+  // Get current page of classes
+  const paginatedClasses = paginatedData(filteredClasses);
+  
+  // Reset pagination when search or sort changes
+  useEffect(() => {
+    resetPagination();
+  }, [debouncedSearchTerm, sort, type, resetPagination]);
+
+  // Refresh data
+  const handleRefresh = () => {
+    refetch();
+    toast({
+      title: "Refreshing classes",
+      description: "Getting the latest class information",
+    });
+  };
+
   // Show error state when query fails
   if (error) {
     return (
@@ -99,29 +156,14 @@ export function StudentClassesView({ type }: StudentClassesViewProps) {
         <Button 
           variant="outline" 
           className="mt-4 border-red-300 text-red-600 hover:bg-red-50"
-          onClick={() => window.location.reload()}
+          onClick={handleRefresh}
         >
+          <RefreshCw className="h-4 w-4 mr-2" />
           Refresh
         </Button>
       </div>
     );
   }
-
-  // Apply search filter
-  const filteredClasses = data?.classes
-    ? data.classes.filter(cls => 
-        cls.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        cls.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        `${cls.teacher.first_name} ${cls.teacher.last_name}`.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    : [];
-
-  // Calculate pagination
-  const totalPages = Math.ceil(filteredClasses.length / ITEMS_PER_PAGE);
-  const paginatedClasses = filteredClasses.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE, 
-    currentPage * ITEMS_PER_PAGE
-  );
 
   return (
     <div className="space-y-6">
@@ -132,18 +174,12 @@ export function StudentClassesView({ type }: StudentClassesViewProps) {
             placeholder="Search classes..."
             className="pl-10"
             value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setCurrentPage(1); // Reset to first page on search
-            }}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-          <Select value={sort} onValueChange={(value) => {
-            setSort(value);
-            setCurrentPage(1); // Reset to first page when sorting changes
-          }}>
+          <Select value={sort} onValueChange={(value) => setSort(value)}>
             <SelectTrigger className="w-full sm:w-40">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
@@ -164,16 +200,39 @@ export function StudentClassesView({ type }: StudentClassesViewProps) {
               </Button>
             </SheetTrigger>
             <SheetContent>
-              <div className="py-4">
+              <div className="py-4 space-y-4">
                 <h3 className="text-lg font-medium mb-4">Filter Classes</h3>
-                {/* Placeholder for future filter options */}
-                <p className="text-gray-500">Filter options coming soon.</p>
+                
+                <div className="space-y-2">
+                  <h4 className="text-sm font-medium">Results per page</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {PAGE_SIZE_OPTIONS.map((size) => (
+                      <Button
+                        key={size}
+                        variant={pageSize === size ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => changePageSize(size)}
+                        className="h-8"
+                      >
+                        {size}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="pt-4">
+                  <p className="text-gray-500 text-sm">More filter options coming soon.</p>
+                </div>
               </div>
             </SheetContent>
           </Sheet>
           
-          <Button variant="outline" className="w-full sm:w-auto">
-            <Calendar className="h-4 w-4 mr-2" />
+          <Button variant="outline" className="w-full sm:w-auto" onClick={handleRefresh} disabled={isFetching}>
+            {isFetching ? (
+              <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Calendar className="h-4 w-4 mr-2" />
+            )}
             Calendar
           </Button>
         </div>
@@ -182,8 +241,8 @@ export function StudentClassesView({ type }: StudentClassesViewProps) {
       {/* Loading state */}
       {isLoading && (
         <div className="space-y-4">
-          {[1, 2, 3].map((item) => (
-            <div key={item} className="border rounded-lg p-6">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="border rounded-lg p-6">
               <Skeleton className="h-8 w-1/3 mb-2" />
               <Skeleton className="h-4 w-2/3 mb-4" />
               <div className="flex justify-between">
@@ -199,7 +258,7 @@ export function StudentClassesView({ type }: StudentClassesViewProps) {
       {!isLoading && filteredClasses.length === 0 && (
         <div className="text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
           <h3 className="text-lg font-medium text-gray-600 dark:text-gray-300 mb-2">
-            {searchTerm ? "No classes match your search" : "No classes found"}
+            {debouncedSearchTerm ? "No classes match your search" : "No classes found"}
           </h3>
           <p className="text-gray-500 dark:text-gray-400 mb-4">
             {type === "enrolled" 
@@ -209,7 +268,7 @@ export function StudentClassesView({ type }: StudentClassesViewProps) {
                 : "No saved classes found."
             }
           </p>
-          {searchTerm && (
+          {debouncedSearchTerm && (
             <Button variant="outline" onClick={() => setSearchTerm("")}>
               Clear Search
             </Button>
@@ -227,30 +286,88 @@ export function StudentClassesView({ type }: StudentClassesViewProps) {
           
           {/* Pagination controls */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 mt-6">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="h-8 w-8 p-0"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              
-              <div className="text-sm">
-                Page {currentPage} of {totalPages}
+            <div className="flex items-center justify-between gap-2 mt-6">
+              <div className="text-sm text-gray-500">
+                Showing {((currentPage - 1) * pageSize) + 1} - {Math.min(currentPage * pageSize, filteredClasses.length)} of {filteredClasses.length}
               </div>
               
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
-                className="h-8 w-8 p-0"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={prevPage}
+                  disabled={currentPage === 1}
+                  className="h-8 w-8 p-0"
+                  aria-label="Previous page"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: Math.min(totalPages, 5) }).map((_, i) => {
+                    let pageNumber: number;
+                    
+                    // Show ellipsis for many pages
+                    if (totalPages > 5) {
+                      if (currentPage <= 3) {
+                        // Near the start
+                        if (i < 4) {
+                          pageNumber = i + 1;
+                        } else {
+                          pageNumber = totalPages;
+                        }
+                      } else if (currentPage >= totalPages - 2) {
+                        // Near the end
+                        if (i === 0) {
+                          pageNumber = 1;
+                        } else {
+                          pageNumber = totalPages - 4 + i;
+                        }
+                      } else {
+                        // In the middle
+                        if (i === 0) {
+                          pageNumber = 1;
+                        } else if (i === 4) {
+                          pageNumber = totalPages;
+                        } else {
+                          pageNumber = currentPage - 1 + i;
+                        }
+                      }
+                    } else {
+                      pageNumber = i + 1;
+                    }
+                    
+                    return (
+                      <Button
+                        key={i}
+                        variant={currentPage === pageNumber ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => {
+                          if (pageNumber === '...') return;
+                          if (typeof pageNumber === 'number') {
+                            prevPage();
+                          }
+                        }}
+                        className="h-8 w-8 p-0"
+                        aria-label={`Go to page ${pageNumber}`}
+                      >
+                        {pageNumber}
+                      </Button>
+                    );
+                  })}
+                </div>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={nextPage}
+                  disabled={currentPage === totalPages}
+                  className="h-8 w-8 p-0"
+                  aria-label="Next page"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           )}
         </>
@@ -259,7 +376,10 @@ export function StudentClassesView({ type }: StudentClassesViewProps) {
       {/* Loading indicator for background refetches */}
       {!isLoading && isFetching && (
         <div className="text-center py-2">
-          <span className="text-sm text-gray-500">Updating...</span>
+          <span className="text-sm text-gray-500 flex items-center justify-center">
+            <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
+            Updating...
+          </span>
         </div>
       )}
     </div>
