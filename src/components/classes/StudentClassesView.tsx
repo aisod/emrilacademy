@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ClassList } from "./ClassList";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { SearchBar } from "./SearchBar";
 import { ClassFilters } from "./ClassFilters";
 import { PaginationControls } from "./PaginationControls";
 import { usePaginatedClasses } from "@/hooks/usePaginatedClasses";
+import { LoadingState } from "./LoadingState";
+import { ErrorState } from "./ErrorState";
 
 interface StudentClassesViewProps {
   type: "enrolled" | "completed" | "saved";
@@ -55,7 +57,7 @@ export function StudentClassesView({ type }: StudentClassesViewProps) {
           query = query.order("title", { ascending: false });
         }
 
-        const { data, error, count } = await query;
+        const { data, error } = await query;
 
         if (error) throw error;
 
@@ -70,12 +72,7 @@ export function StudentClassesView({ type }: StudentClassesViewProps) {
         };
       } catch (error: any) {
         console.error("Error fetching classes:", error);
-        toast({
-          variant: "destructive",
-          title: "Error fetching classes",
-          description: error.message,
-        });
-        return { classes: [], totalCount: 0 };
+        throw error;
       }
     },
     staleTime: 60000,
@@ -102,21 +99,12 @@ export function StudentClassesView({ type }: StudentClassesViewProps) {
     });
   };
 
+  if (isLoading) {
+    return <LoadingState />;
+  }
+
   if (error) {
-    return (
-      <div className="p-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-center">
-        <h3 className="text-lg font-medium text-red-700 dark:text-red-300 mb-2">Unable to load classes</h3>
-        <p className="text-red-600 dark:text-red-400">Please try refreshing the page.</p>
-        <Button 
-          variant="outline" 
-          className="mt-4 border-red-300 text-red-600 hover:bg-red-50"
-          onClick={handleRefresh}
-        >
-          <RefreshCw className="h-4 w-4 mr-2" />
-          Refresh
-        </Button>
-      </div>
-    );
+    return <ErrorState onRefresh={handleRefresh} />;
   }
 
   return (
