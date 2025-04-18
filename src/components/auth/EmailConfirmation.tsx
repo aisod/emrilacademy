@@ -1,86 +1,40 @@
 
-import { useState, useEffect } from "react";
-import { Mail, AlertCircle, ArrowRight, CheckCircle, Loader, RefreshCw, LogIn } from "lucide-react";
+import { useState } from "react";
+import { Mail, AlertCircle, ArrowRight, CheckCircle, Loader, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
-import { useSignup } from "@/hooks/useSignup";
 
 interface EmailConfirmationProps {
   email: string;
   userId?: string;
 }
 
-export const EmailConfirmation = ({ email, userId }: EmailConfirmationProps) => {
+export const EmailConfirmation = ({ email }: EmailConfirmationProps) => {
   const [resending, setResending] = useState(false);
   const [resent, setResent] = useState(false);
   const [countdown, setCountdown] = useState(0);
-  const [directSignInLoading, setDirectSignInLoading] = useState(false);
-  const [directSignInError, setDirectSignInError] = useState<string | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { signInAfterSignup } = useSignup();
 
-  // Handle countdown for resend button
-  useEffect(() => {
-    if (countdown > 0) {
-      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-      return () => clearTimeout(timer);
-    } else if (resent && countdown === 0) {
-      setResent(false);
-    }
-  }, [countdown, resent]);
-
-  // Check if user is authenticated in the background
-  useEffect(() => {
-    const checkSessionStatus = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        console.log("User is already authenticated, navigating to dashboard");
-        navigate("/dashboard");
-      }
-    };
-    
-    // Check on component mount
-    checkSessionStatus();
-    
-    // Set up a listener for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth state changed:", event);
-      if (session) {
-        toast({
-          title: "Email confirmed",
-          description: "You have been automatically signed in.",
-        });
-        navigate("/dashboard");
-      }
-    });
-    
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [navigate, toast]);
-
+  // Handle resend email confirmation
   const handleResendEmail = async () => {
     if (resending || countdown > 0) return;
     
     setResending(true);
-    setDirectSignInError(null);
     
     try {
       // Get the current URL origin for proper redirects
       const siteUrl = window.location.origin;
-      const redirectTo = `${siteUrl}/auth`;
       
       console.log("EmailConfirmation: Using site URL:", siteUrl);
-      console.log("EmailConfirmation: Redirect URL set to:", redirectTo);
       
       const { error } = await supabase.auth.resend({
         type: 'signup',
         email,
         options: {
-          emailRedirectTo: redirectTo
+          emailRedirectTo: `${siteUrl}/auth`
         }
       });
       
@@ -93,6 +47,17 @@ export const EmailConfirmation = ({ email, userId }: EmailConfirmationProps) => 
         title: "Confirmation email sent",
         description: "Please check your inbox and spam folder for the confirmation link",
       });
+      
+      // Start countdown
+      const timer = setInterval(() => {
+        setCountdown(prevCount => {
+          if (prevCount <= 1) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prevCount - 1;
+        });
+      }, 1000);
       
       console.log("Confirmation email resent successfully to:", email);
     } catch (error: any) {
@@ -107,37 +72,8 @@ export const EmailConfirmation = ({ email, userId }: EmailConfirmationProps) => 
     }
   };
 
-  const handleDirectSignIn = async () => {
-    setDirectSignInLoading(true);
-    setDirectSignInError(null);
-    
-    try {
-      // Use the improved signInAfterSignup function
-      const result = await signInAfterSignup(email);
-      
-      if (result.success) {
-        toast({
-          title: "Successfully signed in",
-          description: "You've been signed in and can now use the application.",
-        });
-        navigate("/dashboard");
-      } else {
-        throw new Error(result.error || "Sign-in failed");
-      }
-    } catch (error: any) {
-      console.error("Direct sign-in attempt failed:", error);
-      setDirectSignInError(error.message || "Failed to sign in directly");
-      toast({
-        variant: "destructive",
-        title: "Sign in failed",
-        description: error.message || "Could not sign in directly. Please use the normal sign in page.",
-      });
-    } finally {
-      setDirectSignInLoading(false);
-    }
-  };
-
-  const handleSignInWithPassword = async () => {
+  // Go to sign in page
+  const handleSignInWithPassword = () => {
     navigate("/auth?mode=signin");
   };
 
@@ -192,30 +128,6 @@ export const EmailConfirmation = ({ email, userId }: EmailConfirmationProps) => 
             </>
           )}
         </Button>
-        
-        <Button
-          onClick={handleDirectSignIn}
-          disabled={directSignInLoading}
-          className="w-full bg-green-600 hover:bg-green-700 text-white flex gap-2 justify-center items-center"
-        >
-          {directSignInLoading ? (
-            <>
-              <Loader className="h-4 w-4 animate-spin" /> Signing in...
-            </>
-          ) : (
-            <>
-              <LogIn className="h-4 w-4" /> Skip Email Verification & Sign In Now
-            </>
-          )}
-        </Button>
-        
-        {directSignInError && (
-          <div className="bg-red-50 p-4 rounded-md text-sm text-red-800">
-            <p className="font-medium">Sign in failed</p>
-            <p>{directSignInError}</p>
-            <p className="mt-2">Please try signing in from the login page.</p>
-          </div>
-        )}
 
         <div className="relative py-2">
           <div className="absolute inset-0 flex items-center">

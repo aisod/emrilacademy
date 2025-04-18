@@ -1,70 +1,34 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { Mail, Lock, ArrowRight, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, ArrowRight, Eye, EyeOff, Loader } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
-import { FormInput } from "@/components/auth/FormInput";
+import { useLogin } from "@/hooks/useLogin";
 
 interface LoginFormProps {
   onToggleMode: () => void;
 }
 
 export const LoginForm = ({ onToggleMode }: LoginFormProps) => {
-  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
-  const { toast } = useToast();
+  const [error, setError] = useState<string | null>(null);
+  const { login, loading } = useLogin();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-
-    try {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (signInError) throw signInError;
-
-      // Get the user's role from profiles table
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error("No session after login");
-
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', session.user.id)
-        .maybeSingle();
-
-      if (profileError) throw profileError;
-
-      // Show success message
-      toast({
-        title: "Login successful",
-        description: "Welcome back!",
-      });
-
-      // Redirect based on role
-      if (profile?.role === 'teacher') {
-        navigate('/teacher');
-      } else if (profile?.role === 'student') {
-        navigate('/student');
-      } else {
-        navigate('/dashboard');
-      }
-    } catch (error: any) {
-      console.error("Login error:", error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message,
-      });
-    } finally {
-      setLoading(false);
+    setError(null);
+    
+    // Simple validation
+    if (!email || !password) {
+      setError("Email and password are required");
+      return;
+    }
+    
+    const result = await login(email, password);
+    if (!result.success) {
+      setError(result.error || "Failed to sign in");
     }
   };
 
@@ -73,11 +37,17 @@ export const LoginForm = ({ onToggleMode }: LoginFormProps) => {
   };
 
   return (
-    <div className="w-full max-w-md space-y-6">
+    <div className="w-full max-w-md bg-white p-6 rounded-xl shadow-lg space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-semibold text-gray-800">Welcome Back</h2>
+        <h2 className="text-2xl font-bold text-gray-800">Welcome Back</h2>
         <p className="mt-2 text-gray-600">Sign in to your account</p>
       </div>
+
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative">
+          <span className="block sm:inline">{error}</span>
+        </div>
+      )}
 
       <form onSubmit={handleLogin} className="space-y-4">
         <div>
@@ -89,7 +59,7 @@ export const LoginForm = ({ onToggleMode }: LoginFormProps) => {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="pl-10 w-full p-3 bg-gray-100 border-none rounded-md focus:ring-2 focus:ring-primary focus:bg-gray-100"
+              className="pl-10 w-full p-3 bg-gray-100 border-none rounded-md focus:ring-2 focus:ring-blue-500"
               placeholder="youremail@example.com"
             />
           </div>
@@ -104,7 +74,7 @@ export const LoginForm = ({ onToggleMode }: LoginFormProps) => {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="pl-10 w-full p-3 bg-gray-100 border-none rounded-md focus:ring-2 focus:ring-primary"
+              className="pl-10 w-full p-3 bg-gray-100 border-none rounded-md focus:ring-2 focus:ring-blue-500"
               placeholder="••••••••"
             />
             <button 
@@ -122,7 +92,11 @@ export const LoginForm = ({ onToggleMode }: LoginFormProps) => {
           disabled={loading}
           className="w-full bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-md flex items-center justify-center gap-2 h-auto"
         >
-          {loading ? "Signing In..." : (
+          {loading ? (
+            <>
+              <Loader className="h-4 w-4 animate-spin" /> Signing In...
+            </>
+          ) : (
             <>
               Sign In <ArrowRight className="h-5 w-5" />
             </>

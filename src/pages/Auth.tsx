@@ -19,18 +19,10 @@ const Auth = () => {
     setSearchParams({ mode: mode === "signin" ? "signup" : "signin" });
   };
 
-  // Handle email confirmation
+  // Handle email confirmation and authentication state
   useEffect(() => {
-    const handleEmailConfirmation = async () => {
+    const handleInitialAuth = async () => {
       try {
-        // Check URL for auth parameters
-        const accessToken = searchParams.get("access_token");
-        const type = searchParams.get("type");
-        const refreshToken = searchParams.get("refresh_token");
-        const token = searchParams.get("token"); // Some URLs use this format
-        
-        console.log("Auth: Checking URL parameters:", { accessToken, token, type, refreshToken });
-        
         // First check if we're already authenticated
         const { data: sessionData } = await supabase.auth.getSession();
         if (sessionData?.session) {
@@ -38,32 +30,20 @@ const Auth = () => {
           navigate("/dashboard");
           return;
         }
-        
-        // Handle password recovery flow
-        if (accessToken && type === "recovery") {
-          console.log("Auth: Processing password recovery flow");
-          const { error } = await supabase.auth.setSession({
-            access_token: accessToken,
-            refresh_token: refreshToken || "",
-          });
-          
-          if (error) throw error;
-          
-          toast({
-            title: "Email confirmed successfully",
-            description: "You can now sign in with your account",
-          });
-          
-          // Clear URL params and redirect to signin
-          setSearchParams({ mode: "signin" });
-          return;
-        }
 
+        // Check URL for auth parameters
+        const accessToken = searchParams.get("access_token");
+        const refreshToken = searchParams.get("refresh_token");
+        const type = searchParams.get("type");
+        const token = searchParams.get("token");
+        
+        console.log("Auth: Checking URL parameters:", { accessToken, token, type, refreshToken });
+        
         // Handle email confirmation flow
-        if ((accessToken || token) && (type === "signup" || type === "email_change")) {
-          console.log("Auth: Processing email confirmation flow");
+        if ((accessToken || token) && (type === "signup" || type === "recovery" || type === "email_change")) {
+          console.log("Auth: Processing confirmation flow");
           
-          // First try to set the session if we have tokens
+          // Try to set the session if we have tokens
           if (accessToken && refreshToken) {
             console.log("Auth: Setting session with tokens");
             try {
@@ -74,75 +54,82 @@ const Auth = () => {
               
               if (error) {
                 console.error("Auth: Error setting session:", error);
+                toast({
+                  variant: "destructive",
+                  title: "Error confirming email",
+                  description: error.message,
+                });
               } else {
                 console.log("Auth: Session set successfully", data);
-                // If we successfully set the session, redirect to dashboard
+                
+                toast({
+                  title: "Email confirmed successfully",
+                  description: "Your email has been verified and you're now signed in.",
+                });
+                
                 navigate("/dashboard");
                 return;
               }
-            } catch (error) {
+            } catch (error: any) {
               console.error("Auth: Exception setting session:", error);
             }
           }
           
-          // Then check if we have a token that needs verification
+          // Check for a token that needs verification
           if (token && !accessToken) {
             console.log("Auth: Verifying with token parameter");
+            
             try {
               const { error, data } = await supabase.auth.verifyOtp({
                 token_hash: token,
-                type: type === "signup" ? "signup" : "email_change",
+                type: type === "signup" ? "signup" : "recovery",
               });
               
               if (error) {
                 console.error("Auth: Error verifying OTP:", error);
-                throw error;
+                toast({
+                  variant: "destructive",
+                  title: "Error confirming email",
+                  description: error.message,
+                });
               } else {
                 console.log("Auth: OTP verified successfully", data);
-                // If verification successful and we have a session, redirect to dashboard
+                
+                toast({
+                  title: "Email confirmed successfully",
+                  description: "Your email has been verified and you're now signed in.",
+                });
+                
                 if (data.session) {
                   navigate("/dashboard");
                   return;
                 }
               }
-            } catch (error) {
+            } catch (error: any) {
               console.error("Auth: Exception verifying OTP:", error);
             }
           }
           
-          toast({
-            title: "Email confirmed successfully",
-            description: "Your email has been verified. You can now sign in.",
-          });
-          
-          // Redirect to sign in
+          // If we got here, show the sign in form
           setSearchParams({ mode: "signin" });
+          
+          toast({
+            title: "Email verified",
+            description: "Your email has been verified. Please sign in with your credentials.",
+          });
         }
       } catch (error: any) {
-        console.error("Auth: Error handling email confirmation:", error);
+        console.error("Auth: Error handling initial auth:", error);
         toast({
           variant: "destructive",
-          title: "Error confirming email",
-          description: error.message || "There was an issue verifying your email. Please try again.",
+          title: "Error",
+          description: error.message || "There was an issue with authentication.",
         });
       }
     };
     
-    handleEmailConfirmation();
-  }, [searchParams, toast, setSearchParams, navigate]);
-
-  // Check if the user is already authenticated
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        console.log("User is already authenticated, redirecting to dashboard");
-        navigate("/dashboard");
-      }
-    };
-    
-    checkAuth();
-  }, [navigate]);
+    handleInitialAuth();
+  }, [searchParams, toast, navigate, setSearchParams]);
 
   // Function to handle successful signup and show email confirmation page
   const handleSignupSuccess = (email: string, userId?: string) => {

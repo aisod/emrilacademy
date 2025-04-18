@@ -1,8 +1,7 @@
 
 import { useState } from "react";
-import { Mail, Lock, User, ArrowRight, GraduationCap, BookOpen, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, User, ArrowRight, GraduationCap, BookOpen, Eye, EyeOff, Loader } from "lucide-react";
 import { useSignup } from "@/hooks/useSignup";
-import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -19,8 +18,8 @@ export const SignupForm = ({ onToggleMode, onSignupSuccess }: SignupFormProps) =
   const [lastName, setLastName] = useState("");
   const [role, setRole] = useState("student");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { signup, loading } = useSignup();
-  const { toast } = useToast();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -28,13 +27,16 @@ export const SignupForm = ({ onToggleMode, onSignupSuccess }: SignupFormProps) =
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     
+    // Simple validation
     if (!firstName || !lastName || !email || !password) {
-      toast({
-        variant: "destructive",
-        title: "Missing information",
-        description: "Please fill in all required fields.",
-      });
+      setError("All fields are required");
+      return;
+    }
+
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters long");
       return;
     }
 
@@ -46,17 +48,15 @@ export const SignupForm = ({ onToggleMode, onSignupSuccess }: SignupFormProps) =
       role: role as "student" | "teacher" 
     });
     
-    if (!result.error) {
-      if (result.autoSignedIn) {
-        // User was automatically signed in, no need to show email confirmation
-        toast({
-          title: "Account created",
-          description: "Your account has been created and you're now signed in.",
-        });
+    if (result.success) {
+      if (result.requiresEmailConfirmation) {
+        onSignupSuccess(email, result.user?.id);
       } else {
-        // No longer pass the password - it's now stored securely in localStorage
-        onSignupSuccess(email, result.userId);
+        // User was automatically signed in, no need to show email confirmation
+        // This would happen if email confirmations are disabled in Supabase
       }
+    } else {
+      setError(result.error || "Failed to create account");
     }
   };
 
@@ -66,6 +66,12 @@ export const SignupForm = ({ onToggleMode, onSignupSuccess }: SignupFormProps) =
         <h2 className="text-2xl font-bold text-gray-800">Create Account</h2>
         <p className="mt-2 text-gray-600">Sign up to start learning</p>
       </div>
+
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative">
+          <span className="block sm:inline">{error}</span>
+        </div>
+      )}
 
       <form onSubmit={handleSignup} className="space-y-4">
         <div>
@@ -160,7 +166,11 @@ export const SignupForm = ({ onToggleMode, onSignupSuccess }: SignupFormProps) =
           disabled={loading}
           className="w-full bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-md flex items-center justify-center gap-2 h-auto"
         >
-          {loading ? "Creating Account..." : (
+          {loading ? (
+            <>
+              <Loader className="h-5 w-5 animate-spin" /> Creating Account...
+            </>
+          ) : (
             <>
               Create Account <ArrowRight className="h-5 w-5" />
             </>
