@@ -19,8 +19,6 @@ export const useLogin = () => {
       }
       
       console.log("Attempting login for:", email);
-      console.log("Current URL:", window.location.href);
-      console.log("Origin:", window.location.origin);
       
       // Sign in with Supabase
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -75,7 +73,7 @@ export const useLogin = () => {
       
       toast({
         variant: "destructive",
-        title: "Error",
+        title: "Error signing in",
         description: errorMessage,
       });
       return { success: false, error: errorMessage };

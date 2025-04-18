@@ -1,10 +1,11 @@
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { Play, Video } from "lucide-react";
+import { Loader, Play, Video } from "lucide-react";
 import type { Class } from "./types";
 
 interface EnrollmentActionsProps {
@@ -16,11 +17,22 @@ export function EnrollmentActions({ class_, isSessionActive = false }: Enrollmen
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const [isEnrolling, setIsEnrolling] = useState(false);
+  const [isStarting, setIsStarting] = useState(false);
 
   const handleEnroll = async (classId: string) => {
+    setIsEnrolling(true);
+    
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error("Please sign in to enroll");
+      if (!session) {
+        navigate('/auth');
+        toast({
+          title: "Authentication required",
+          description: "Please sign in to enroll in a class",
+        });
+        return;
+      }
 
       const { error } = await supabase
         .from("enrollments")
@@ -41,15 +53,22 @@ export function EnrollmentActions({ class_, isSessionActive = false }: Enrollmen
         description: "Successfully enrolled in class",
       });
 
+      // Invalidate relevant queries to refresh data
       queryClient.invalidateQueries({ queryKey: ["available-classes"] });
       queryClient.invalidateQueries({ queryKey: ["student-stats"] });
       queryClient.invalidateQueries({ queryKey: ["next-class"] });
+      queryClient.invalidateQueries({ queryKey: ["student-classes"] });
+      
+      // Add the current class view to ensure it updates immediately
+      queryClient.invalidateQueries({ queryKey: ["class", classId] });
     } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Error",
         description: error.message,
       });
+    } finally {
+      setIsEnrolling(false);
     }
   };
 
@@ -58,7 +77,19 @@ export function EnrollmentActions({ class_, isSessionActive = false }: Enrollmen
   };
 
   const startLiveSession = async (classId: string) => {
+    setIsStarting(true);
+    
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate('/auth');
+        toast({
+          title: "Authentication required",
+          description: "Please sign in to start a live session",
+        });
+        return;
+      }
+
       const { data, error } = await supabase
         .from('class_sessions')
         .upsert({
@@ -77,6 +108,9 @@ export function EnrollmentActions({ class_, isSessionActive = false }: Enrollmen
         description: "Students can now join your class.",
       });
       
+      // Invalidate relevant queries
+      queryClient.invalidateQueries({ queryKey: ["active-sessions"] });
+      
       navigate(`/live-classes/${classId}`);
     } catch (error: any) {
       toast({
@@ -84,12 +118,17 @@ export function EnrollmentActions({ class_, isSessionActive = false }: Enrollmen
         title: "Error",
         description: error.message || "Could not start live session",
       });
+    } finally {
+      setIsStarting(false);
     }
   };
 
+  const isClassFull = (class_.enrollments[0]?.count || 0) >= class_.capacity;
+  const isEnrolled = class_.isEnrolled;
+
   return (
     <div className="space-y-2">
-      {class_.isEnrolled ? (
+      {isEnrolled ? (
         <>
           {class_.class_type === "live" && isSessionActive && (
             <Button 
@@ -107,7 +146,7 @@ export function EnrollmentActions({ class_, isSessionActive = false }: Enrollmen
         </>
       ) : (
         <>
-          {class_.class_type === "live" && !class_.isEnrolled && isSessionActive && (
+          {class_.class_type === "live" && !isEnrolled && isSessionActive && (
             <Button 
               onClick={() => handleJoinLiveClass(class_.id)}
               className="w-full mb-2"
@@ -120,12 +159,18 @@ export function EnrollmentActions({ class_, isSessionActive = false }: Enrollmen
           <Button
             onClick={() => handleEnroll(class_.id)}
             className="w-full"
-            disabled={(class_.enrollments[0]?.count || 0) >= class_.capacity}
+            disabled={isClassFull || isEnrolling}
           >
-            {(class_.enrollments[0]?.count || 0) >= class_.capacity
-              ? "Class Full"
-              : "Enroll Now"
-            }
+            {isEnrolling ? (
+              <>
+                <Loader className="h-4 w-4 animate-spin mr-2" /> 
+                Enrolling...
+              </>
+            ) : isClassFull ? (
+              "Class Full"
+            ) : (
+              "Enroll Now"
+            )}
           </Button>
         </>
       )}

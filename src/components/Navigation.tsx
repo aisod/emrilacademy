@@ -3,17 +3,19 @@ import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import type { User } from "@supabase/supabase-js";
 import { useToast } from "@/components/ui/use-toast";
-import { LogOut, User as UserIcon } from "lucide-react";
+import { LogOut, Settings, User as UserIcon } from "lucide-react";
 import { Button } from "./ui/button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export function Navigation() {
   const [user, setUser] = useState<User | null>(null);
   const [userProfile, setUserProfile] = useState<any>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     // Set up the auth listener first
@@ -23,7 +25,10 @@ export function Navigation() {
       
       // Fetch profile information if user is logged in
       if (currentUser) {
-        fetchUserProfile(currentUser.id);
+        setTimeout(() => {
+          // Using setTimeout to avoid potential deadlocks with Supabase auth
+          fetchUserProfile(currentUser.id);
+        }, 0);
       } else {
         setUserProfile(null);
       }
@@ -40,6 +45,7 @@ export function Navigation() {
       }
     });
 
+    // Handle cross-tab logout
     const handleStorageChange = async (event: StorageEvent) => {
       if (event.key === 'logout-event') {
         try {
@@ -97,17 +103,25 @@ export function Navigation() {
         title: "Error signing out",
         description: error.message,
       });
+    } finally {
+      setIsMenuOpen(false);
     }
+  };
+
+  // Determine current dashboard link based on user role
+  const getDashboardLink = () => {
+    if (!userProfile) return '/dashboard';
+    return userProfile.role === 'teacher' ? '/teacher' : '/student';
   };
 
   if (!user) return null;
 
   return (
     <div className="fixed top-0 right-0 p-3 md:p-4 z-40">
-      <DropdownMenu>
+      <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-9 w-9 md:h-10 md:w-10 rounded-full p-0">
-            <Avatar className="h-full w-full">
+            <Avatar className="h-full w-full border-2 border-transparent hover:border-gray-200 dark:hover:border-gray-700 transition-all">
               <AvatarImage src={userProfile?.avatar_url} alt="Profile" />
               <AvatarFallback className="bg-primary text-white text-xs md:text-sm">
                 {userProfile?.first_name?.charAt(0)}{userProfile?.last_name?.charAt(0)}
@@ -116,17 +130,42 @@ export function Navigation() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
-          <DropdownMenuItem className="font-medium">
-            <div className="flex flex-col">
-              <span>{userProfile?.first_name} {userProfile?.last_name}</span>
-              <span className="text-xs text-gray-500 dark:text-gray-400">{userProfile?.email}</span>
+          <div className="px-2 py-1.5">
+            <div className="font-medium">
+              <p className="text-sm">{userProfile?.first_name} {userProfile?.last_name}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{userProfile?.email}</p>
             </div>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate(userProfile?.role === 'teacher' ? '/teacher' : '/student')}>
+          </div>
+          <DropdownMenuSeparator />
+          
+          <DropdownMenuItem 
+            onClick={() => {
+              navigate(getDashboardLink());
+              setIsMenuOpen(false);
+            }}
+            className="cursor-pointer"
+          >
             <UserIcon className="w-4 h-4 mr-2" />
             Dashboard
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleSignOut} className="text-red-500">
+          
+          <DropdownMenuItem 
+            onClick={() => {
+              navigate('/profile');
+              setIsMenuOpen(false);
+            }}
+            className="cursor-pointer"
+          >
+            <Settings className="w-4 h-4 mr-2" />
+            Settings
+          </DropdownMenuItem>
+          
+          <DropdownMenuSeparator />
+          
+          <DropdownMenuItem 
+            onClick={handleSignOut} 
+            className="text-red-500 cursor-pointer"
+          >
             <LogOut className="w-4 h-4 mr-2" />
             Sign Out
           </DropdownMenuItem>
