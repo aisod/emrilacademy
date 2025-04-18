@@ -3,7 +3,7 @@ import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { ProfileContent } from "@/components/profile/ProfileContent";
 import { ProfileLoadingState } from "@/components/profile/ProfileLoadingState";
 import { useProfile } from "@/hooks/use-profile";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@/components/ui/breadcrumb";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage } from "@/components/ui/breadcrumb";
 import { Home } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -23,7 +23,7 @@ export default function Profile() {
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbItem>
-            <BreadcrumbLink isCurrentPage>Profile</BreadcrumbLink>
+            <BreadcrumbPage>Profile</BreadcrumbPage>
           </BreadcrumbItem>
         </Breadcrumb>
         
