@@ -22,14 +22,17 @@ const Auth = () => {
   useEffect(() => {
     const handleEmailConfirmation = async () => {
       try {
-        // Check for recovery token first (from confirmation email)
+        // Check URL for auth parameters
         const accessToken = searchParams.get("access_token");
         const type = searchParams.get("type");
         const refreshToken = searchParams.get("refresh_token");
+        const token = searchParams.get("token"); // Some URLs use this format
         
-        console.log("Auth params:", { accessToken, type, refreshToken });
+        console.log("Auth: Checking URL parameters:", { accessToken, token, type, refreshToken });
         
+        // Handle password recovery flow
         if (accessToken && type === "recovery") {
+          console.log("Auth: Processing password recovery flow");
           const { error } = await supabase.auth.setSession({
             access_token: accessToken,
             refresh_token: refreshToken || "",
@@ -47,21 +50,46 @@ const Auth = () => {
           return;
         }
 
-        // For email confirmation link from Supabase
-        if ((accessToken || searchParams.get("token")) && type === "signup") {
-          // Email confirmation token exists
-          console.log("Processing email confirmation with token");
+        // Handle email confirmation flow
+        if ((accessToken || token) && (type === "signup" || type === "email_change")) {
+          console.log("Auth: Processing email confirmation flow");
           
-          // If we have both access_token and refresh_token, try to set the session directly
+          // First try to set the session if we have tokens
           if (accessToken && refreshToken) {
-            const { error } = await supabase.auth.setSession({
-              access_token: accessToken,
-              refresh_token: refreshToken,
-            });
-            
-            if (error) {
-              console.error("Error setting session:", error);
-              throw error;
+            console.log("Auth: Setting session with tokens");
+            try {
+              const { error } = await supabase.auth.setSession({
+                access_token: accessToken,
+                refresh_token: refreshToken,
+              });
+              
+              if (error) {
+                console.error("Auth: Error setting session:", error);
+              } else {
+                console.log("Auth: Session set successfully");
+              }
+            } catch (error) {
+              console.error("Auth: Exception setting session:", error);
+            }
+          }
+          
+          // Then check if we have a token that needs verification
+          if (token && !accessToken) {
+            console.log("Auth: Verifying with token parameter");
+            try {
+              const { error } = await supabase.auth.verifyOtp({
+                token_hash: token,
+                type: type === "signup" ? "signup" : "email_change",
+              });
+              
+              if (error) {
+                console.error("Auth: Error verifying OTP:", error);
+                throw error;
+              } else {
+                console.log("Auth: OTP verified successfully");
+              }
+            } catch (error) {
+              console.error("Auth: Exception verifying OTP:", error);
             }
           }
           
@@ -74,7 +102,7 @@ const Auth = () => {
           setSearchParams({ mode: "signin" });
         }
       } catch (error: any) {
-        console.error("Error confirming email:", error);
+        console.error("Auth: Error handling email confirmation:", error);
         toast({
           variant: "destructive",
           title: "Error confirming email",

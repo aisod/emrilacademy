@@ -1,6 +1,6 @@
 
-import { useState } from "react";
-import { Mail, AlertCircle, ArrowRight, CheckCircle, Loader } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Mail, AlertCircle, ArrowRight, CheckCircle, Loader, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
@@ -13,16 +13,30 @@ interface EmailConfirmationProps {
 export const EmailConfirmation = ({ email }: EmailConfirmationProps) => {
   const [resending, setResending] = useState(false);
   const [resent, setResent] = useState(false);
+  const [countdown, setCountdown] = useState(0);
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  // Handle countdown for resend button
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    } else if (resent && countdown === 0) {
+      setResent(false);
+    }
+  }, [countdown, resent]);
+
   const handleResendEmail = async () => {
-    if (resending) return;
+    if (resending || countdown > 0) return;
     
     setResending(true);
     try {
-      // Make sure redirectTo has the full URL with origin
-      const redirectTo = `${window.location.origin}/auth`;
+      // Get the current URL origin for proper redirects
+      const siteUrl = window.location.origin;
+      const redirectTo = `${siteUrl}/auth`;
+      
+      console.log("EmailConfirmation: Using site URL:", siteUrl);
       console.log("EmailConfirmation: Redirect URL set to:", redirectTo);
       
       const { error } = await supabase.auth.resend({
@@ -36,10 +50,15 @@ export const EmailConfirmation = ({ email }: EmailConfirmationProps) => {
       if (error) throw error;
       
       setResent(true);
+      setCountdown(60); // 60 second countdown before allowing another resend
+      
       toast({
         title: "Confirmation email sent",
-        description: "Please check your inbox for the confirmation link",
+        description: "Please check your inbox and spam folder for the confirmation link",
       });
+      
+      // Log successful resend operation
+      console.log("Confirmation email resent successfully to:", email);
     } catch (error: any) {
       console.error("Resend error:", error);
       toast({
@@ -49,12 +68,11 @@ export const EmailConfirmation = ({ email }: EmailConfirmationProps) => {
       });
     } finally {
       setResending(false);
-      
-      // Reset the "Email Sent" state after 30 seconds so user can try again if needed
-      setTimeout(() => {
-        setResent(false);
-      }, 30000);
     }
+  };
+
+  const handleProceedToSignIn = () => {
+    navigate("/auth?mode=signin");
   };
 
   return (
@@ -86,25 +104,31 @@ export const EmailConfirmation = ({ email }: EmailConfirmationProps) => {
 
         <Button
           onClick={handleResendEmail}
-          disabled={resending || resent}
+          disabled={resending || countdown > 0}
           variant="outline"
           className="w-full flex gap-2 justify-center items-center border-blue-500 text-blue-600 hover:bg-blue-50"
         >
           {resending ? (
             <>
-              <Loader className="h-4 w-4 animate-spin mr-2" /> Sending...
+              <Loader className="h-4 w-4 animate-spin" /> Sending...
+            </>
+          ) : countdown > 0 ? (
+            <>
+              <RefreshCw className="h-4 w-4" /> Resend available in {countdown}s
             </>
           ) : resent ? (
             <>
               <CheckCircle className="h-5 w-5" /> Email Sent
             </>
           ) : (
-            "Resend Confirmation Email"
+            <>
+              <RefreshCw className="h-4 w-4" /> Resend Confirmation Email
+            </>
           )}
         </Button>
 
         <Button
-          onClick={() => navigate("/auth?mode=signin")}
+          onClick={handleProceedToSignIn}
           variant="ghost"
           className="w-full flex gap-2 justify-center items-center"
         >

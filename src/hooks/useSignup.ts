@@ -37,12 +37,15 @@ export const useSignup = () => {
         throw new Error("Please enter a valid email address");
       }
 
-      // Make sure redirectTo has the full URL with origin and path to auth page
-      const redirectTo = `${window.location.origin}/auth`;
+      // Get the current URL origin for proper redirects
+      const siteUrl = window.location.origin;
+      const redirectTo = `${siteUrl}/auth`;
+      
+      console.log("Signup: Using site URL:", siteUrl);
       console.log("Signup: Redirect URL set to:", redirectTo);
 
-      // Sign up the user with Supabase - email confirmation is already enabled
-      const { error } = await supabase.auth.signUp({
+      // Sign up the user with Supabase
+      const { data: signupData, error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
         options: {
@@ -57,7 +60,14 @@ export const useSignup = () => {
 
       if (error) throw error;
       
-      return { error: null };
+      // Log successful registration
+      console.log("Signup successful:", {
+        user: signupData.user?.id,
+        confirmationSent: !signupData.session,
+        hasSession: !!signupData.session
+      });
+      
+      return { success: true, requiresEmailConfirmation: !signupData.session, error: null };
     } catch (error: any) {
       console.error("Signup error:", error);
       toast({
@@ -65,7 +75,7 @@ export const useSignup = () => {
         title: "Error",
         description: error.message,
       });
-      return { error };
+      return { success: false, error };
     } finally {
       setLoading(false);
     }
