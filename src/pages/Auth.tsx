@@ -32,12 +32,15 @@ const Auth = () => {
         }
 
         // Check URL for auth parameters
-        const accessToken = searchParams.get("access_token");
-        const refreshToken = searchParams.get("refresh_token");
-        const type = searchParams.get("type");
-        const token = searchParams.get("token");
+        const fragment = window.location.hash;
+        const params = new URLSearchParams(fragment.substring(1));
+        const accessToken = params.get("access_token") || searchParams.get("access_token");
+        const refreshToken = params.get("refresh_token") || searchParams.get("refresh_token");
+        const type = params.get("type") || searchParams.get("type");
+        const token = params.get("token") || searchParams.get("token");
         
         console.log("Auth: Checking URL parameters:", { accessToken, token, type, refreshToken });
+        console.log("Auth: Fragment:", fragment);
         
         // Handle email confirmation flow
         if ((accessToken || token) && (type === "signup" || type === "recovery" || type === "email_change")) {

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
@@ -60,11 +61,11 @@ export const useSignup = () => {
         throw new Error("Please enter a valid email address");
       }
 
-      // Get the current URL origin for proper redirects
-      const siteUrl = window.location.origin;
-      const redirectUrl = `${siteUrl}/auth?type=signup`;
+      // Use the current window location for proper redirects
+      const currentUrl = window.location.origin;
+      const redirectUrl = `${currentUrl}/auth?type=signup`;
       
-      console.log("Signup: Using site URL:", siteUrl);
+      console.log("Signup: Using site URL:", currentUrl);
       console.log("Signup: Redirect URL set to:", redirectUrl);
       
       // Sign up the user with Supabase - this will send a confirmation email
