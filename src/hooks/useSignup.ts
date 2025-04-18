@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
@@ -61,11 +60,11 @@ export const useSignup = () => {
         throw new Error("Please enter a valid email address");
       }
 
-      // Use the current window location for proper redirects
-      const currentUrl = window.location.origin;
-      const redirectUrl = `${currentUrl}/auth?type=signup`;
+      // Use absolute URLs for redirects - these must match your Supabase configuration
+      const siteUrl = window.location.origin;
+      const redirectUrl = `${siteUrl}/auth`;
       
-      console.log("Signup: Using site URL:", currentUrl);
+      console.log("Signup: Using site URL:", siteUrl);
       console.log("Signup: Redirect URL set to:", redirectUrl);
       
       // Sign up the user with Supabase - this will send a confirmation email
@@ -108,6 +107,11 @@ export const useSignup = () => {
       }
       
       // Otherwise, they need email confirmation
+      toast({
+        title: "Account created",
+        description: "Please check your email to confirm your account.",
+      });
+      
       return { 
         success: true, 
         requiresEmailConfirmation: true, 
@@ -117,12 +121,21 @@ export const useSignup = () => {
       };
     } catch (error: any) {
       console.error("Signup error:", error);
+      
+      // Improve error messaging
+      let errorMessage = error.message;
+      if (error.message.includes("User already registered")) {
+        errorMessage = "This email is already registered. Please sign in instead.";
+      } else if (error.message.includes("unable to validate email")) {
+        errorMessage = "Please enter a valid email address.";
+      }
+      
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message,
+        description: errorMessage,
       });
-      return { success: false, error };
+      return { success: false, error: errorMessage };
     } finally {
       setLoading(false);
     }

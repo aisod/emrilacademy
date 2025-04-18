@@ -31,24 +31,39 @@ const Auth = () => {
           return;
         }
 
-        // Check URL for auth parameters
-        const fragment = window.location.hash;
-        const params = new URLSearchParams(fragment.substring(1));
-        const accessToken = params.get("access_token") || searchParams.get("access_token");
-        const refreshToken = params.get("refresh_token") || searchParams.get("refresh_token");
-        const type = params.get("type") || searchParams.get("type");
-        const token = params.get("token") || searchParams.get("token");
+        // Check URL for auth parameters - including hash fragment
+        const fullUrl = window.location.href;
+        console.log("Full URL:", fullUrl);
         
-        console.log("Auth: Checking URL parameters:", { accessToken, token, type, refreshToken });
-        console.log("Auth: Fragment:", fragment);
+        // Check both query parameters and hash fragments
+        const hashFragment = window.location.hash;
+        console.log("Hash fragment:", hashFragment);
+        
+        // Parse hash fragment if it exists (Supabase sometimes puts tokens there)
+        let hashParams = {};
+        if (hashFragment) {
+          const hashSearch = new URLSearchParams(hashFragment.substring(1));
+          hashParams = Object.fromEntries(hashSearch.entries());
+          console.log("Parsed hash params:", hashParams);
+        }
+        
+        // Get params from both URL search and hash
+        const accessToken = hashParams['access_token'] || searchParams.get("access_token");
+        const refreshToken = hashParams['refresh_token'] || searchParams.get("refresh_token");
+        const type = hashParams['type'] || searchParams.get("type");
+        const token = hashParams['token'] || searchParams.get("token");
+        
+        console.log("Auth parameters:", { accessToken, refreshToken, type, token });
         
         // Handle email confirmation flow
         if ((accessToken || token) && (type === "signup" || type === "recovery" || type === "email_change")) {
-          console.log("Auth: Processing confirmation flow");
+          console.log("Processing confirmation flow");
+          
+          let authSuccess = false;
           
           // Try to set the session if we have tokens
           if (accessToken && refreshToken) {
-            console.log("Auth: Setting session with tokens");
+            console.log("Setting session with tokens");
             try {
               const { error, data } = await supabase.auth.setSession({
                 access_token: accessToken,
@@ -56,31 +71,32 @@ const Auth = () => {
               });
               
               if (error) {
-                console.error("Auth: Error setting session:", error);
+                console.error("Error setting session:", error);
                 toast({
                   variant: "destructive",
                   title: "Error confirming email",
                   description: error.message,
                 });
               } else {
-                console.log("Auth: Session set successfully", data);
+                console.log("Session set successfully", data);
                 
                 toast({
                   title: "Email confirmed successfully",
                   description: "Your email has been verified and you're now signed in.",
                 });
                 
+                authSuccess = true;
                 navigate("/dashboard");
                 return;
               }
             } catch (error: any) {
-              console.error("Auth: Exception setting session:", error);
+              console.error("Exception setting session:", error);
             }
           }
           
           // Check for a token that needs verification
-          if (token && !accessToken) {
-            console.log("Auth: Verifying with token parameter");
+          if (token && !authSuccess) {
+            console.log("Verifying with token parameter");
             
             try {
               const { error, data } = await supabase.auth.verifyOtp({
@@ -89,14 +105,14 @@ const Auth = () => {
               });
               
               if (error) {
-                console.error("Auth: Error verifying OTP:", error);
+                console.error("Error verifying OTP:", error);
                 toast({
                   variant: "destructive",
                   title: "Error confirming email",
                   description: error.message,
                 });
               } else {
-                console.log("Auth: OTP verified successfully", data);
+                console.log("OTP verified successfully", data);
                 
                 toast({
                   title: "Email confirmed successfully",
@@ -109,11 +125,11 @@ const Auth = () => {
                 }
               }
             } catch (error: any) {
-              console.error("Auth: Exception verifying OTP:", error);
+              console.error("Exception verifying OTP:", error);
             }
           }
           
-          // If we got here, show the sign in form
+          // If we got here without redirection, show the sign in form
           setSearchParams({ mode: "signin" });
           
           toast({
@@ -122,7 +138,7 @@ const Auth = () => {
           });
         }
       } catch (error: any) {
-        console.error("Auth: Error handling initial auth:", error);
+        console.error("Error handling initial auth:", error);
         toast({
           variant: "destructive",
           title: "Error",
