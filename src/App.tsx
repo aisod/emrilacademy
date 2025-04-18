@@ -1,4 +1,4 @@
-
+import React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -11,8 +11,8 @@ import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
 import Messages from "./pages/Messages";
 import ResourcesPage from "./pages/ResourcesPage";
+import Profile from './pages/Profile';
 
-// Lazy load non-critical routes for better performance
 const StudentDashboard = lazy(() => import("./pages/StudentDashboard"));
 const TeacherDashboard = lazy(() => import("./pages/TeacherDashboard"));
 const BrowseClasses = lazy(() => import("./pages/BrowseClasses"));
@@ -20,7 +20,6 @@ const LiveClasses = lazy(() => import("./pages/LiveClasses"));
 const Courses = lazy(() => import("./pages/Courses"));
 const Course = lazy(() => import("./pages/Course"));
 
-// Create a loading fallback component
 const LoadingFallback = () => (
   <div className="flex items-center justify-center min-h-screen">
     <div className="animate-pulse text-center">
@@ -30,7 +29,6 @@ const LoadingFallback = () => (
   </div>
 );
 
-// Create a client
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -42,7 +40,6 @@ const queryClient = new QueryClient({
 });
 
 function App() {
-  // Add focus outline for keyboard users only
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Tab') {
@@ -63,7 +60,6 @@ function App() {
     };
   }, []);
   
-  // Add error boundary
   useEffect(() => {
     const handleError = (event: ErrorEvent) => {
       console.error("Global error caught:", event.error);
@@ -145,6 +141,7 @@ function App() {
                 </Suspense>
               } 
             />
+            <Route path="/profile" element={<Profile />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>

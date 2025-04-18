@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import type { User } from "@supabase/supabase-js";
@@ -18,15 +17,12 @@ export function Navigation() {
   const location = useLocation();
 
   useEffect(() => {
-    // Set up the auth listener first
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       const currentUser = session?.user ?? null;
       setUser(currentUser);
       
-      // Fetch profile information if user is logged in
       if (currentUser) {
         setTimeout(() => {
-          // Using setTimeout to avoid potential deadlocks with Supabase auth
           fetchUserProfile(currentUser.id);
         }, 0);
       } else {
@@ -34,18 +30,15 @@ export function Navigation() {
       }
     });
 
-    // Then check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       const currentUser = session?.user ?? null;
       setUser(currentUser);
       
-      // Fetch profile information if user is logged in
       if (currentUser) {
         fetchUserProfile(currentUser.id);
       }
     });
 
-    // Handle cross-tab logout
     const handleStorageChange = async (event: StorageEvent) => {
       if (event.key === 'logout-event') {
         try {
@@ -108,7 +101,6 @@ export function Navigation() {
     }
   };
 
-  // Determine current dashboard link based on user role
   const getDashboardLink = () => {
     if (!userProfile) return '/dashboard';
     return userProfile.role === 'teacher' ? '/teacher' : '/student';
@@ -157,7 +149,7 @@ export function Navigation() {
             className="cursor-pointer"
           >
             <Settings className="w-4 h-4 mr-2" />
-            Settings
+            Profile & Settings
           </DropdownMenuItem>
           
           <DropdownMenuSeparator />
