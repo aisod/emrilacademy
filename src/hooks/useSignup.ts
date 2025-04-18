@@ -67,18 +67,26 @@ export const useSignup = () => {
         hasSession: !!signupData.session
       });
       
-      // Store the password temporarily for direct sign-in option
-      // Note: In a production environment, you might want to consider more secure approaches
+      // Store the credentials securely for later use
       if (!signupData.session) {
-        // Only needed if we don't have a session yet
-        localStorage.setItem(`temp_pwd_${data.email}`, data.password);
+        // Only save credentials if we don't have a session yet
+        const tempAuthData = {
+          email: data.email,
+          password: data.password,
+          timestamp: Date.now()
+        };
+        
+        // Store in localStorage with expiration
+        localStorage.setItem(`temp_auth_${data.email}`, JSON.stringify(tempAuthData));
+        
+        // Set cleanup timeout
         setTimeout(() => {
-          // Remove the password after 10 minutes for security
-          localStorage.removeItem(`temp_pwd_${data.email}`);
-        }, 10 * 60 * 1000);
+          console.log("Removing temporary auth data for security");
+          localStorage.removeItem(`temp_auth_${data.email}`);
+        }, 10 * 60 * 1000); // 10 minutes
       }
       
-      // If we have a session immediately, the user is already confirmed (or auto-confirmed)
+      // If we have a session immediately, the user is already confirmed
       if (signupData.session) {
         toast({
           title: "Account created",
@@ -116,27 +124,37 @@ export const useSignup = () => {
   };
 
   // Method to directly sign in a user after signup
-  // This can be used as a fallback when email verification fails
-  const signInAfterSignup = async (email: string, password?: string) => {
+  const signInAfterSignup = async (email: string) => {
     setLoading(true);
+    
     try {
-      // If no password is provided, attempt to retrieve it from local storage
-      const storedPassword = localStorage.getItem(`temp_pwd_${email}`);
-      const passwordToUse = password || storedPassword;
+      // Attempt to retrieve stored credentials
+      const storedAuthDataJson = localStorage.getItem(`temp_auth_${email}`);
       
-      if (!passwordToUse) {
-        throw new Error("Password not available for direct sign in");
+      if (!storedAuthDataJson) {
+        console.error("No stored credentials found for direct sign-in");
+        throw new Error("No stored credentials found for sign in");
+      }
+      
+      const storedAuthData = JSON.parse(storedAuthDataJson);
+      const now = Date.now();
+      
+      // Check if stored credentials have expired (more than 10 minutes old)
+      if (now - storedAuthData.timestamp > 10 * 60 * 1000) {
+        localStorage.removeItem(`temp_auth_${email}`);
+        throw new Error("Stored credentials have expired. Please sign in manually.");
       }
       
       console.log("Attempting direct sign-in for:", email);
       
+      // Attempt to sign in with stored credentials
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password: passwordToUse
+        email: storedAuthData.email,
+        password: storedAuthData.password
       });
       
-      // Clean up stored password regardless of success/failure
-      localStorage.removeItem(`temp_pwd_${email}`);
+      // Clean up stored credentials regardless of outcome
+      localStorage.removeItem(`temp_auth_${email}`);
       
       if (error) {
         console.error("Direct sign-in error:", error);
@@ -156,7 +174,10 @@ export const useSignup = () => {
       return { success: true, error: null, session: data.session };
     } catch (error: any) {
       console.error("Direct sign-in error:", error);
-      return { success: false, error };
+      return { 
+        success: false, 
+        error: error.message || "Failed to sign in directly"
+      };
     } finally {
       setLoading(false);
     }

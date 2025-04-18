@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 
 interface SignupFormProps {
   onToggleMode: () => void;
-  onSignupSuccess: (email: string, userId?: string, password?: string) => void;
+  onSignupSuccess: (email: string, userId?: string) => void;
 }
 
 export const SignupForm = ({ onToggleMode, onSignupSuccess }: SignupFormProps) => {
@@ -54,8 +54,8 @@ export const SignupForm = ({ onToggleMode, onSignupSuccess }: SignupFormProps) =
           description: "Your account has been created and you're now signed in.",
         });
       } else {
-        // Always pass the password for direct sign-in option
-        onSignupSuccess(email, result.userId, password);
+        // No longer pass the password - it's now stored securely in localStorage
+        onSignupSuccess(email, result.userId);
       }
     }
   };

@@ -12,7 +12,6 @@ const Auth = () => {
   const mode = searchParams.get("mode") || "signin";
   const [confirmedEmail, setConfirmedEmail] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
-  const [password, setPassword] = useState<string | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -146,11 +145,10 @@ const Auth = () => {
   }, [navigate]);
 
   // Function to handle successful signup and show email confirmation page
-  const handleSignupSuccess = (email: string, userId?: string, password?: string) => {
+  const handleSignupSuccess = (email: string, userId?: string) => {
     console.log("Signup success, showing email confirmation for:", email);
     setConfirmedEmail(email);
     if (userId) setUserId(userId);
-    if (password) setPassword(password);
   };
 
   return (
@@ -158,8 +156,7 @@ const Auth = () => {
       {confirmedEmail ? (
         <EmailConfirmation 
           email={confirmedEmail} 
-          userId={userId || undefined} 
-          password={password || undefined} 
+          userId={userId || undefined}
         />
       ) : mode === "signup" ? (
         <SignupForm onToggleMode={toggleMode} onSignupSuccess={handleSignupSuccess} />

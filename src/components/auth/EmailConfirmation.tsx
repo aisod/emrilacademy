@@ -10,10 +10,9 @@ import { useSignup } from "@/hooks/useSignup";
 interface EmailConfirmationProps {
   email: string;
   userId?: string;
-  password?: string;  // Optional password for direct sign in
 }
 
-export const EmailConfirmation = ({ email, userId, password }: EmailConfirmationProps) => {
+export const EmailConfirmation = ({ email, userId }: EmailConfirmationProps) => {
   const [resending, setResending] = useState(false);
   const [resent, setResent] = useState(false);
   const [countdown, setCountdown] = useState(0);
@@ -39,7 +38,6 @@ export const EmailConfirmation = ({ email, userId, password }: EmailConfirmation
       const { data } = await supabase.auth.getSession();
       if (data.session) {
         console.log("User is already authenticated, navigating to dashboard");
-        // If user is authenticated, redirect them appropriately
         navigate("/dashboard");
       }
     };
@@ -114,8 +112,8 @@ export const EmailConfirmation = ({ email, userId, password }: EmailConfirmation
     setDirectSignInError(null);
     
     try {
-      // Attempt direct sign-in with the stored password
-      const result = await signInAfterSignup(email, password);
+      // Use the improved signInAfterSignup function
+      const result = await signInAfterSignup(email);
       
       if (result.success) {
         toast({
@@ -124,11 +122,11 @@ export const EmailConfirmation = ({ email, userId, password }: EmailConfirmation
         });
         navigate("/dashboard");
       } else {
-        throw new Error(result.error?.message || "Sign-in failed");
+        throw new Error(result.error || "Sign-in failed");
       }
     } catch (error: any) {
       console.error("Direct sign-in attempt failed:", error);
-      setDirectSignInError(error.message || "Invalid login credentials");
+      setDirectSignInError(error.message || "Failed to sign in directly");
       toast({
         variant: "destructive",
         title: "Sign in failed",
