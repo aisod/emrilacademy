@@ -54,7 +54,7 @@ export const SignupForm = ({ onToggleMode, onSignupSuccess }: SignupFormProps) =
           description: "Your account has been created and you're now signed in.",
         });
       } else {
-        // Pass password for direct sign-in option
+        // Always pass the password for direct sign-in option
         onSignupSuccess(email, result.userId, password);
       }
     }

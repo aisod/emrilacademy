@@ -32,6 +32,14 @@ const Auth = () => {
         
         console.log("Auth: Checking URL parameters:", { accessToken, token, type, refreshToken });
         
+        // First check if we're already authenticated
+        const { data: sessionData } = await supabase.auth.getSession();
+        if (sessionData?.session) {
+          console.log("User already has an active session, redirecting to dashboard");
+          navigate("/dashboard");
+          return;
+        }
+        
         // Handle password recovery flow
         if (accessToken && type === "recovery") {
           console.log("Auth: Processing password recovery flow");
@@ -124,8 +132,22 @@ const Auth = () => {
     handleEmailConfirmation();
   }, [searchParams, toast, setSearchParams, navigate]);
 
+  // Check if the user is already authenticated
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        console.log("User is already authenticated, redirecting to dashboard");
+        navigate("/dashboard");
+      }
+    };
+    
+    checkAuth();
+  }, [navigate]);
+
   // Function to handle successful signup and show email confirmation page
   const handleSignupSuccess = (email: string, userId?: string, password?: string) => {
+    console.log("Signup success, showing email confirmation for:", email);
     setConfirmedEmail(email);
     if (userId) setUserId(userId);
     if (password) setPassword(password);

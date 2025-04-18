@@ -18,6 +18,7 @@ export const EmailConfirmation = ({ email, userId, password }: EmailConfirmation
   const [resent, setResent] = useState(false);
   const [countdown, setCountdown] = useState(0);
   const [directSignInLoading, setDirectSignInLoading] = useState(false);
+  const [directSignInError, setDirectSignInError] = useState<string | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
   const { signInAfterSignup } = useSignup();
@@ -67,6 +68,8 @@ export const EmailConfirmation = ({ email, userId, password }: EmailConfirmation
     if (resending || countdown > 0) return;
     
     setResending(true);
+    setDirectSignInError(null);
+    
     try {
       // Get the current URL origin for proper redirects
       const siteUrl = window.location.origin;
@@ -107,32 +110,32 @@ export const EmailConfirmation = ({ email, userId, password }: EmailConfirmation
   };
 
   const handleDirectSignIn = async () => {
-    if (!password) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Password not available for direct sign in. Please return to the sign in page.",
-      });
-      navigate("/auth?mode=signin");
-      return;
-    }
-
     setDirectSignInLoading(true);
-    const result = await signInAfterSignup(email, password);
-    setDirectSignInLoading(false);
-
-    if (result.success) {
-      toast({
-        title: "Successfully signed in",
-        description: "You've been signed in and can now use the application.",
-      });
-      navigate("/dashboard");
-    } else {
+    setDirectSignInError(null);
+    
+    try {
+      // Attempt direct sign-in with the stored password
+      const result = await signInAfterSignup(email, password);
+      
+      if (result.success) {
+        toast({
+          title: "Successfully signed in",
+          description: "You've been signed in and can now use the application.",
+        });
+        navigate("/dashboard");
+      } else {
+        throw new Error(result.error?.message || "Sign-in failed");
+      }
+    } catch (error: any) {
+      console.error("Direct sign-in attempt failed:", error);
+      setDirectSignInError(error.message || "Invalid login credentials");
       toast({
         variant: "destructive",
         title: "Sign in failed",
-        description: result.error?.message || "Could not sign in directly. Please use the normal sign in page.",
+        description: error.message || "Could not sign in directly. Please use the normal sign in page.",
       });
+    } finally {
+      setDirectSignInLoading(false);
     }
   };
 
@@ -192,22 +195,28 @@ export const EmailConfirmation = ({ email, userId, password }: EmailConfirmation
           )}
         </Button>
         
-        {password && (
-          <Button
-            onClick={handleDirectSignIn}
-            disabled={directSignInLoading}
-            className="w-full bg-green-600 hover:bg-green-700 text-white flex gap-2 justify-center items-center"
-          >
-            {directSignInLoading ? (
-              <>
-                <Loader className="h-4 w-4 animate-spin" /> Signing in...
-              </>
-            ) : (
-              <>
-                <LogIn className="h-4 w-4" /> Skip Email Verification & Sign In Now
-              </>
-            )}
-          </Button>
+        <Button
+          onClick={handleDirectSignIn}
+          disabled={directSignInLoading}
+          className="w-full bg-green-600 hover:bg-green-700 text-white flex gap-2 justify-center items-center"
+        >
+          {directSignInLoading ? (
+            <>
+              <Loader className="h-4 w-4 animate-spin" /> Signing in...
+            </>
+          ) : (
+            <>
+              <LogIn className="h-4 w-4" /> Skip Email Verification & Sign In Now
+            </>
+          )}
+        </Button>
+        
+        {directSignInError && (
+          <div className="bg-red-50 p-4 rounded-md text-sm text-red-800">
+            <p className="font-medium">Sign in failed</p>
+            <p>{directSignInError}</p>
+            <p className="mt-2">Please try signing in from the login page.</p>
+          </div>
         )}
 
         <div className="relative py-2">
