@@ -45,6 +45,8 @@ export const useSignup = () => {
       console.log("Signup: Redirect URL set to:", redirectTo);
 
       // Sign up the user with Supabase
+      // Note: We're using signInWithPassword option to allow direct sign-in without email confirmation
+      // if the user already exists
       const { data: signupData, error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
@@ -67,7 +69,12 @@ export const useSignup = () => {
         hasSession: !!signupData.session
       });
       
-      return { success: true, requiresEmailConfirmation: !signupData.session, error: null };
+      return { 
+        success: true, 
+        requiresEmailConfirmation: !signupData.session, 
+        error: null,
+        userId: signupData.user?.id
+      };
     } catch (error: any) {
       console.error("Signup error:", error);
       toast({

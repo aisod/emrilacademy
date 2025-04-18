@@ -8,9 +8,10 @@ import { useNavigate } from "react-router-dom";
 
 interface EmailConfirmationProps {
   email: string;
+  userId?: string;
 }
 
-export const EmailConfirmation = ({ email }: EmailConfirmationProps) => {
+export const EmailConfirmation = ({ email, userId }: EmailConfirmationProps) => {
   const [resending, setResending] = useState(false);
   const [resent, setResent] = useState(false);
   const [countdown, setCountdown] = useState(0);
@@ -26,6 +27,37 @@ export const EmailConfirmation = ({ email }: EmailConfirmationProps) => {
       setResent(false);
     }
   }, [countdown, resent]);
+
+  // Check if user is authenticated in the background
+  useEffect(() => {
+    const checkSessionStatus = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        console.log("User is already authenticated, navigating to dashboard");
+        // If user is authenticated, redirect them appropriately
+        navigate("/dashboard");
+      }
+    };
+    
+    // Check on component mount
+    checkSessionStatus();
+    
+    // Set up a listener for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state changed:", event);
+      if (session) {
+        toast({
+          title: "Email confirmed",
+          description: "You have been automatically signed in.",
+        });
+        navigate("/dashboard");
+      }
+    });
+    
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate, toast]);
 
   const handleResendEmail = async () => {
     if (resending || countdown > 0) return;
@@ -57,7 +89,6 @@ export const EmailConfirmation = ({ email }: EmailConfirmationProps) => {
         description: "Please check your inbox and spam folder for the confirmation link",
       });
       
-      // Log successful resend operation
       console.log("Confirmation email resent successfully to:", email);
     } catch (error: any) {
       console.error("Resend error:", error);
@@ -71,7 +102,7 @@ export const EmailConfirmation = ({ email }: EmailConfirmationProps) => {
     }
   };
 
-  const handleProceedToSignIn = () => {
+  const handleSignInWithPassword = async () => {
     navigate("/auth?mode=signin");
   };
 
@@ -92,7 +123,7 @@ export const EmailConfirmation = ({ email }: EmailConfirmationProps) => {
           <AlertCircle className="h-6 w-6 text-blue-600 flex-shrink-0" />
           <div className="text-sm text-blue-800">
             <p className="font-medium">You need to verify your email before signing in</p>
-            <p className="mt-1">Please check your inbox and spam folder for the confirmation link</p>
+            <p className="mt-1">Please check both your inbox and spam folder for the confirmation link</p>
           </div>
         </div>
       </div>
@@ -128,7 +159,7 @@ export const EmailConfirmation = ({ email }: EmailConfirmationProps) => {
         </Button>
 
         <Button
-          onClick={handleProceedToSignIn}
+          onClick={handleSignInWithPassword}
           variant="ghost"
           className="w-full flex gap-2 justify-center items-center"
         >

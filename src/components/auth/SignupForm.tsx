@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 
 interface SignupFormProps {
   onToggleMode: () => void;
-  onSignupSuccess: (email: string) => void;
+  onSignupSuccess: (email: string, userId?: string) => void;
 }
 
 export const SignupForm = ({ onToggleMode, onSignupSuccess }: SignupFormProps) => {
@@ -47,7 +47,7 @@ export const SignupForm = ({ onToggleMode, onSignupSuccess }: SignupFormProps) =
     });
     
     if (!result.error) {
-      onSignupSuccess(email);
+      onSignupSuccess(email, result.userId);
     }
   };
 

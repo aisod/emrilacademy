@@ -11,6 +11,7 @@ const Auth = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const mode = searchParams.get("mode") || "signin";
   const [confirmedEmail, setConfirmedEmail] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -58,7 +59,7 @@ const Auth = () => {
           if (accessToken && refreshToken) {
             console.log("Auth: Setting session with tokens");
             try {
-              const { error } = await supabase.auth.setSession({
+              const { error, data } = await supabase.auth.setSession({
                 access_token: accessToken,
                 refresh_token: refreshToken,
               });
@@ -66,7 +67,10 @@ const Auth = () => {
               if (error) {
                 console.error("Auth: Error setting session:", error);
               } else {
-                console.log("Auth: Session set successfully");
+                console.log("Auth: Session set successfully", data);
+                // If we successfully set the session, redirect to dashboard
+                navigate("/dashboard");
+                return;
               }
             } catch (error) {
               console.error("Auth: Exception setting session:", error);
@@ -77,7 +81,7 @@ const Auth = () => {
           if (token && !accessToken) {
             console.log("Auth: Verifying with token parameter");
             try {
-              const { error } = await supabase.auth.verifyOtp({
+              const { error, data } = await supabase.auth.verifyOtp({
                 token_hash: token,
                 type: type === "signup" ? "signup" : "email_change",
               });
@@ -86,7 +90,12 @@ const Auth = () => {
                 console.error("Auth: Error verifying OTP:", error);
                 throw error;
               } else {
-                console.log("Auth: OTP verified successfully");
+                console.log("Auth: OTP verified successfully", data);
+                // If verification successful and we have a session, redirect to dashboard
+                if (data.session) {
+                  navigate("/dashboard");
+                  return;
+                }
               }
             } catch (error) {
               console.error("Auth: Exception verifying OTP:", error);
@@ -112,17 +121,18 @@ const Auth = () => {
     };
     
     handleEmailConfirmation();
-  }, [searchParams, toast, setSearchParams]);
+  }, [searchParams, toast, setSearchParams, navigate]);
 
   // Function to handle successful signup and show email confirmation page
-  const handleSignupSuccess = (email: string) => {
+  const handleSignupSuccess = (email: string, userId?: string) => {
     setConfirmedEmail(email);
+    if (userId) setUserId(userId);
   };
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center px-4">
       {confirmedEmail ? (
-        <EmailConfirmation email={confirmedEmail} />
+        <EmailConfirmation email={confirmedEmail} userId={userId || undefined} />
       ) : mode === "signup" ? (
         <SignupForm onToggleMode={toggleMode} onSignupSuccess={handleSignupSuccess} />
       ) : (
