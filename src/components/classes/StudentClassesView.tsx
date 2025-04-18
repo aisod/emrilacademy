@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -307,31 +306,14 @@ export function StudentClassesView({ type }: StudentClassesViewProps) {
                   {Array.from({ length: Math.min(totalPages, 5) }).map((_, i) => {
                     let pageNumber: number;
                     
-                    // Show ellipsis for many pages
+                    // Refactored page number logic
                     if (totalPages > 5) {
                       if (currentPage <= 3) {
-                        // Near the start
-                        if (i < 4) {
-                          pageNumber = i + 1;
-                        } else {
-                          pageNumber = totalPages;
-                        }
+                        pageNumber = i < 4 ? i + 1 : totalPages;
                       } else if (currentPage >= totalPages - 2) {
-                        // Near the end
-                        if (i === 0) {
-                          pageNumber = 1;
-                        } else {
-                          pageNumber = totalPages - 4 + i;
-                        }
+                        pageNumber = i === 0 ? 1 : totalPages - 4 + i;
                       } else {
-                        // In the middle
-                        if (i === 0) {
-                          pageNumber = 1;
-                        } else if (i === 4) {
-                          pageNumber = totalPages;
-                        } else {
-                          pageNumber = currentPage - 1 + i;
-                        }
+                        pageNumber = i === 0 ? 1 : (i === 4 ? totalPages : currentPage - 1 + i);
                       }
                     } else {
                       pageNumber = i + 1;
@@ -339,13 +321,14 @@ export function StudentClassesView({ type }: StudentClassesViewProps) {
                     
                     return (
                       <Button
-                        key={i}
+                        key={pageNumber}
                         variant={currentPage === pageNumber ? "default" : "outline"}
                         size="sm"
                         onClick={() => {
-                          if (pageNumber === '...') return;
+                          // Type-safe page navigation
                           if (typeof pageNumber === 'number') {
-                            prevPage();
+                            // Use goToPage from usePagination hook for safer navigation
+                            goToPage(pageNumber);
                           }
                         }}
                         className="h-8 w-8 p-0"
