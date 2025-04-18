@@ -50,7 +50,7 @@ export const SignupForm = ({ onToggleMode, onSignupSuccess }: SignupFormProps) =
     
     if (result.success) {
       if (result.requiresEmailConfirmation) {
-        onSignupSuccess(email, result.user?.id);
+        onSignupSuccess(email, result.userId); // Fix: Using userId instead of user.id
       } else {
         // User was automatically signed in, no need to show email confirmation
         // This would happen if email confirmations are disabled in Supabase

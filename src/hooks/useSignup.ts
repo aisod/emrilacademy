@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
@@ -12,11 +13,35 @@ interface SignupData {
   role: UserRole;
 }
 
+// Define explicit return types for better type safety
+interface SignupSuccessWithConfirmation {
+  success: true;
+  requiresEmailConfirmation: true;
+  error: null;
+  userId: string;
+  autoSignedIn: false;
+}
+
+interface SignupSuccessWithAutoSignIn {
+  success: true;
+  requiresEmailConfirmation: false;
+  error: null;
+  userId: string;
+  autoSignedIn: true;
+}
+
+interface SignupError {
+  success: false;
+  error: any;
+}
+
+type SignupResult = SignupSuccessWithConfirmation | SignupSuccessWithAutoSignIn | SignupError;
+
 export const useSignup = () => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  const signup = async (data: SignupData) => {
+  const signup = async (data: SignupData): Promise<SignupResult> => {
     setLoading(true);
 
     try {
@@ -96,7 +121,7 @@ export const useSignup = () => {
           success: true, 
           requiresEmailConfirmation: false, 
           error: null,
-          userId: signupData.user?.id,
+          userId: signupData.user?.id || '',
           autoSignedIn: true
         };
       }
@@ -106,7 +131,7 @@ export const useSignup = () => {
         success: true, 
         requiresEmailConfirmation: true, 
         error: null,
-        userId: signupData.user?.id,
+        userId: signupData.user?.id || '',
         autoSignedIn: false
       };
     } catch (error: any) {
