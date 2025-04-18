@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 
 interface SignupFormProps {
   onToggleMode: () => void;
-  onSignupSuccess: (email: string, userId?: string) => void;
+  onSignupSuccess: (email: string, userId?: string, password?: string) => void;
 }
 
 export const SignupForm = ({ onToggleMode, onSignupSuccess }: SignupFormProps) => {
@@ -47,7 +47,16 @@ export const SignupForm = ({ onToggleMode, onSignupSuccess }: SignupFormProps) =
     });
     
     if (!result.error) {
-      onSignupSuccess(email, result.userId);
+      if (result.autoSignedIn) {
+        // User was automatically signed in, no need to show email confirmation
+        toast({
+          title: "Account created",
+          description: "Your account has been created and you're now signed in.",
+        });
+      } else {
+        // Pass password for direct sign-in option
+        onSignupSuccess(email, result.userId, password);
+      }
     }
   };
 

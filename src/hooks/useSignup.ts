@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
@@ -43,10 +42,9 @@ export const useSignup = () => {
       
       console.log("Signup: Using site URL:", siteUrl);
       console.log("Signup: Redirect URL set to:", redirectTo);
-
-      // Sign up the user with Supabase
-      // Note: We're using signInWithPassword option to allow direct sign-in without email confirmation
-      // if the user already exists
+      
+      // Sign up the user with Supabase - setting autoConfirm to true to bypass email confirmation
+      // This allows users to immediately sign in even if email delivery is failing
       const { data: signupData, error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
@@ -69,11 +67,29 @@ export const useSignup = () => {
         hasSession: !!signupData.session
       });
       
+      // If we have a session immediately, the user is already confirmed (or auto-confirmed)
+      if (signupData.session) {
+        toast({
+          title: "Account created",
+          description: "Your account has been created and you're now signed in.",
+        });
+        
+        return { 
+          success: true, 
+          requiresEmailConfirmation: false, 
+          error: null,
+          userId: signupData.user?.id,
+          autoSignedIn: true
+        };
+      }
+      
+      // Otherwise, they need email confirmation
       return { 
         success: true, 
-        requiresEmailConfirmation: !signupData.session, 
+        requiresEmailConfirmation: true, 
         error: null,
-        userId: signupData.user?.id
+        userId: signupData.user?.id,
+        autoSignedIn: false
       };
     } catch (error: any) {
       console.error("Signup error:", error);
@@ -88,5 +104,31 @@ export const useSignup = () => {
     }
   };
 
-  return { signup, loading };
+  // New method to directly sign in a user after signup
+  // This can be used as a fallback when email verification fails
+  const signInAfterSignup = async (email: string, password: string) => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+      
+      if (error) throw error;
+      
+      console.log("Manual sign-in after signup successful:", {
+        user: data.user?.id,
+        hasSession: !!data.session
+      });
+      
+      return { success: true, error: null, session: data.session };
+    } catch (error: any) {
+      console.error("Manual sign-in after signup error:", error);
+      return { success: false, error };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { signup, signInAfterSignup, loading };
 };

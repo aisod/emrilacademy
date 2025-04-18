@@ -1,22 +1,26 @@
 
 import { useState, useEffect } from "react";
-import { Mail, AlertCircle, ArrowRight, CheckCircle, Loader, RefreshCw } from "lucide-react";
+import { Mail, AlertCircle, ArrowRight, CheckCircle, Loader, RefreshCw, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
+import { useSignup } from "@/hooks/useSignup";
 
 interface EmailConfirmationProps {
   email: string;
   userId?: string;
+  password?: string;  // Optional password for direct sign in
 }
 
-export const EmailConfirmation = ({ email, userId }: EmailConfirmationProps) => {
+export const EmailConfirmation = ({ email, userId, password }: EmailConfirmationProps) => {
   const [resending, setResending] = useState(false);
   const [resent, setResent] = useState(false);
   const [countdown, setCountdown] = useState(0);
+  const [directSignInLoading, setDirectSignInLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { signInAfterSignup } = useSignup();
 
   // Handle countdown for resend button
   useEffect(() => {
@@ -102,6 +106,36 @@ export const EmailConfirmation = ({ email, userId }: EmailConfirmationProps) => 
     }
   };
 
+  const handleDirectSignIn = async () => {
+    if (!password) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Password not available for direct sign in. Please return to the sign in page.",
+      });
+      navigate("/auth?mode=signin");
+      return;
+    }
+
+    setDirectSignInLoading(true);
+    const result = await signInAfterSignup(email, password);
+    setDirectSignInLoading(false);
+
+    if (result.success) {
+      toast({
+        title: "Successfully signed in",
+        description: "You've been signed in and can now use the application.",
+      });
+      navigate("/dashboard");
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Sign in failed",
+        description: result.error?.message || "Could not sign in directly. Please use the normal sign in page.",
+      });
+    }
+  };
+
   const handleSignInWithPassword = async () => {
     navigate("/auth?mode=signin");
   };
@@ -157,6 +191,33 @@ export const EmailConfirmation = ({ email, userId }: EmailConfirmationProps) => 
             </>
           )}
         </Button>
+        
+        {password && (
+          <Button
+            onClick={handleDirectSignIn}
+            disabled={directSignInLoading}
+            className="w-full bg-green-600 hover:bg-green-700 text-white flex gap-2 justify-center items-center"
+          >
+            {directSignInLoading ? (
+              <>
+                <Loader className="h-4 w-4 animate-spin" /> Signing in...
+              </>
+            ) : (
+              <>
+                <LogIn className="h-4 w-4" /> Skip Email Verification & Sign In Now
+              </>
+            )}
+          </Button>
+        )}
+
+        <div className="relative py-2">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-300"></div>
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-white text-gray-500">or</span>
+          </div>
+        </div>
 
         <Button
           onClick={handleSignInWithPassword}
