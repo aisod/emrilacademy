@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { Suspense, lazy, useEffect } from "react";
+import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
@@ -82,66 +83,108 @@ function App() {
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route 
+              path="/dashboard" 
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } 
+            />
             <Route 
               path="/teacher" 
               element={
-                <Suspense fallback={<LoadingFallback />}>
-                  <TeacherDashboard />
-                </Suspense>
+                <ProtectedRoute requiredRole="teacher">
+                  <Suspense fallback={<LoadingFallback />}>
+                    <TeacherDashboard />
+                  </Suspense>
+                </ProtectedRoute>
               } 
             />
             <Route 
               path="/student" 
               element={
-                <Suspense fallback={<LoadingFallback />}>
-                  <StudentDashboard />
-                </Suspense>
+                <ProtectedRoute requiredRole="student">
+                  <Suspense fallback={<LoadingFallback />}>
+                    <StudentDashboard />
+                  </Suspense>
+                </ProtectedRoute>
               } 
             />
             <Route 
               path="/browse-classes" 
               element={
-                <Suspense fallback={<LoadingFallback />}>
-                  <BrowseClasses />
-                </Suspense>
+                <ProtectedRoute>
+                  <Suspense fallback={<LoadingFallback />}>
+                    <BrowseClasses />
+                  </Suspense>
+                </ProtectedRoute>
               } 
             />
             <Route 
               path="/live-classes" 
               element={
-                <Suspense fallback={<LoadingFallback />}>
-                  <LiveClasses />
-                </Suspense>
+                <ProtectedRoute>
+                  <Suspense fallback={<LoadingFallback />}>
+                    <LiveClasses />
+                  </Suspense>
+                </ProtectedRoute>
               } 
             />
             <Route 
               path="/live-classes/:classId" 
               element={
-                <Suspense fallback={<LoadingFallback />}>
-                  <LiveClasses />
-                </Suspense>
+                <ProtectedRoute>
+                  <Suspense fallback={<LoadingFallback />}>
+                    <LiveClasses />
+                  </Suspense>
+                </ProtectedRoute>
               } 
             />
-            <Route path="/messages" element={<Messages />} />
+            <Route 
+              path="/messages" 
+              element={
+                <ProtectedRoute>
+                  <Messages />
+                </ProtectedRoute>
+              } 
+            />
             <Route 
               path="/courses" 
               element={
-                <Suspense fallback={<LoadingFallback />}>
-                  <Courses />
-                </Suspense>
+                <ProtectedRoute>
+                  <Suspense fallback={<LoadingFallback />}>
+                    <Courses />
+                  </Suspense>
+                </ProtectedRoute>
               } 
             />
-            <Route path="/resources" element={<ResourcesPage />} />
+            <Route 
+              path="/resources" 
+              element={
+                <ProtectedRoute>
+                  <ResourcesPage />
+                </ProtectedRoute>
+              } 
+            />
             <Route 
               path="/courses/:slug" 
               element={
-                <Suspense fallback={<LoadingFallback />}>
-                  <Course />
-                </Suspense>
+                <ProtectedRoute>
+                  <Suspense fallback={<LoadingFallback />}>
+                    <Course />
+                  </Suspense>
+                </ProtectedRoute>
               } 
             />
-            <Route path="/profile" element={<Profile />} />
+            <Route 
+              path="/profile" 
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              } 
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
