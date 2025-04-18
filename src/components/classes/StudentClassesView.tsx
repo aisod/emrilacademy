@@ -9,6 +9,7 @@ import { PaginationControls } from "./PaginationControls";
 import { usePaginatedClasses } from "@/hooks/usePaginatedClasses";
 import { LoadingState } from "./LoadingState";
 import { ErrorState } from "./ErrorState";
+import { RefreshCw } from "lucide-react";
 
 interface StudentClassesViewProps {
   type: "enrolled" | "completed" | "saved";
