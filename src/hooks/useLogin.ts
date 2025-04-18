@@ -61,12 +61,22 @@ export const useLogin = () => {
       return { success: true, error: null, session: data.session };
     } catch (error: any) {
       console.error("Login error:", error);
+      
+      let errorMessage = error.message;
+      
+      // Provide more user-friendly error messages
+      if (error.message.includes("Invalid login credentials")) {
+        errorMessage = "Invalid email or password. Please try again.";
+      } else if (error.message.includes("Email not confirmed")) {
+        errorMessage = "Please check your email to confirm your account before logging in.";
+      }
+      
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message || "Failed to sign in",
+        description: errorMessage,
       });
-      return { success: false, error: error.message };
+      return { success: false, error: errorMessage };
     } finally {
       setLoading(false);
     }

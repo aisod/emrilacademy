@@ -27,14 +27,16 @@ export const EmailConfirmation = ({ email }: EmailConfirmationProps) => {
     try {
       // Get the current URL origin for proper redirects
       const siteUrl = window.location.origin;
+      const redirectUrl = `${siteUrl}/auth?type=signup`;
       
       console.log("EmailConfirmation: Using site URL:", siteUrl);
+      console.log("EmailConfirmation: Redirect URL:", redirectUrl);
       
       const { error } = await supabase.auth.resend({
         type: 'signup',
         email,
         options: {
-          emailRedirectTo: `${siteUrl}/auth`
+          emailRedirectTo: redirectUrl
         }
       });
       
