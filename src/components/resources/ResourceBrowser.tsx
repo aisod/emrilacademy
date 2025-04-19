@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { 
@@ -30,17 +31,17 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
     classes.length > 0 ? classes[0].id : ""
   );
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const { toast } = useToast();
   
   // Reset search and category when class changes
   useEffect(() => {
     setSearchTerm("");
-    setSelectedCategory("");
+    setSelectedCategory("all");
   }, [selectedClassId]);
   
   const categories = [
-    { id: "", name: "All Categories" },
+    { id: "all", name: "All Categories" },
     { id: "general", name: "General" },
     { id: "lecture", name: "Lecture Notes" },
     { id: "assignment", name: "Assignment" },
@@ -51,7 +52,7 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
   const { data: resources, isLoading, refetch, isError } = useResources({
     classId: selectedClassId,
     searchTerm: searchTerm,
-    category: selectedCategory
+    category: selectedCategory === "all" ? "" : selectedCategory
   });
 
   // Show error toast if query fails
