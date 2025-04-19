@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,7 +8,10 @@ import { MessageComposer } from "./MessageComposer";
 import { MessagingHeader } from "./MessagingHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, ArrowLeft } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export function MessagingInterface() {
   const [selectedContact, setSelectedContact] = useState<any>(null);
@@ -17,6 +19,7 @@ export function MessagingInterface() {
   const [searchQuery, setSearchQuery] = useState("");
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   // Get current user
   const { data: currentUser } = useQuery({
@@ -85,8 +88,12 @@ export function MessagingInterface() {
   };
 
   return (
-    <div className="flex h-full border rounded-lg overflow-hidden bg-white shadow-sm">
-      <div className="w-80 border-r border-gray-200 flex flex-col">
+    <div className="flex h-full border rounded-lg overflow-hidden bg-white">
+      {/* Contact list section - hidden on mobile when a chat is selected */}
+      <div className={cn(
+        "w-80 border-r border-gray-200 flex flex-col",
+        isMobile && selectedContact ? "hidden" : "w-full md:w-80"
+      )}>
         <div className="p-4 border-b border-gray-100">
           <Tabs 
             defaultValue="direct" 
@@ -132,13 +139,31 @@ export function MessagingInterface() {
         </div>
       </div>
       
-      <div className="flex-1 flex flex-col bg-gray-50">
+      {/* Chat section - full width on mobile when selected */}
+      <div className={cn(
+        "flex-1 flex flex-col bg-gray-50",
+        isMobile && !selectedContact ? "hidden" : "flex"
+      )}>
         {selectedContact ? (
           <>
-            <MessagingHeader 
-              contact={selectedContact} 
-              type={activeTab}
-            />
+            <div className="flex items-center gap-2 p-3 border-b bg-white">
+              {isMobile && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setSelectedContact(null)}
+                  className="md:hidden"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+              )}
+              <div className="flex-1">
+                <MessagingHeader 
+                  contact={selectedContact} 
+                  type={activeTab}
+                />
+              </div>
+            </div>
             
             <ConversationView 
               contact={selectedContact}
@@ -152,7 +177,7 @@ export function MessagingInterface() {
             />
           </>
         ) : (
-          <div className="flex-1 flex items-center justify-center p-4">
+          <div className="flex-1 flex items-center justify-center p-4 hidden md:flex">
             <div className="text-center max-w-sm">
               <h3 className="text-lg font-medium text-gray-700 mb-2">Select a Contact</h3>
               <p className="text-sm text-gray-500">Choose someone from your contacts list to start a conversation</p>
