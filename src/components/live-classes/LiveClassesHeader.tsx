@@ -1,7 +1,7 @@
 
 import { LiveClassSearch } from "./LiveClassSearch";
 import { Button } from "@/components/ui/button";
-import { ArrowDown } from "lucide-react";
+import { RefreshCcw } from "lucide-react";
 
 interface LiveClassesHeaderProps {
   searchQuery: string;
@@ -26,7 +26,7 @@ export function LiveClassesHeader({ searchQuery, onSearchChange, onRefresh }: Li
             className="flex-shrink-0"
             title="Refresh data"
           >
-            <ArrowDown className="h-4 w-4" />
+            <RefreshCcw className="h-4 w-4" />
           </Button>
         )}
       </div>

@@ -76,6 +76,7 @@ export function LiveClassesContent() {
     });
   };
 
+  // First use the useFilteredSessions hook to filter by search query
   const filteredActiveSessions = useFilteredSessions(activeSessions, searchQuery);
   const filteredHistorySessions = useFilteredSessions(sessionHistory, searchQuery);
 
