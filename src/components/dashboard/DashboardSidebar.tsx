@@ -1,6 +1,6 @@
 
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, ChevronLeft, X } from "lucide-react";
+import { LayoutDashboard, ChevronLeft } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -9,7 +9,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useUserRole } from "@/hooks/use-user-role";
 import { MainLinks } from "./sidebar/MainLinks";
@@ -60,16 +60,7 @@ export function DashboardSidebar({ onMobileClose, isMobileOpen = false }: Dashbo
                 <LayoutDashboard className="h-5 w-5" />
                 <span>EmRil Academy</span>
               </Link>
-              {onMobileClose && (
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  onClick={onMobileClose}
-                  className="text-white hover:bg-sidebar-hover dark:hover:bg-gray-700"
-                >
-                  <X className="h-5 w-5" />
-                </Button>
-              )}
+              {/* We're removing the duplicate X button here. The Sheet component already provides a close button */}
             </div>
             <div className="bg-sidebar dark:bg-gray-800 text-sidebar-text dark:text-gray-200 h-full overflow-y-auto">
               <nav className="space-y-1 p-4">
