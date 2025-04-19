@@ -4,13 +4,13 @@ import { ClassCalendar } from "@/components/calendar/ClassCalendar";
 
 export function DashboardCalendar() {
   return (
-    <Card className="border border-gray-200 dark:border-gray-700 shadow-sm bg-white dark:bg-gray-800">
+    <Card className="border border-card-border shadow-sm bg-white dark:bg-gray-800">
       <CardHeader className="border-b border-gray-100 dark:border-gray-700">
-        <CardTitle className="text-gray-900 dark:text-white">
+        <CardTitle className="text-xl font-heading font-semibold text-gray-900 dark:text-white">
           Class Schedule
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-0 overflow-x-auto">
+      <CardContent className="p-4">
         <ClassCalendar role="student" />
       </CardContent>
     </Card>

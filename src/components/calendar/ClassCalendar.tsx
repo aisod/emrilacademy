@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -32,9 +31,7 @@ export function ClassCalendar({ role }: ClassCalendarProps) {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("No session");
 
-      // Fixed query construction to properly chain methods
       if (role === "teacher") {
-        // Query for teacher
         const { data, error } = await supabase
           .from("classes")
           .select(`
@@ -49,7 +46,6 @@ export function ClassCalendar({ role }: ClassCalendarProps) {
         if (error) throw error;
         return data;
       } else {
-        // Query for student
         const { data, error } = await supabase
           .from("classes")
           .select(`
@@ -136,20 +132,38 @@ export function ClassCalendar({ role }: ClassCalendarProps) {
 
   return (
     <Card className="flex-1">
-      <CardHeader>
-        <CardTitle>Your Schedule</CardTitle>
-      </CardHeader>
       <CardContent>
         <div className="flex flex-col lg:flex-row gap-8">
           <Calendar
             mode="single"
             selected={date}
             onSelect={(date) => date && setDate(date)}
-            className="rounded-md border w-full lg:w-auto"
+            className="rounded-lg border border-card-border bg-calendar p-4 shadow-sm w-full lg:w-auto"
+            classNames={{
+              months: "space-y-4",
+              month: "space-y-4",
+              caption: "flex justify-center pt-1 relative items-center",
+              caption_label: "text-base font-medium text-gray-900",
+              nav: "space-x-1 flex items-center",
+              nav_button: "h-8 w-8 bg-transparent p-0 hover:bg-calendar-hover rounded-md text-gray-500",
+              nav_button_previous: "absolute left-1",
+              nav_button_next: "absolute right-1",
+              table: "w-full border-collapse space-y-1",
+              head_row: "flex",
+              head_cell: "w-9 font-medium text-calendar-text-muted rounded-md",
+              row: "flex w-full mt-2",
+              cell: "w-9 h-9 text-center text-sm relative p-0 hover:bg-calendar-hover rounded-md",
+              day: "h-9 w-9 p-0 font-normal text-calendar-text hover:bg-calendar-hover rounded-md",
+              day_today: "bg-calendar-today text-calendar-text font-semibold hover:bg-calendar-hover",
+              day_selected: "bg-calendar-selected text-calendar-text-selected hover:bg-calendar-selected hover:text-calendar-text-selected focus:bg-calendar-selected focus:text-calendar-text-selected",
+              day_outside: "text-calendar-text-muted opacity-50",
+              day_disabled: "text-calendar-text-muted opacity-50",
+              day_hidden: "invisible",
+            }}
           />
 
           <div className="flex-1 space-y-4">
-            <h3 className="font-semibold">
+            <h3 className="font-heading text-lg font-semibold text-gray-900 dark:text-white">
               Classes for {format(date, "MMMM d, yyyy")}
             </h3>
             {classesForSelectedDate.length === 0 ? (

@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -45,30 +44,42 @@ export default {
           dark: "#E1E5EB",
           foreground: "#1A1A1A",
         },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
-        },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-        },
         sidebar: {
           DEFAULT: "#1A1F2C",
-          hover: "#2A3042", 
+          hover: "#2A3042",
           active: "#3A4155",
           text: "#FFFFFF",
-          muted: "#8E9196",
+          muted: "#A0A3BD",
         },
         card: {
           DEFAULT: "#FFFFFF",
           hover: "#F8FAFC",
           border: "#E2E8F0",
         },
+        calendar: {
+          DEFAULT: "#FFFFFF",
+          selected: "#0288D1",
+          hover: "#F0F7FF",
+          today: "#B3E5FC",
+          text: {
+            DEFAULT: "#1A1A1A",
+            muted: "#64748B",
+            selected: "#FFFFFF",
+          },
+        },
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        heading: ['Poppins', 'system-ui', 'sans-serif'],
+      },
+      fontSize: {
+        'xs': ['0.75rem', { lineHeight: '1rem' }],
+        'sm': ['0.875rem', { lineHeight: '1.25rem' }],
+        'base': ['1rem', { lineHeight: '1.5rem' }],
+        'lg': ['1.125rem', { lineHeight: '1.75rem' }],
+        'xl': ['1.25rem', { lineHeight: '1.75rem' }],
+        '2xl': ['1.5rem', { lineHeight: '2rem' }],
+        '3xl': ['1.875rem', { lineHeight: '2.25rem' }],
       },
       borderRadius: {
         lg: "var(--radius)",
