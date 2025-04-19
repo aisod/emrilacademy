@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -77,6 +78,14 @@ export default {
           purple: "#8B5CF6",
           red: "#EF4444",
         },
+        // Define dropdown colors explicitly
+        dropdown: {
+          bg: "#FFFFFF",
+          hover: "#F3F4F6",
+          border: "#E5E7EB",
+          text: "#1A1A1A",
+          shadow: "rgba(0, 0, 0, 0.1)",
+        }
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],

@@ -92,10 +92,10 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
                   onValueChange={setSelectedClassId}
                   disabled={classes.length === 0}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="bg-white border-gray-300 text-gray-900">
                     <SelectValue placeholder="Select a class" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white border border-gray-300 shadow-lg">
                     {classes.map((classItem) => (
                       <SelectItem key={classItem.id} value={classItem.id}>
                         {classItem.title}
@@ -112,10 +112,10 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
                     placeholder="Search resources..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
+                    className="pl-10 bg-white border-gray-300"
                   />
                 </div>
-                <Button type="submit" variant="secondary" className="hidden md:flex">
+                <Button type="submit" variant="secondary" className="hidden md:flex bg-gray-100 hover:bg-gray-200 text-gray-900">
                   Search
                 </Button>
                 <Button 
@@ -123,7 +123,7 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
                   size="icon" 
                   onClick={handleRefresh}
                   type="button"
-                  className="hidden md:flex"
+                  className="hidden md:flex bg-white border-gray-300"
                   title="Refresh resources"
                 >
                   <RefreshCw className="h-4 w-4" />
@@ -141,10 +141,10 @@ export function ResourceBrowser({ classes, isTeacher, onResourceChange }: Resour
                   refetch();
                 }}
               >
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="w-[180px] bg-white border-gray-300 text-gray-900">
                   <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white border border-gray-300 shadow-lg">
                   {categories.map((category) => (
                     <SelectItem key={category.id} value={category.id}>
                       {category.name}

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -105,10 +104,10 @@ export default function BrowseClasses() {
           </div>
           
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-full md:w-[180px] bg-white border-gray-300">
+            <SelectTrigger className="w-full md:w-[180px] bg-white border-gray-300 text-gray-900">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white border border-gray-200 shadow-lg">
               <SelectItem value="upcoming">Upcoming First</SelectItem>
               <SelectItem value="newest">Recently Added</SelectItem>
               <SelectItem value="popular">Most Popular</SelectItem>
