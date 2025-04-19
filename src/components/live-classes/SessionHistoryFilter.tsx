@@ -87,14 +87,14 @@ export function SessionHistoryFilter({
   const hasActiveFilters = !!searchTerm || !!startDate || !!endDate || sortBy !== "recent";
 
   return (
-    <Card className={className}>
-      <CardContent className="p-4">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <Card className={`${className} overflow-hidden`}>
+      <CardContent className="p-3 sm:p-4">
+        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 h-4 w-4" />
             <Input
               placeholder="Search sessions..."
-              className="pl-9"
+              className="pl-9 h-9"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               disabled={isFiltering}
@@ -110,11 +110,12 @@ export function SessionHistoryFilter({
             disabled={isFiltering}
           />
 
-          <div className="flex justify-between items-center gap-4">
+          <div className="flex justify-between items-center">
             <SortBySelect 
               value={sortBy}
               onValueChange={setSortBy}
               disabled={isFiltering}
+              className="w-full"
             />
           </div>
 
@@ -123,7 +124,7 @@ export function SessionHistoryFilter({
             onApply={handleApplyFilters}
             isFiltering={isFiltering}
             hasFilters={hasActiveFilters}
-            className="self-end justify-self-end"
+            className="justify-start md:justify-end"
           />
         </div>
       </CardContent>

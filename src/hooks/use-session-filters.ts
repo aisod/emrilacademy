@@ -22,7 +22,7 @@ export function useSessionFilters() {
     if (!sessions) return [];
     
     return sessions.filter(session => {
-      if (filters.searchTerm && !session.classes?.title.toLowerCase().includes(filters.searchTerm.toLowerCase())) {
+      if (filters.searchTerm && !matchesSearchTerm(session, filters.searchTerm)) {
         return false;
       }
       
@@ -51,6 +51,39 @@ export function useSessionFilters() {
       }
       return 0;
     });
+  };
+
+  // Helper function to check if session matches search term
+  const matchesSearchTerm = (session: any, term: string): boolean => {
+    const lowercaseTerm = term.toLowerCase();
+    
+    // Check class title
+    if (session.classes?.title?.toLowerCase().includes(lowercaseTerm)) {
+      return true;
+    }
+    
+    // Check alternative class title location
+    if (session.class?.title?.toLowerCase().includes(lowercaseTerm)) {
+      return true;
+    }
+    
+    // Check teacher name
+    if (session.classes?.teacher?.first_name && session.classes?.teacher?.last_name) {
+      const teacherName = `${session.classes.teacher.first_name} ${session.classes.teacher.last_name}`.toLowerCase();
+      if (teacherName.includes(lowercaseTerm)) {
+        return true;
+      }
+    }
+    
+    // Check alternative teacher name location
+    if (session.class?.teacher?.first_name && session.class?.teacher?.last_name) {
+      const teacherName = `${session.class.teacher.first_name} ${session.class.teacher.last_name}`.toLowerCase();
+      if (teacherName.includes(lowercaseTerm)) {
+        return true;
+      }
+    }
+    
+    return false;
   };
 
   return {

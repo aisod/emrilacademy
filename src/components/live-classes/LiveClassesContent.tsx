@@ -81,7 +81,7 @@ export function LiveClassesContent() {
   const filteredHistorySessions = useFilteredSessions(sessionHistory, searchQuery);
 
   return (
-    <div className="container max-w-7xl mx-auto p-6">
+    <div className="container max-w-7xl mx-auto p-3 sm:p-6">
       <LiveClassesHeader 
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
@@ -89,9 +89,9 @@ export function LiveClassesContent() {
       />
 
       <Tabs defaultValue="active" className="w-full" value={activeTab} onValueChange={handleTabChange}>
-        <TabsList className="mb-4">
-          <TabsTrigger value="active" data-testid="active-tab">Active Sessions</TabsTrigger>
-          <TabsTrigger value="history" data-testid="history-tab">Session History</TabsTrigger>
+        <TabsList className="w-full mb-4 h-10">
+          <TabsTrigger value="active" data-testid="active-tab" className="flex-1">Active Sessions</TabsTrigger>
+          <TabsTrigger value="history" data-testid="history-tab" className="flex-1">Session History</TabsTrigger>
         </TabsList>
         
         <TabsContent value="active">

@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import { ArrowDownAZ, ArrowUpDown, Clock, Users } from "lucide-react";
+import { ArrowDownAZ, Clock, Users } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 
 export type SortOption = "recent" | "duration" | "participants";
@@ -36,10 +36,10 @@ export function SortBySelect({
 
   return (
     <div className={`flex items-center gap-2 ${className}`}>
-      <Label htmlFor="sort-by" className="text-sm font-medium whitespace-nowrap">Sort by:</Label>
+      <Label htmlFor="sort-by" className="text-sm font-medium whitespace-nowrap hidden sm:inline">Sort:</Label>
       <Select value={value} onValueChange={handleSortChange} disabled={disabled}>
         <SelectTrigger 
-          className="w-[180px]" 
+          className="h-9 w-full" 
           id="sort-by"
           data-testid="sort-select"
         >

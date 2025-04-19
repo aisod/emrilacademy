@@ -35,31 +35,34 @@ export function FilterActions({
   };
 
   return (
-    <div className={`flex flex-wrap gap-2 ${className}`}>
+    <div className={`flex gap-2 ${className}`}>
+      {/* On mobile, show only icons */}
       <Button 
         variant="outline" 
         onClick={handleReset}
-        className="flex items-center transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
+        className="flex items-center h-9 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
         disabled={isFiltering || !hasFilters}
         title="Reset all filters"
         data-testid="reset-filters-btn"
+        size="sm"
       >
-        <X className="mr-2 h-4 w-4" />
-        Reset Filters
+        <X className="h-4 w-4 sm:mr-2" />
+        <span className="hidden sm:inline">Reset</span>
       </Button>
       <Button 
         onClick={handleApply}
-        className="flex items-center"
+        className="flex items-center h-9"
         disabled={isFiltering}
         title="Apply selected filters"
         data-testid="apply-filters-btn"
+        size="sm"
       >
         {isFiltering ? (
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          <Loader2 className="h-4 w-4 sm:mr-2 animate-spin" />
         ) : (
-          <Filter className="mr-2 h-4 w-4" />
+          <Filter className="h-4 w-4 sm:mr-2" />
         )}
-        Apply Filters
+        <span className="hidden sm:inline">Apply</span>
       </Button>
     </div>
   );
