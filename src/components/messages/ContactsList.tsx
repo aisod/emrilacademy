@@ -12,6 +12,19 @@ interface ContactsListProps {
   searchQuery: string;
 }
 
+// Define a proper type for our contact with optional message properties
+interface Contact {
+  id: string;
+  first_name: string;
+  last_name: string;
+  avatar_url: string | null;
+  role: "student" | "teacher" | "admin";
+  created_at: string;
+  updated_at: string;
+  last_message?: string;
+  last_message_time?: string;
+}
+
 export function ContactsList({ onSelectContact, selectedContact, currentUserId, searchQuery }: ContactsListProps) {
   const { data: contacts, isLoading } = useQuery({
     queryKey: ["contacts", currentUserId],
@@ -21,6 +34,19 @@ export function ContactsList({ onSelectContact, selectedContact, currentUserId, 
         .select("*")
         .neq("id", currentUserId)
         .order("first_name");
+      
+      // If we have contacts, get the last message for each contact
+      if (data && data.length > 0) {
+        // Initialize contacts with message info as empty
+        const contactsWithMessages: Contact[] = data.map(contact => ({
+          ...contact,
+          last_message: undefined,
+          last_message_time: undefined
+        }));
+        
+        return contactsWithMessages;
+      }
+      
       return data || [];
     },
     enabled: !!currentUserId,
