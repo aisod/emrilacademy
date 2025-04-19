@@ -67,6 +67,16 @@ export default {
             selected: "#FFFFFF",
           },
         },
+        text: {
+          DEFAULT: "#1A1A1A",
+          muted: "#64748B",
+          inverse: "#FFFFFF",
+        },
+        accent: {
+          blue: "#0EA5E9",
+          purple: "#8B5CF6",
+          red: "#EF4444",
+        },
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
@@ -133,7 +143,11 @@ export default {
         'safe-bottom': 'env(safe-area-inset-bottom)',
         'safe-left': 'env(safe-area-inset-left)',
         'safe-right': 'env(safe-area-inset-right)',
-      }
+      },
+      boxShadow: {
+        card: "0 2px 8px rgba(0, 0, 0, 0.08)",
+        dropdown: "0 4px 12px rgba(0, 0, 0, 0.1)",
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],
