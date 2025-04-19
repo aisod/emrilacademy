@@ -55,35 +55,37 @@ export const DashboardLayout = ({
   return (
     <SidebarProvider defaultOpen={!isMobile}>
       <div className="min-h-screen flex w-full bg-gray-50 dark:bg-gray-900">
-        {isMobile ? (
-          <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-            <div className="md:hidden">
-              <SheetTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="fixed left-4 top-4 z-50 text-gray-700 dark:text-white"
-                  onClick={() => setIsMobileMenuOpen(true)}
-                  aria-label="Open menu"
-                >
-                  <Menu className="h-6 w-6" />
-                </Button>
-              </SheetTrigger>
-            </div>
-            <SheetContent 
-              side="left" 
-              className="p-0 max-w-[280px] border-none bg-white dark:bg-gray-900 shadow-lg"
-            >
-              <DashboardSidebar onMobileClose={() => setIsMobileMenuOpen(false)} />
-            </SheetContent>
-          </Sheet>
-        ) : (
+        {/* Mobile sidebar with improved positioning and visibility */}
+        <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+          <div className="md:hidden">
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                className="fixed left-4 top-4 z-50 text-gray-700 dark:text-white"
+                onClick={() => setIsMobileMenuOpen(true)}
+                aria-label="Open menu"
+              >
+                <Menu className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+          </div>
+          <SheetContent 
+            side="left" 
+            className="p-0 max-w-[280px] border-none bg-white dark:bg-gray-900 shadow-lg"
+          >
+            <DashboardSidebar onMobileClose={() => setIsMobileMenuOpen(false)} />
+          </SheetContent>
+        </Sheet>
+        
+        {/* Desktop sidebar */}
+        <div className="hidden md:block">
           <DashboardSidebar />
-        )}
+        </div>
         
         <div className="flex-1">
           <Navigation />
           
-          <div className="p-3 md:p-6 pt-16 md:pt-20 max-w-7xl mx-auto">
+          <div className="p-3 md:p-6 pt-16 md:pt-20 max-w-7xl mx-auto w-full">
             <div className="mb-4">
               <DashboardMenubar />
             </div>

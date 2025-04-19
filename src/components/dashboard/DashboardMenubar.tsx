@@ -27,12 +27,12 @@ export function DashboardMenubar() {
 
   return (
     <>
-      {/* Mobile menu - visible only on mobile */}
+      {/* Mobile menu - always rendered but only visible on mobile */}
       <div className="md:hidden">
         <DashboardMobileMenu items={menuItems} isActive={isActive} />
       </div>
       
-      {/* Desktop menu - visible only on desktop */}
+      {/* Desktop menu - always rendered but only visible on desktop */}
       <div className="hidden md:block">
         <DashboardDesktopMenu items={menuItems} isActive={isActive} />
       </div>

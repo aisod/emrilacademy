@@ -6,7 +6,7 @@ import { UpcomingAssignments } from "@/components/dashboard/student/UpcomingAssi
 
 export function DashboardGrid() {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 gap-4 md:gap-6">
       <NextClassCard />
       <RecentMessages />
       <UpcomingAssignments />

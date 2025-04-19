@@ -47,7 +47,7 @@ export default function StudentDashboard() {
 
   return (
     <DashboardLayout requiredRole="student">
-      <div className="animate-fade-up space-y-6">
+      <div className="animate-fade-up space-y-4 md:space-y-6">
         <WelcomeSection
           firstName={profile?.first_name}
           isLoading={isLoadingProfile}

@@ -11,14 +11,14 @@ interface DashboardDesktopMenuProps {
 export function DashboardDesktopMenu({ items, isActive }: DashboardDesktopMenuProps) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-      <Menubar className="flex border-0 bg-transparent justify-start p-2 max-w-full gap-1">
+      <Menubar className="flex border-0 bg-transparent justify-start p-2 max-w-full gap-1 overflow-x-auto hide-scrollbar">
         {items.map((item) => (
           <MenubarMenu key={item.path}>
             <MenubarTrigger asChild>
               <Link 
                 to={item.path}
                 className={cn(
-                  "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+                  "px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap",
                   isActive(item.path)
                     ? "bg-primary text-white"
                     : "text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
