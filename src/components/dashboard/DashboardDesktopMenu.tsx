@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Menubar, MenubarMenu, MenubarTrigger } from "@/components/ui/menubar";
 import { cn } from "@/lib/utils";
@@ -10,7 +9,7 @@ interface DashboardDesktopMenuProps {
 
 export function DashboardDesktopMenu({ items, isActive }: DashboardDesktopMenuProps) {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+    <div className="hidden md:block bg-white dark:bg-gray-800 rounded-lg shadow-sm">
       <Menubar className="flex border-0 bg-transparent justify-start p-2 max-w-full gap-1">
         {items.map((item) => (
           <MenubarMenu key={item.path}>

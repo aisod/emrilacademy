@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useUserRole } from "@/hooks/use-user-role";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { DashboardMobileMenu } from "./DashboardMobileMenu";
 import { DashboardDesktopMenu } from "./DashboardDesktopMenu";
 import { getMenuItems } from "./utils/menuItems";
@@ -11,7 +10,6 @@ export function DashboardMenubar() {
   const location = useLocation();
   const { data: userRole, isLoading } = useUserRole();
   const [mounted, setMounted] = useState(false);
-  const isMobile = useIsMobile();
   
   useEffect(() => {
     setMounted(true);
@@ -30,7 +28,7 @@ export function DashboardMenubar() {
   return (
     <div>
       <DashboardMobileMenu items={menuItems} isActive={isActive} />
-      {!isMobile && <DashboardDesktopMenu items={menuItems} isActive={isActive} />}
+      <DashboardDesktopMenu items={menuItems} isActive={isActive} />
     </div>
   );
 }

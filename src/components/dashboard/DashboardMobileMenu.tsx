@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Menu } from "lucide-react";
@@ -12,7 +11,7 @@ interface DashboardMobileMenuProps {
 
 export function DashboardMobileMenu({ items, isActive }: DashboardMobileMenuProps) {
   return (
-    <div className="md:hidden rounded-lg bg-white dark:bg-gray-800 shadow-sm">
+    <div className="block md:hidden rounded-lg bg-white dark:bg-gray-800 shadow-sm">
       <Drawer>
         <DrawerTrigger asChild>
           <Button variant="ghost" size="sm" className="w-full flex justify-between items-center px-4">
