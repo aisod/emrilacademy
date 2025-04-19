@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
@@ -56,16 +57,18 @@ export const DashboardLayout = ({
       <div className="min-h-screen flex w-full bg-gray-50 dark:bg-gray-900">
         {isMobile ? (
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-            <SheetTrigger asChild>
-              <Button
-                variant="ghost"
-                className="fixed left-4 top-4 z-50 md:hidden text-gray-700 dark:text-white"
-                onClick={() => setIsMobileMenuOpen(true)}
-                aria-label="Open menu"
-              >
-                <Menu className="h-6 w-6" />
-              </Button>
-            </SheetTrigger>
+            <div className="md:hidden">
+              <SheetTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="fixed left-4 top-4 z-50 text-gray-700 dark:text-white"
+                  onClick={() => setIsMobileMenuOpen(true)}
+                  aria-label="Open menu"
+                >
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </SheetTrigger>
+            </div>
             <SheetContent 
               side="left" 
               className="p-0 max-w-[280px] border-none bg-white dark:bg-gray-900 shadow-lg"
