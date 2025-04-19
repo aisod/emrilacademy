@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,8 +10,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
 
 export default function BrowseClasses() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -88,7 +87,7 @@ export default function BrowseClasses() {
     <DashboardLayout requiredRole="student">
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-bold">Browse Classes</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Browse Classes</h1>
           <p className="text-gray-500 mt-1">
             Discover and enroll in available classes
           </p>
@@ -99,14 +98,14 @@ export default function BrowseClasses() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
             <Input
               placeholder="Search classes..."
-              className="pl-10"
+              className="pl-10 bg-white border-gray-300"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
           
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-full md:w-[180px]">
+            <SelectTrigger className="w-full md:w-[180px] bg-white border-gray-300">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>
@@ -119,20 +118,21 @@ export default function BrowseClasses() {
           
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="w-full md:w-auto">
+              <Button variant="outline" className="w-full md:w-auto bg-white border-gray-300 text-gray-900">
                 <Filter className="mr-2 h-4 w-4" />
                 Filters
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-80">
+            <PopoverContent className="w-80 bg-white border-gray-200 shadow-lg p-4">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <h4 className="font-medium">Class Type</h4>
+                  <h4 className="font-medium text-gray-900">Class Type</h4>
                   <div className="grid grid-cols-2 gap-2">
                     <Button 
                       variant={classType === "all" ? "default" : "outline"}
                       size="sm"
                       onClick={() => setClassType("all")}
+                      className={classType !== "all" ? "bg-white text-gray-900 border-gray-300" : ""}
                     >
                       All Classes
                     </Button>
@@ -140,6 +140,7 @@ export default function BrowseClasses() {
                       variant={classType === "live" ? "default" : "outline"}
                       size="sm"
                       onClick={() => setClassType("live")}
+                      className={classType !== "live" ? "bg-white text-gray-900 border-gray-300" : ""}
                     >
                       Live Classes
                     </Button>
@@ -147,6 +148,7 @@ export default function BrowseClasses() {
                       variant={classType === "recorded" ? "default" : "outline"}
                       size="sm"
                       onClick={() => setClassType("recorded")}
+                      className={classType !== "recorded" ? "bg-white text-gray-900 border-gray-300" : ""}
                     >
                       Recorded
                     </Button>
@@ -154,12 +156,13 @@ export default function BrowseClasses() {
                 </div>
                 
                 <div className="space-y-2">
-                  <h4 className="font-medium">Availability</h4>
+                  <h4 className="font-medium text-gray-900">Availability</h4>
                   <div className="grid grid-cols-3 gap-2">
                     <Button 
                       variant={capacity === "any" ? "default" : "outline"}
                       size="sm"
                       onClick={() => setCapacity("any")}
+                      className={capacity !== "any" ? "bg-white text-gray-900 border-gray-300" : ""}
                     >
                       Any
                     </Button>
@@ -167,6 +170,7 @@ export default function BrowseClasses() {
                       variant={capacity === "available" ? "default" : "outline"}
                       size="sm"
                       onClick={() => setCapacity("available")}
+                      className={capacity !== "available" ? "bg-white text-gray-900 border-gray-300" : ""}
                     >
                       Available
                     </Button>
@@ -174,6 +178,7 @@ export default function BrowseClasses() {
                       variant={capacity === "full" ? "default" : "outline"}
                       size="sm"
                       onClick={() => setCapacity("full")}
+                      className={capacity !== "full" ? "bg-white text-gray-900 border-gray-300" : ""}
                     >
                       Nearly Full
                     </Button>
@@ -183,17 +188,17 @@ export default function BrowseClasses() {
             </PopoverContent>
           </Popover>
           
-          <Button variant="outline" className="w-full md:w-auto">
+          <Button variant="outline" className="w-full md:w-auto bg-white border-gray-300 text-gray-900">
             <Calendar className="mr-2 h-4 w-4" />
             Calendar View
           </Button>
         </div>
 
         <Tabs defaultValue="all" className="w-full">
-          <TabsList>
-            <TabsTrigger value="all">All Classes</TabsTrigger>
-            <TabsTrigger value="live">Live Classes</TabsTrigger>
-            <TabsTrigger value="recorded">Recorded</TabsTrigger>
+          <TabsList className="bg-gray-100 border border-gray-200">
+            <TabsTrigger value="all" className="text-gray-900 data-[state=active]:bg-white data-[state=active]:text-blue-600">All Classes</TabsTrigger>
+            <TabsTrigger value="live" className="text-gray-900 data-[state=active]:bg-white data-[state=active]:text-blue-600">Live Classes</TabsTrigger>
+            <TabsTrigger value="recorded" className="text-gray-900 data-[state=active]:bg-white data-[state=active]:text-blue-600">Recorded</TabsTrigger>
           </TabsList>
           
           <TabsContent value="all" className="mt-6">

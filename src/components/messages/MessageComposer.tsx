@@ -50,7 +50,7 @@ export function MessageComposer({ receiverId, currentUserId }: MessageComposerPr
     <form 
       onSubmit={handleSubmit} 
       className={cn(
-        "p-4 border-t bg-white shadow-sm",
+        "p-4 border-t border-gray-200 bg-white shadow-sm",
         isMobile && "sticky bottom-0 left-0 right-0 z-10"
       )}
     >
@@ -59,7 +59,7 @@ export function MessageComposer({ receiverId, currentUserId }: MessageComposerPr
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Type your message..."
-          className="min-h-[44px] max-h-32 resize-none p-3 bg-gray-50 border-gray-200 text-gray-900"
+          className="min-h-[44px] max-h-32 resize-none p-3 bg-gray-50 border-gray-200 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
@@ -71,7 +71,7 @@ export function MessageComposer({ receiverId, currentUserId }: MessageComposerPr
           type="submit" 
           size="icon"
           disabled={!message.trim() || isSending}
-          className="h-11 w-11 bg-blue-600 hover:bg-blue-700 text-white"
+          className="h-11 w-11 bg-blue-600 hover:bg-blue-700 text-white shadow"
         >
           <Send className="h-5 w-5" />
           <span className="sr-only">Send message</span>

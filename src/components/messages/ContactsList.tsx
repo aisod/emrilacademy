@@ -60,7 +60,7 @@ export function ContactsList({ onSelectContact, selectedContact, currentUserId, 
 
   if (isLoading) {
     return (
-      <div className="p-4">
+      <div className="p-4 bg-white">
         <div className="space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="flex items-center space-x-3">
@@ -78,7 +78,7 @@ export function ContactsList({ onSelectContact, selectedContact, currentUserId, 
 
   if (!filteredContacts?.length) {
     return (
-      <div className="p-4 text-center text-sm text-gray-500 bg-white">
+      <div className="p-4 text-center text-sm text-gray-500 bg-white border-t border-gray-100">
         {searchQuery ? "No contacts found" : "No contacts available"}
       </div>
     );
@@ -101,7 +101,7 @@ export function ContactsList({ onSelectContact, selectedContact, currentUserId, 
               {contact.avatar_url ? (
                 <AvatarImage src={contact.avatar_url} alt={`${contact.first_name}'s avatar`} />
               ) : (
-                <AvatarFallback className="bg-primary/10 text-primary font-medium">
+                <AvatarFallback className="bg-blue-100 text-blue-800 font-medium">
                   {contact.first_name[0]}
                   {contact.last_name[0]}
                 </AvatarFallback>
