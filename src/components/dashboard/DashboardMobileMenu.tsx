@@ -12,10 +12,10 @@ interface DashboardMobileMenuProps {
 
 export function DashboardMobileMenu({ items, isActive }: DashboardMobileMenuProps) {
   return (
-    <div className="md:hidden">
+    <div className="md:hidden rounded-lg bg-white dark:bg-gray-800 shadow-sm">
       <Drawer>
         <DrawerTrigger asChild>
-          <Button variant="ghost" size="sm" className="w-full flex justify-between items-center">
+          <Button variant="ghost" size="sm" className="w-full flex justify-between items-center px-4">
             <span className="font-medium">Menu</span>
             <Menu className="h-5 w-5" />
           </Button>

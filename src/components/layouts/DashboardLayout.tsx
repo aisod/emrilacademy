@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
@@ -79,17 +78,10 @@ export const DashboardLayout = ({
         )}
         
         <div className="flex-1">
-          <div className="flex justify-between items-center p-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm md:hidden">
-            <div className="flex items-center gap-2 ml-8">
-              <span className="font-semibold text-gray-800 dark:text-white">
-                EmRil Academy
-              </span>
-            </div>
-          </div>
           <Navigation />
           
           <div className="p-3 md:p-6 pt-16 md:pt-20 max-w-7xl mx-auto">
-            <div className="mb-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-2">
+            <div className="mb-4">
               <DashboardMenubar />
             </div>
             <main className={cn("overflow-x-hidden", className)}>
