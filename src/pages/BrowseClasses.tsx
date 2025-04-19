@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,7 +15,7 @@ import { Label } from "@/components/ui/label";
 export default function BrowseClasses() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("upcoming");
-  const [classType, setClassType] = useState("all");
+  const [classType, setClassType] = useState<"all" | "live" | "recorded">("all");
   const [capacity, setCapacity] = useState("any");
 
   const { data: classes, isLoading } = useQuery({
