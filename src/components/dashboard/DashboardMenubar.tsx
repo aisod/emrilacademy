@@ -5,8 +5,14 @@ import { useUserRole } from "@/hooks/use-user-role";
 import { DashboardMobileMenu } from "./DashboardMobileMenu";
 import { DashboardDesktopMenu } from "./DashboardDesktopMenu";
 import { getMenuItems } from "./utils/menuItems";
+import { Menu } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-export function DashboardMenubar() {
+interface DashboardMenubarProps {
+  onMobileToggle?: () => void;
+}
+
+export function DashboardMenubar({ onMobileToggle }: DashboardMenubarProps) {
   const location = useLocation();
   const { data: userRole, isLoading } = useUserRole();
   const [mounted, setMounted] = useState(false);
@@ -27,12 +33,24 @@ export function DashboardMenubar() {
 
   return (
     <>
-      {/* Mobile menu - always rendered but only visible on mobile */}
+      {/* Mobile menu button and menu */}
       <div className="md:hidden">
+        {onMobileToggle && (
+          <Button 
+            variant="outline"
+            size="sm"
+            onClick={onMobileToggle}
+            className="mb-2"
+            aria-label="Open sidebar menu"
+          >
+            <Menu className="h-4 w-4 mr-2" />
+            <span>Menu</span>
+          </Button>
+        )}
         <DashboardMobileMenu items={menuItems} isActive={isActive} />
       </div>
       
-      {/* Desktop menu - always rendered but only visible on desktop */}
+      {/* Desktop menu */}
       <div className="hidden md:block">
         <DashboardDesktopMenu items={menuItems} isActive={isActive} />
       </div>

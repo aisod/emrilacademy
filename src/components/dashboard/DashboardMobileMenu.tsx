@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
-import { Menu, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
@@ -24,7 +24,7 @@ export function DashboardMobileMenu({ items, isActive }: DashboardMobileMenuProp
             className="w-full flex justify-between items-center px-4 py-3"
           >
             <span className="font-medium">Quick Navigation</span>
-            <Menu className="h-5 w-5" />
+            <ChevronDown className="h-4 w-4" />
           </Button>
         </DrawerTrigger>
         <DrawerContent className="p-0">

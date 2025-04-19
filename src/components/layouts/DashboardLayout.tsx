@@ -7,9 +7,6 @@ import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { DashboardMenubar } from "@/components/dashboard/DashboardMenubar";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Menu } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
 interface DashboardLayoutProps {
@@ -55,29 +52,7 @@ export const DashboardLayout = ({
   return (
     <SidebarProvider defaultOpen={!isMobile}>
       <div className="min-h-screen flex w-full bg-gray-50 dark:bg-gray-900">
-        {/* Mobile sidebar with improved positioning and visibility */}
-        <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-          <div className="md:hidden">
-            <SheetTrigger asChild>
-              <Button
-                variant="ghost"
-                className="fixed left-4 top-4 z-50 text-gray-700 dark:text-white"
-                onClick={() => setIsMobileMenuOpen(true)}
-                aria-label="Open menu"
-              >
-                <Menu className="h-6 w-6" />
-              </Button>
-            </SheetTrigger>
-          </div>
-          <SheetContent 
-            side="left" 
-            className="p-0 max-w-[280px] border-none bg-white dark:bg-gray-900 shadow-lg"
-          >
-            <DashboardSidebar onMobileClose={() => setIsMobileMenuOpen(false)} />
-          </SheetContent>
-        </Sheet>
-        
-        {/* Desktop sidebar */}
+        {/* Mobile sidebar handled by DashboardSidebar directly */}
         <div className="hidden md:block">
           <DashboardSidebar />
         </div>
@@ -87,13 +62,21 @@ export const DashboardLayout = ({
           
           <div className="p-3 md:p-6 pt-16 md:pt-20 max-w-7xl mx-auto w-full">
             <div className="mb-4">
-              <DashboardMenubar />
+              <DashboardMenubar onMobileToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)} />
             </div>
             <main className={cn("overflow-x-hidden", className)}>
               {children}
             </main>
           </div>
         </div>
+        
+        {/* Sidebar for mobile view */}
+        {isMobile && (
+          <DashboardSidebar 
+            isMobileOpen={isMobileMenuOpen} 
+            onMobileClose={() => setIsMobileMenuOpen(false)} 
+          />
+        )}
       </div>
     </SidebarProvider>
   );

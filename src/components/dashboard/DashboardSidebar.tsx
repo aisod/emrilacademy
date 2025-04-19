@@ -9,6 +9,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useUserRole } from "@/hooks/use-user-role";
 import { MainLinks } from "./sidebar/MainLinks";
@@ -17,9 +18,10 @@ import { ResourceLinks } from "./sidebar/ResourceLinks";
 
 interface DashboardSidebarProps {
   onMobileClose?: () => void;
+  isMobileOpen?: boolean;
 }
 
-export function DashboardSidebar({ onMobileClose }: DashboardSidebarProps) {
+export function DashboardSidebar({ onMobileClose, isMobileOpen = false }: DashboardSidebarProps) {
   const location = useLocation();
   const { toggleSidebar } = useSidebar();
   const isMobile = useIsMobile();
@@ -31,7 +33,6 @@ export function DashboardSidebar({ onMobileClose }: DashboardSidebarProps) {
     if (location.pathname === path) return true;
     
     // For parameterized routes
-    // For example, /live-classes/123 should match /live-classes
     if (path !== '/' && location.pathname.startsWith(path + '/')) return true;
     
     return false;
@@ -45,6 +46,56 @@ export function DashboardSidebar({ onMobileClose }: DashboardSidebarProps) {
     }
   };
 
+  // For mobile, we use Sheet component
+  if (isMobile) {
+    return (
+      <Sheet open={isMobileOpen} onOpenChange={onMobileClose}>
+        <SheetContent 
+          side="left" 
+          className="p-0 max-w-[280px] border-none bg-sidebar dark:bg-gray-800 shadow-lg"
+        >
+          <div className="flex flex-col h-full">
+            <div className="p-4 bg-sidebar dark:bg-gray-800 border-b border-sidebar-hover dark:border-gray-700 flex justify-between items-center">
+              <Link to="/" className="text-xl font-bold text-white dark:text-white flex items-center gap-2">
+                <LayoutDashboard className="h-5 w-5" />
+                <span>EmRil Academy</span>
+              </Link>
+              {onMobileClose && (
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={onMobileClose}
+                  className="text-white hover:bg-sidebar-hover dark:hover:bg-gray-700"
+                >
+                  <X className="h-5 w-5" />
+                </Button>
+              )}
+            </div>
+            <div className="bg-sidebar dark:bg-gray-800 text-sidebar-text dark:text-gray-200 h-full overflow-y-auto">
+              <nav className="space-y-1 p-4">
+                <MainLinks
+                  dashboardPath={dashboardPath}
+                  isLinkActive={isLinkActive}
+                  onLinkClick={handleLinkClick}
+                />
+                <ClassLinks
+                  isLinkActive={isLinkActive}
+                  isStudent={userRole === "student"}
+                  onLinkClick={handleLinkClick}
+                />
+                <ResourceLinks
+                  isLinkActive={isLinkActive}
+                  onLinkClick={handleLinkClick}
+                />
+              </nav>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
+  // For desktop, we use the regular Sidebar component
   return (
     <Sidebar className="border-r border-gray-200 dark:border-gray-700">
       <SidebarHeader className="p-4 bg-sidebar dark:bg-gray-800 border-b border-sidebar-hover dark:border-gray-700 flex justify-between items-center">
@@ -52,16 +103,6 @@ export function DashboardSidebar({ onMobileClose }: DashboardSidebarProps) {
           <LayoutDashboard className="h-5 w-5" />
           <span>EmRil Academy</span>
         </Link>
-        {isMobile && onMobileClose && (
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={onMobileClose}
-            className="text-white hover:bg-sidebar-hover dark:hover:bg-gray-700"
-          >
-            <X className="h-5 w-5" />
-          </Button>
-        )}
       </SidebarHeader>
       <SidebarContent className="bg-sidebar dark:bg-gray-800 text-sidebar-text dark:text-gray-200 h-full overflow-y-auto">
         <nav className="space-y-1 p-4">
@@ -81,11 +122,9 @@ export function DashboardSidebar({ onMobileClose }: DashboardSidebarProps) {
           />
         </nav>
       </SidebarContent>
-      {!isMobile && (
-        <SidebarTrigger className="absolute right-0 top-4 translate-x-full bg-white dark:bg-gray-800 p-2 rounded-r-lg border border-l-0 border-gray-200 dark:border-gray-700 shadow-sm">
-          <ChevronLeft className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-        </SidebarTrigger>
-      )}
+      <SidebarTrigger className="absolute right-0 top-4 translate-x-full bg-white dark:bg-gray-800 p-2 rounded-r-lg border border-l-0 border-gray-200 dark:border-gray-700 shadow-sm">
+        <ChevronLeft className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+      </SidebarTrigger>
     </Sidebar>
   );
 }
