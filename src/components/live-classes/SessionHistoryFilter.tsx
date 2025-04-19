@@ -1,33 +1,14 @@
 
-import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Label } from "@/components/ui/label";
-import { 
-  Popover,
-  PopoverContent,
-  PopoverTrigger 
-} from "@/components/ui/popover";
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue 
-} from "@/components/ui/select";
-import { format } from "date-fns";
-import { Search, CalendarIcon, X } from "lucide-react";
+import { Search } from "lucide-react";
+import { useState } from "react";
+import { DateRangeFilter } from "./filters/DateRangeFilter";
+import { SortBySelect } from "./filters/SortBySelect";
+import { FilterActions } from "./filters/FilterActions";
+import type { SessionFilters } from "@/hooks/use-session-filters";
 
 interface SessionHistoryFilterProps {
   onFilterChange: (filters: SessionFilters) => void;
-}
-
-export interface SessionFilters {
-  searchTerm: string;
-  startDate: Date | undefined;
-  endDate: Date | undefined;
-  sortBy: "recent" | "duration" | "participants";
 }
 
 export function SessionHistoryFilter({ onFilterChange }: SessionHistoryFilterProps) {
@@ -36,7 +17,6 @@ export function SessionHistoryFilter({ onFilterChange }: SessionHistoryFilterPro
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   const [sortBy, setSortBy] = useState<"recent" | "duration" | "participants">("recent");
   
-  // Handle filter changes
   const handleFilterChange = () => {
     onFilterChange({
       searchTerm,
@@ -46,7 +26,6 @@ export function SessionHistoryFilter({ onFilterChange }: SessionHistoryFilterPro
     });
   };
   
-  // Reset all filters
   const handleReset = () => {
     setSearchTerm("");
     setStartDate(undefined);
@@ -75,69 +54,17 @@ export function SessionHistoryFilter({ onFilterChange }: SessionHistoryFilterPro
           />
         </div>
         
-        <div className="flex gap-2">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="justify-start text-left font-normal">
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {startDate ? format(startDate, "MMM d, yyyy") : "Start Date"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={startDate}
-                onSelect={setStartDate}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
-          
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="justify-start text-left font-normal">
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {endDate ? format(endDate, "MMM d, yyyy") : "End Date"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={endDate}
-                onSelect={setEndDate}
-                disabled={(date) => startDate ? date < startDate : false}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
+        <DateRangeFilter
+          startDate={startDate}
+          endDate={endDate}
+          onStartDateChange={setStartDate}
+          onEndDateChange={setEndDate}
+        />
       </div>
       
       <div className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <Label htmlFor="sort-by">Sort by:</Label>
-          <Select 
-            value={sortBy} 
-            onValueChange={(value) => setSortBy(value as "recent" | "duration" | "participants")}
-          >
-            <SelectTrigger className="w-[180px]" id="sort-by">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="recent">Most Recent</SelectItem>
-              <SelectItem value="duration">Longest Duration</SelectItem>
-              <SelectItem value="participants">Most Participants</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={handleReset}>
-            <X className="mr-2 h-4 w-4" />
-            Reset Filters
-          </Button>
-          <Button onClick={handleFilterChange}>Apply Filters</Button>
-        </div>
+        <SortBySelect value={sortBy} onValueChange={setSortBy} />
+        <FilterActions onReset={handleReset} onApply={handleFilterChange} />
       </div>
     </div>
   );
