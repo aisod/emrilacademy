@@ -91,43 +91,44 @@ export function MessagingInterface() {
           <Tabs 
             defaultValue="direct" 
             className="w-full"
+            value={activeTab}
             onValueChange={(value) => setActiveTab(value)}
           >
             <TabsList className="w-full grid grid-cols-2">
               <TabsTrigger value="direct">Direct</TabsTrigger>
               <TabsTrigger value="class">Classes</TabsTrigger>
             </TabsList>
-          </Tabs>
           
-          <div className="mt-4 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input
-              placeholder="Search contacts..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 bg-gray-50"
-            />
-          </div>
-        </div>
-        
-        <div className="flex-1 overflow-hidden">
-          <TabsContent value="direct" className="h-full m-0">
-            <ContactsList 
-              onSelectContact={setSelectedContact} 
-              selectedContact={selectedContact}
-              currentUserId={currentUser?.id}
-              searchQuery={searchQuery}
-            />
-          </TabsContent>
-          
-          <TabsContent value="class" className="h-full m-0">
-            <div className="flex items-center justify-center h-full text-gray-500 p-4 text-center">
-              <div>
-                <p className="text-sm font-medium mb-1">Class Messages Coming Soon</p>
-                <p className="text-xs text-gray-400">You'll be able to chat with your classes here</p>
-              </div>
+            <div className="mt-4 relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                placeholder="Search contacts..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9 bg-gray-50"
+              />
             </div>
-          </TabsContent>
+          
+            <div className="flex-1 overflow-hidden mt-4">
+              <TabsContent value="direct" className="h-full m-0">
+                <ContactsList 
+                  onSelectContact={setSelectedContact} 
+                  selectedContact={selectedContact}
+                  currentUserId={currentUser?.id}
+                  searchQuery={searchQuery}
+                />
+              </TabsContent>
+              
+              <TabsContent value="class" className="h-full m-0">
+                <div className="flex items-center justify-center h-full text-gray-500 p-4 text-center">
+                  <div>
+                    <p className="text-sm font-medium mb-1">Class Messages Coming Soon</p>
+                    <p className="text-xs text-gray-400">You'll be able to chat with your classes here</p>
+                  </div>
+                </div>
+              </TabsContent>
+            </div>
+          </Tabs>
         </div>
       </div>
       
