@@ -36,7 +36,6 @@ export function FilterActions({
 
   return (
     <div className={`flex gap-2 ${className}`}>
-      {/* On mobile, show only icons */}
       <Button 
         variant="outline" 
         onClick={handleReset}
@@ -45,6 +44,7 @@ export function FilterActions({
         title="Reset all filters"
         data-testid="reset-filters-btn"
         size="sm"
+        aria-label="Reset filters"
       >
         <X className="h-4 w-4 sm:mr-2" />
         <span className="hidden sm:inline">Reset</span>
@@ -56,6 +56,7 @@ export function FilterActions({
         title="Apply selected filters"
         data-testid="apply-filters-btn"
         size="sm"
+        aria-label="Apply filters"
       >
         {isFiltering ? (
           <Loader2 className="h-4 w-4 sm:mr-2 animate-spin" />

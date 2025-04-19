@@ -14,7 +14,7 @@ export function LiveClassSearch({ searchQuery, onSearchChange }: LiveClassSearch
       <Input
         type="search"
         placeholder="Search sessions..."
-        className="pl-8 h-9 sm:h-10"
+        className="pl-8 h-9 sm:h-10 w-full"
         value={searchQuery}
         onChange={(e) => onSearchChange(e.target.value)}
         aria-label="Search class sessions"

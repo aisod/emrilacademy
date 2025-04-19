@@ -61,6 +61,7 @@ export const DashboardLayout = ({
                 variant="ghost"
                 className="fixed left-4 top-4 z-50 md:hidden text-gray-700 dark:text-white"
                 onClick={() => setIsMobileMenuOpen(true)}
+                aria-label="Open menu"
               >
                 <Menu className="h-6 w-6" />
               </Button>
@@ -85,11 +86,11 @@ export const DashboardLayout = ({
             </div>
           </div>
           <Navigation />
-          <main className={cn("p-4 md:p-8 pt-16 md:pt-8", className)}>
+          <main className={cn("p-3 md:p-8 pt-14 md:pt-8 overflow-x-hidden", className)}>
             {children}
           </main>
         </div>
       </div>
     </SidebarProvider>
   );
-}
+};
