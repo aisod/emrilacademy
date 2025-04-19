@@ -37,7 +37,7 @@ export function ContactsList({ onSelectContact, selectedContact, currentUserId, 
       
       // If we have contacts, get the last message for each contact
       if (data && data.length > 0) {
-        // Initialize contacts with message info as empty
+        // Explicitly cast the data to Contact[] and add the message properties
         const contactsWithMessages: Contact[] = data.map(contact => ({
           ...contact,
           last_message: undefined,
@@ -47,7 +47,7 @@ export function ContactsList({ onSelectContact, selectedContact, currentUserId, 
         return contactsWithMessages;
       }
       
-      return data || [];
+      return (data || []) as Contact[];
     },
     enabled: !!currentUserId,
   });
