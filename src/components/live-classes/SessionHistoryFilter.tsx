@@ -50,7 +50,7 @@ export function SessionHistoryFilter({
   }, [searchTerm, startDate, endDate, sortBy, appliedFilters]);
 
   const handleApplyFilters = () => {
-    const newFilters = {
+    const newFilters: SessionFilterOptions = {
       searchTerm,
       startDate,
       endDate,
@@ -73,7 +73,7 @@ export function SessionHistoryFilter({
     setEndDate(undefined);
     setSortBy("recent");
     
-    const resetFilters = {
+    const resetFilters: SessionFilterOptions = {
       searchTerm: "",
       startDate: undefined,
       endDate: undefined,

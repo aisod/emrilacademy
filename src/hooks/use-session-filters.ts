@@ -1,12 +1,13 @@
 
 import { useState } from "react";
 import { startOfDay, endOfDay } from "date-fns";
+import { SortOption } from "@/components/live-classes/filters/SortBySelect";
 
 export interface SessionFilters {
   searchTerm: string;
   startDate: Date | undefined;
   endDate: Date | undefined;
-  sortBy: "recent" | "duration" | "participants";
+  sortBy: SortOption;
 }
 
 export function useSessionFilters() {
