@@ -2,6 +2,7 @@
 import { format } from "date-fns";
 import { Calendar, Clock, Users, BookOpen } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { ClassCapacityAlert } from "./ClassCapacityAlert";
 import type { Class } from "./types";
 
 interface ClassDetailsProps {
@@ -9,6 +10,8 @@ interface ClassDetailsProps {
 }
 
 export function ClassDetails({ class_ }: ClassDetailsProps) {
+  const enrollmentCount = class_.enrollments[0]?.count || 0;
+  
   return (
     <div className="space-y-2">
       {class_.start_time && (
@@ -29,7 +32,7 @@ export function ClassDetails({ class_ }: ClassDetailsProps) {
       <div className="flex items-center justify-between text-sm">
         <div className="flex items-center text-gray-500">
           <Users className="w-4 h-4 mr-2" />
-          <span>{class_.enrollments[0]?.count || 0} students enrolled</span>
+          <span>{enrollmentCount} students enrolled</span>
         </div>
         <div className="flex items-center text-gray-500">
           <BookOpen className="w-4 h-4 mr-2" />
@@ -39,13 +42,18 @@ export function ClassDetails({ class_ }: ClassDetailsProps) {
       <div className="space-y-1">
         <div className="flex justify-between text-sm text-gray-500">
           <span>Class capacity</span>
-          <span>{class_.enrollments[0]?.count || 0}/{class_.capacity}</span>
+          <span>{enrollmentCount}/{class_.capacity}</span>
         </div>
         <Progress 
-          value={((class_.enrollments[0]?.count || 0) / class_.capacity) * 100} 
+          value={(enrollmentCount / class_.capacity) * 100} 
           className="h-2"
         />
       </div>
+      
+      <ClassCapacityAlert 
+        enrollmentCount={enrollmentCount}
+        capacity={class_.capacity}
+      />
     </div>
   );
 }
