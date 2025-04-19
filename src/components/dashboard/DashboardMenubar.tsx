@@ -1,9 +1,10 @@
 
 import { useState, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
-import { Menubar, MenubarMenu, MenubarTrigger, MenubarContent, MenubarItem } from "@/components/ui/menubar";
+import { Menubar, MenubarMenu, MenubarTrigger } from "@/components/ui/menubar";
 import { useUserRole } from "@/hooks/use-user-role";
 import { cn } from "@/lib/utils";
+import { DashboardMobileMenu } from "./DashboardMobileMenu";
 
 export function DashboardMenubar() {
   const location = useLocation();
@@ -73,22 +74,28 @@ export function DashboardMenubar() {
   ];
 
   return (
-    <Menubar className="border-0 bg-transparent justify-start overflow-x-auto p-0 max-w-full">
-      {menuItems.map((item) => (
-        <MenubarMenu key={item.path}>
-          <MenubarTrigger asChild>
-            <Link 
-              to={item.path}
-              className={cn(
-                menuItemClass,
-                isActive(item.path) && activeClass
-              )}
-            >
-              {item.label}
-            </Link>
-          </MenubarTrigger>
-        </MenubarMenu>
-      ))}
-    </Menubar>
+    <div>
+      <DashboardMobileMenu items={menuItems} isActive={isActive} />
+      
+      <Menubar className="hidden md:flex border-0 bg-transparent justify-start overflow-x-auto p-0 max-w-full gap-1">
+        {menuItems.map((item) => (
+          <MenubarMenu key={item.path}>
+            <MenubarTrigger asChild>
+              <Link 
+                to={item.path}
+                className={cn(
+                  "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+                  isActive(item.path)
+                    ? "bg-primary text-white"
+                    : "text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                )}
+              >
+                {item.label}
+              </Link>
+            </MenubarTrigger>
+          </MenubarMenu>
+        ))}
+      </Menubar>
+    </div>
   );
 }
