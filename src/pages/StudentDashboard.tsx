@@ -1,10 +1,10 @@
+
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
-import { NextClassCard } from "@/components/dashboard/NextClassCard";
-import { RecentMessages } from "@/components/dashboard/RecentMessages";
 import { StudentStats } from "@/components/dashboard/student/StudentStats";
 import { WelcomeSection } from "@/components/dashboard/student/WelcomeSection";
 import { DashboardError } from "@/components/dashboard/student/DashboardError";
 import { DashboardCalendar } from "@/components/dashboard/student/DashboardCalendar";
+import { DashboardGrid } from "@/components/dashboard/student/DashboardGrid";
 import { useStudentProfile } from "@/hooks/use-student-profile";
 import { useState, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -59,10 +59,7 @@ export default function StudentDashboard() {
 
         <StudentStats />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <NextClassCard />
-          <RecentMessages />
-        </div>
+        <DashboardGrid />
 
         <DashboardCalendar />
       </div>
