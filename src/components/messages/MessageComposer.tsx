@@ -49,16 +49,16 @@ export function MessageComposer({ receiverId, currentUserId }: MessageComposerPr
     <form 
       onSubmit={handleSubmit} 
       className={cn(
-        "p-4 border-t bg-white",
+        "p-4 border-t bg-white shadow-sm",
         isMobile && "sticky bottom-0"
       )}
     >
-      <div className="flex gap-2">
+      <div className="flex gap-2 items-end">
         <Textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Type your message..."
-          className="min-h-[20px] max-h-32 resize-none"
+          className="min-h-[44px] max-h-32 resize-none p-3 bg-gray-50"
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
@@ -71,11 +71,11 @@ export function MessageComposer({ receiverId, currentUserId }: MessageComposerPr
           size="icon"
           disabled={!message.trim() || isSending}
           className={cn(
-            "shrink-0",
-            isMobile && "h-[72px]"
+            "h-11 w-11",
+            isMobile && "h-11 w-11"
           )}
         >
-          <Send className="h-4 w-4" />
+          <Send className="h-5 w-5" />
           <span className="sr-only">Send message</span>
         </Button>
       </div>

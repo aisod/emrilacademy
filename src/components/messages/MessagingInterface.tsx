@@ -88,10 +88,10 @@ export function MessagingInterface() {
   };
 
   return (
-    <div className="flex h-full border rounded-lg overflow-hidden bg-white">
+    <div className="flex h-full border rounded-lg overflow-hidden bg-white shadow-sm">
       {/* Contact list section - hidden on mobile when a chat is selected */}
       <div className={cn(
-        "w-80 border-r border-gray-200 flex flex-col",
+        "w-80 border-r border-gray-100 flex flex-col bg-white",
         isMobile && selectedContact ? "hidden" : "w-full md:w-80"
       )}>
         <div className="p-4 border-b border-gray-100">
@@ -101,12 +101,12 @@ export function MessagingInterface() {
             value={activeTab}
             onValueChange={(value) => setActiveTab(value)}
           >
-            <TabsList className="w-full grid grid-cols-2">
-              <TabsTrigger value="direct">Direct</TabsTrigger>
-              <TabsTrigger value="class">Classes</TabsTrigger>
+            <TabsList className="w-full grid grid-cols-2 mb-4">
+              <TabsTrigger value="direct" className="text-sm">Direct</TabsTrigger>
+              <TabsTrigger value="class" className="text-sm">Classes</TabsTrigger>
             </TabsList>
           
-            <div className="mt-4 relative">
+            <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
                 placeholder="Search contacts..."
@@ -116,8 +116,8 @@ export function MessagingInterface() {
               />
             </div>
           
-            <div className="flex-1 overflow-hidden mt-4">
-              <TabsContent value="direct" className="h-full m-0">
+            <div className="mt-4">
+              <TabsContent value="direct" className="m-0">
                 <ContactsList 
                   onSelectContact={setSelectedContact} 
                   selectedContact={selectedContact}
@@ -126,8 +126,8 @@ export function MessagingInterface() {
                 />
               </TabsContent>
               
-              <TabsContent value="class" className="h-full m-0">
-                <div className="flex items-center justify-center h-full text-gray-500 p-4 text-center">
+              <TabsContent value="class" className="m-0">
+                <div className="flex items-center justify-center h-[300px] text-gray-500 p-4 text-center bg-gray-50 rounded-lg">
                   <div>
                     <p className="text-sm font-medium mb-1">Class Messages Coming Soon</p>
                     <p className="text-xs text-gray-400">You'll be able to chat with your classes here</p>
@@ -146,7 +146,7 @@ export function MessagingInterface() {
       )}>
         {selectedContact ? (
           <>
-            <div className="flex items-center gap-2 p-3 border-b bg-white">
+            <div className="flex items-center gap-2 p-4 border-b bg-white shadow-sm">
               {isMobile && (
                 <Button
                   variant="ghost"

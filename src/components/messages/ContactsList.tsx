@@ -85,23 +85,23 @@ export function ContactsList({ onSelectContact, selectedContact, currentUserId, 
   }
 
   return (
-    <div className="overflow-y-auto h-full">
+    <div className="overflow-y-auto h-[calc(100vh-280px)] md:h-[calc(100vh-320px)]">
       <div className="divide-y divide-gray-100">
-        {filteredContacts.map((contact) => (
+        {filteredContacts?.map((contact) => (
           <button
             key={contact.id}
             onClick={() => onSelectContact(contact)}
             className={cn(
-              "w-full p-3 flex items-center gap-3 hover:bg-gray-50 transition-colors",
+              "w-full p-4 flex items-center gap-3 hover:bg-gray-50 transition-colors",
               "focus:outline-none focus:bg-gray-50",
               selectedContact?.id === contact.id && "bg-blue-50 hover:bg-blue-50"
             )}
           >
-            <Avatar className="h-10 w-10 border border-gray-200">
+            <Avatar className="h-12 w-12 border border-gray-200 flex-shrink-0">
               {contact.avatar_url ? (
                 <AvatarImage src={contact.avatar_url} alt={`${contact.first_name}'s avatar`} />
               ) : (
-                <AvatarFallback className="bg-blue-100 text-blue-600">
+                <AvatarFallback className="bg-primary/10 text-primary">
                   {contact.first_name[0]}
                   {contact.last_name[0]}
                 </AvatarFallback>
@@ -109,7 +109,7 @@ export function ContactsList({ onSelectContact, selectedContact, currentUserId, 
             </Avatar>
             <div className="flex-1 min-w-0 text-left">
               <div className="flex items-baseline justify-between">
-                <p className="text-sm font-medium text-gray-900 truncate">
+                <p className="text-sm font-semibold text-gray-900 truncate">
                   {contact.first_name} {contact.last_name}
                 </p>
                 {contact.last_message_time && (
@@ -119,7 +119,7 @@ export function ContactsList({ onSelectContact, selectedContact, currentUserId, 
                 )}
               </div>
               {contact.last_message && (
-                <p className="text-xs text-gray-500 truncate mt-0.5">
+                <p className="text-xs text-gray-600 truncate mt-1">
                   {contact.last_message}
                 </p>
               )}
