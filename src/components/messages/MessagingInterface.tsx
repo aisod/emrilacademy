@@ -88,13 +88,14 @@ export function MessagingInterface() {
   };
 
   return (
-    <div className="flex h-full border rounded-lg overflow-hidden bg-white shadow-sm">
+    <div className="flex h-full border rounded-lg overflow-hidden bg-white shadow">
       {/* Contact list section - hidden on mobile when a chat is selected */}
       <div className={cn(
-        "w-80 border-r border-gray-100 flex flex-col bg-white",
+        "border-r border-gray-100 flex flex-col bg-white",
         isMobile && selectedContact ? "hidden" : "w-full md:w-80"
       )}>
-        <div className="p-4 border-b border-gray-100">
+        <div className="p-4 border-b border-gray-100 bg-white shadow-sm">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Messages</h2>
           <Tabs 
             defaultValue="direct" 
             className="w-full"
@@ -117,7 +118,7 @@ export function MessagingInterface() {
             </div>
           
             <div className="mt-4">
-              <TabsContent value="direct" className="m-0">
+              <TabsContent value="direct" className="m-0 p-0">
                 <ContactsList 
                   onSelectContact={setSelectedContact} 
                   selectedContact={selectedContact}
@@ -126,7 +127,7 @@ export function MessagingInterface() {
                 />
               </TabsContent>
               
-              <TabsContent value="class" className="m-0">
+              <TabsContent value="class" className="m-0 p-0">
                 <div className="flex items-center justify-center h-[300px] text-gray-500 p-4 text-center bg-gray-50 rounded-lg">
                   <div>
                     <p className="text-sm font-medium mb-1">Class Messages Coming Soon</p>

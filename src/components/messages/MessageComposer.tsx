@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -50,7 +51,7 @@ export function MessageComposer({ receiverId, currentUserId }: MessageComposerPr
       onSubmit={handleSubmit} 
       className={cn(
         "p-4 border-t bg-white shadow-sm",
-        isMobile && "sticky bottom-0"
+        isMobile && "sticky bottom-0 left-0 right-0 z-10"
       )}
     >
       <div className="flex gap-2 items-end">
@@ -58,7 +59,7 @@ export function MessageComposer({ receiverId, currentUserId }: MessageComposerPr
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Type your message..."
-          className="min-h-[44px] max-h-32 resize-none p-3 bg-gray-50"
+          className="min-h-[44px] max-h-32 resize-none p-3 bg-gray-50 border-gray-200 text-gray-900"
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
@@ -70,10 +71,7 @@ export function MessageComposer({ receiverId, currentUserId }: MessageComposerPr
           type="submit" 
           size="icon"
           disabled={!message.trim() || isSending}
-          className={cn(
-            "h-11 w-11",
-            isMobile && "h-11 w-11"
-          )}
+          className="h-11 w-11 bg-blue-600 hover:bg-blue-700 text-white"
         >
           <Send className="h-5 w-5" />
           <span className="sr-only">Send message</span>

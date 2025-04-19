@@ -78,14 +78,14 @@ export function ContactsList({ onSelectContact, selectedContact, currentUserId, 
 
   if (!filteredContacts?.length) {
     return (
-      <div className="p-4 text-center text-sm text-gray-500">
+      <div className="p-4 text-center text-sm text-gray-500 bg-white">
         {searchQuery ? "No contacts found" : "No contacts available"}
       </div>
     );
   }
 
   return (
-    <div className="overflow-y-auto h-[calc(100vh-280px)] md:h-[calc(100vh-320px)]">
+    <div className="overflow-y-auto h-[calc(100vh-220px)] md:h-[calc(100vh-300px)] bg-white">
       <div className="divide-y divide-gray-100">
         {filteredContacts?.map((contact) => (
           <button
@@ -94,30 +94,28 @@ export function ContactsList({ onSelectContact, selectedContact, currentUserId, 
             className={cn(
               "w-full p-4 flex items-center gap-3 hover:bg-gray-50 transition-colors",
               "focus:outline-none focus:bg-gray-50",
-              selectedContact?.id === contact.id && "bg-blue-50 hover:bg-blue-50"
+              selectedContact?.id === contact.id ? "bg-blue-50 hover:bg-blue-50" : "bg-white"
             )}
           >
             <Avatar className="h-12 w-12 border border-gray-200 flex-shrink-0">
               {contact.avatar_url ? (
                 <AvatarImage src={contact.avatar_url} alt={`${contact.first_name}'s avatar`} />
               ) : (
-                <AvatarFallback className="bg-primary/10 text-primary">
+                <AvatarFallback className="bg-primary/10 text-primary font-medium">
                   {contact.first_name[0]}
                   {contact.last_name[0]}
                 </AvatarFallback>
               )}
             </Avatar>
             <div className="flex-1 min-w-0 text-left">
-              <div className="flex items-baseline justify-between">
-                <p className="text-sm font-semibold text-gray-900 truncate">
-                  {contact.first_name} {contact.last_name}
-                </p>
-                {contact.last_message_time && (
-                  <span className="text-xs text-gray-500">
-                    {format(new Date(contact.last_message_time), "MMM d")}
-                  </span>
-                )}
-              </div>
+              <p className="text-sm font-semibold text-gray-900 truncate">
+                {contact.first_name} {contact.last_name}
+              </p>
+              {contact.last_message_time && (
+                <span className="text-xs text-gray-500 mt-1 block">
+                  {format(new Date(contact.last_message_time), "MMM d")}
+                </span>
+              )}
               {contact.last_message && (
                 <p className="text-xs text-gray-600 truncate mt-1">
                   {contact.last_message}
