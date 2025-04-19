@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
+import { DashboardMenubar } from "@/components/dashboard/DashboardMenubar";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Menu } from "lucide-react";
@@ -86,11 +87,17 @@ export const DashboardLayout = ({
             </div>
           </div>
           <Navigation />
-          <main className={cn("p-3 md:p-8 pt-14 md:pt-8 overflow-x-hidden", className)}>
-            {children}
-          </main>
+          
+          <div className="p-3 md:p-6 pt-16 md:pt-20 max-w-7xl mx-auto">
+            <div className="mb-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-2">
+              <DashboardMenubar />
+            </div>
+            <main className={cn("overflow-x-hidden", className)}>
+              {children}
+            </main>
+          </div>
         </div>
       </div>
     </SidebarProvider>
   );
-};
+}
