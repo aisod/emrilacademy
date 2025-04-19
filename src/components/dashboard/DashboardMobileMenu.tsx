@@ -20,25 +20,23 @@ export function DashboardMobileMenu({ items, isActive }: DashboardMobileMenuProp
             <Menu className="h-5 w-5" />
           </Button>
         </DrawerTrigger>
-        <DrawerContent>
-          <div className="px-4 py-6">
-            <nav className="flex flex-col gap-2">
-              {items.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={cn(
-                    "px-4 py-3 rounded-lg text-sm font-medium transition-colors",
-                    isActive(item.path)
-                      ? "bg-primary text-white"
-                      : "text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
-                  )}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
-          </div>
+        <DrawerContent className="p-0">
+          <nav className="px-4 py-2">
+            {items.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={cn(
+                  "px-4 py-3 rounded-lg text-sm font-medium transition-colors block",
+                  isActive(item.path)
+                    ? "bg-primary text-white"
+                    : "text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                )}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
         </DrawerContent>
       </Drawer>
     </div>
