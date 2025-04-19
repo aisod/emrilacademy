@@ -26,9 +26,16 @@ export function DashboardMenubar() {
   const menuItems = getMenuItems(userRole);
 
   return (
-    <div>
-      <DashboardMobileMenu items={menuItems} isActive={isActive} />
-      <DashboardDesktopMenu items={menuItems} isActive={isActive} />
-    </div>
+    <>
+      {/* Mobile menu - visible only on mobile */}
+      <div className="md:hidden">
+        <DashboardMobileMenu items={menuItems} isActive={isActive} />
+      </div>
+      
+      {/* Desktop menu - visible only on desktop */}
+      <div className="hidden md:block">
+        <DashboardDesktopMenu items={menuItems} isActive={isActive} />
+      </div>
+    </>
   );
 }
