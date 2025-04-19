@@ -8,9 +8,14 @@ import { useSessionHistory } from "@/hooks/use-session-history";
 import { useSupabaseSubscription } from "@/hooks/use-supabase-subscription";
 import { useState } from "react";
 import { useFilteredSessions } from "@/hooks/use-filtered-sessions";
+import { SessionFilterOptions } from "./SessionHistoryFilter";
+import { useToast } from "@/components/ui/use-toast";
+import { trackEvent } from "@/lib/analytics";
 
 export function LiveClassesContent() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState<"active" | "history">("active");
+  const { toast } = useToast();
   
   const { 
     data: activeSessions,
@@ -26,10 +31,50 @@ export function LiveClassesContent() {
     error: historyError
   } = useSessionHistory();
 
+  // Set up real-time subscription for session updates
   useSupabaseSubscription('class_sessions', () => {
-    refetchActiveSessions();
-    refetchSessionHistory();
+    if (activeTab === "active") {
+      refetchActiveSessions();
+    } else {
+      refetchSessionHistory();
+    }
   });
+
+  const handleTabChange = (value: string) => {
+    const tabValue = value as "active" | "history";
+    setActiveTab(tabValue);
+    trackEvent("class_view", { action: "change_tab", tab: tabValue });
+    
+    // Refresh data when switching tabs
+    if (tabValue === "active") {
+      refetchActiveSessions();
+    } else {
+      refetchSessionHistory();
+    }
+  };
+
+  const handleFilterChange = (filters: SessionFilterOptions) => {
+    // This would be expanded to handle all filter options
+    setSearchQuery(filters.searchTerm);
+    trackEvent("class_view", { 
+      action: "apply_filters",
+      has_search: !!filters.searchTerm,
+      has_date_filter: !!(filters.startDate || filters.endDate)
+    });
+  };
+
+  const handleRefresh = () => {
+    if (activeTab === "active") {
+      refetchActiveSessions();
+    } else {
+      refetchSessionHistory();
+    }
+    
+    toast({
+      title: "Data refreshed",
+      description: "The latest session data has been loaded.",
+    });
+  };
 
   const filteredActiveSessions = useFilteredSessions(activeSessions, searchQuery);
   const filteredHistorySessions = useFilteredSessions(sessionHistory, searchQuery);
@@ -39,12 +84,13 @@ export function LiveClassesContent() {
       <LiveClassesHeader 
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
+        onRefresh={handleRefresh}
       />
 
-      <Tabs defaultValue="active" className="w-full">
+      <Tabs defaultValue="active" className="w-full" value={activeTab} onValueChange={handleTabChange}>
         <TabsList className="mb-4">
-          <TabsTrigger value="active">Active Sessions</TabsTrigger>
-          <TabsTrigger value="history">Session History</TabsTrigger>
+          <TabsTrigger value="active" data-testid="active-tab">Active Sessions</TabsTrigger>
+          <TabsTrigger value="history" data-testid="history-tab">Session History</TabsTrigger>
         </TabsList>
         
         <TabsContent value="active">
