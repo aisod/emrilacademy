@@ -1,17 +1,17 @@
 
-import { format } from "date-fns";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Calendar, Clock } from "lucide-react";
+import { format } from "date-fns";
 
-interface NextClassProps {
+interface NextClassCardProps {
   title?: string;
   startTime?: string;
   endTime?: string;
   isLoading?: boolean;
 }
 
-export function NextClassCard({ title, startTime, endTime, isLoading }: NextClassProps) {
+export function NextClassCard({ title, startTime, endTime, isLoading }: NextClassCardProps) {
   if (isLoading) {
     return (
       <Card className="border border-card-border shadow-sm bg-white dark:bg-gray-800">
