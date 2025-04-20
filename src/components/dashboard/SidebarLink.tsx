@@ -25,16 +25,16 @@ export function SidebarLink({
     <Link
       to={to}
       className={cn(
-        "flex items-center justify-between p-3 rounded-lg transition-colors",
+        "flex items-center justify-between p-3 rounded-lg transition-colors font-medium",
         isActive
-          ? "bg-primary text-white"
-          : "text-gray-600 hover:bg-gray-100"
+          ? "bg-primary text-white shadow-md"
+          : "text-gray-900 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-100 dark:hover:bg-gray-800"
       )}
       onClick={onClick}
     >
       <div className="flex items-center gap-2">
         <Icon className="h-5 w-5" />
-        <span>{label}</span>
+        <span className="text-base">{label}</span>
       </div>
       {showUnreadCount && <UnreadCount />}
     </Link>
