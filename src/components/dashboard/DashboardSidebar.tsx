@@ -1,4 +1,3 @@
-
 import { Link, useLocation } from "react-router-dom";
 import { LayoutDashboard, ChevronLeft } from "lucide-react";
 import {
@@ -27,17 +26,12 @@ export function DashboardSidebar({ onMobileClose, isMobileOpen = false }: Dashbo
   const isMobile = useIsMobile();
   const { data: userRole } = useUserRole();
 
-  // Check if a path is active, including for paths with parameters
   const isLinkActive = (path: string) => {
-    // For exact matches
     if (location.pathname === path) return true;
-    
-    // For parameterized routes
     if (path !== '/' && location.pathname.startsWith(path + '/')) return true;
-    
     return false;
   };
-  
+
   const dashboardPath = userRole === "teacher" ? "/teacher" : "/student";
 
   const handleLinkClick = () => {
@@ -46,23 +40,21 @@ export function DashboardSidebar({ onMobileClose, isMobileOpen = false }: Dashbo
     }
   };
 
-  // For mobile, we use Sheet component
   if (isMobile) {
     return (
       <Sheet open={isMobileOpen} onOpenChange={onMobileClose}>
         <SheetContent 
           side="left" 
-          className="p-0 max-w-[280px] border-none bg-sidebar dark:bg-gray-800 shadow-lg"
+          className="p-0 max-w-[280px] border-none bg-gray-900 dark:bg-gray-900 shadow-xl"
         >
           <div className="flex flex-col h-full">
-            <div className="p-4 bg-sidebar dark:bg-gray-800 border-b border-sidebar-hover dark:border-gray-700 flex justify-between items-center">
+            <div className="p-4 bg-gray-800 dark:bg-gray-800 border-b border-gray-700 flex justify-between items-center">
               <Link to="/" className="text-xl font-bold text-white dark:text-white flex items-center gap-2">
                 <LayoutDashboard className="h-5 w-5" />
                 <span>EmRil Academy</span>
               </Link>
-              {/* We're removing the duplicate X button here. The Sheet component already provides a close button */}
             </div>
-            <div className="bg-sidebar dark:bg-gray-800 text-sidebar-text dark:text-gray-200 h-full overflow-y-auto">
+            <div className="bg-gray-900 dark:bg-gray-900 text-white dark:text-gray-100 h-full overflow-y-auto">
               <nav className="space-y-1 p-4">
                 <MainLinks
                   dashboardPath={dashboardPath}
@@ -86,16 +78,15 @@ export function DashboardSidebar({ onMobileClose, isMobileOpen = false }: Dashbo
     );
   }
 
-  // For desktop, we use the regular Sidebar component
   return (
-    <Sidebar className="border-r border-gray-200 dark:border-gray-700">
-      <SidebarHeader className="p-4 bg-sidebar dark:bg-gray-800 border-b border-sidebar-hover dark:border-gray-700 flex justify-between items-center">
+    <Sidebar className="border-r border-gray-700/50 dark:border-gray-800">
+      <SidebarHeader className="p-4 bg-gray-900 dark:bg-gray-900 border-b border-gray-700/50 dark:border-gray-800 flex justify-between items-center">
         <Link to="/" className="text-xl font-bold text-white dark:text-white flex items-center gap-2">
           <LayoutDashboard className="h-5 w-5" />
           <span>EmRil Academy</span>
         </Link>
       </SidebarHeader>
-      <SidebarContent className="bg-sidebar dark:bg-gray-800 text-sidebar-text dark:text-gray-200 h-full overflow-y-auto">
+      <SidebarContent className="bg-gray-900 dark:bg-gray-900 text-white dark:text-gray-100 h-full overflow-y-auto">
         <nav className="space-y-1 p-4">
           <MainLinks
             dashboardPath={dashboardPath}
@@ -113,8 +104,8 @@ export function DashboardSidebar({ onMobileClose, isMobileOpen = false }: Dashbo
           />
         </nav>
       </SidebarContent>
-      <SidebarTrigger className="absolute right-0 top-4 translate-x-full bg-white dark:bg-gray-800 p-2 rounded-r-lg border border-l-0 border-gray-200 dark:border-gray-700 shadow-sm">
-        <ChevronLeft className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+      <SidebarTrigger className="absolute right-0 top-4 translate-x-full bg-gray-900 dark:bg-gray-900 p-2 rounded-r-lg border border-l-0 border-gray-700/50 dark:border-gray-800 shadow-sm hover:bg-gray-800 transition-colors">
+        <ChevronLeft className="h-5 w-5 text-gray-300 dark:text-gray-300" />
       </SidebarTrigger>
     </Sidebar>
   );
