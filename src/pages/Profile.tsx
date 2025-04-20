@@ -12,7 +12,7 @@ export default function Profile() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6 bg-gray-50 p-4 sm:p-6 rounded-lg">
+      <div className="space-y-6 bg-white p-4 sm:p-6 rounded-lg border border-gray-200 shadow-md">
         <Breadcrumb className="bg-white p-2 rounded-md shadow-sm border border-gray-200">
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
@@ -36,7 +36,7 @@ export default function Profile() {
             </p>
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-100">
+          <div className="bg-white rounded-lg shadow-md border border-gray-200">
             <ProfileContent 
               user={user} 
               profile={profile} 

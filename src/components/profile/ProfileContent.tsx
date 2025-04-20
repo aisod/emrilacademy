@@ -96,8 +96,8 @@ export function ProfileContent({ user, profile, setProfile }: ProfileContentProp
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 p-6">
-      <Card className="border border-gray-200 shadow-sm bg-white overflow-hidden">
+    <div className="max-w-4xl mx-auto space-y-8 p-6 bg-white">
+      <Card className="border border-gray-200 shadow-md bg-white overflow-hidden">
         <CardHeader className="bg-white rounded-t-lg border-b border-gray-100 px-6 py-4">
           <CardTitle className="text-center text-gray-900 text-xl">Profile Settings</CardTitle>
         </CardHeader>
@@ -115,20 +115,20 @@ export function ProfileContent({ user, profile, setProfile }: ProfileContentProp
               <TabsList className="grid w-full grid-cols-2 bg-gray-100">
                 <TabsTrigger 
                   value="profile" 
-                  className="data-[state=active]:bg-primary data-[state=active]:text-white"
+                  className="bg-white data-[state=active]:bg-primary data-[state=active]:text-white hover:bg-gray-50"
                 >
                   Profile
                 </TabsTrigger>
                 <TabsTrigger 
                   value="security" 
-                  className="data-[state=active]:bg-primary data-[state=active]:text-white"
+                  className="bg-white data-[state=active]:bg-primary data-[state=active]:text-white hover:bg-gray-50"
                 >
                   Security
                 </TabsTrigger>
               </TabsList>
               <TabsContent 
                 value="profile" 
-                className="border border-gray-100 rounded-md shadow-sm mt-4 p-4 bg-white"
+                className="bg-white border border-gray-200 shadow-sm rounded-md p-6 mt-4"
               >
                 <ProfileForm
                   user={user}
@@ -138,7 +138,7 @@ export function ProfileContent({ user, profile, setProfile }: ProfileContentProp
               </TabsContent>
               <TabsContent 
                 value="security" 
-                className="border border-gray-100 rounded-md shadow-sm mt-4 p-4 bg-white"
+                className="bg-white border border-gray-200 shadow-sm rounded-md p-6 mt-4"
               >
                 <PasswordForm onSubmit={handlePasswordUpdate} />
               </TabsContent>
