@@ -36,7 +36,7 @@ export default function Profile() {
             </p>
           </div>
         ) : (
-          <div className="bg-transparent">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-100">
             <ProfileContent 
               user={user} 
               profile={profile} 

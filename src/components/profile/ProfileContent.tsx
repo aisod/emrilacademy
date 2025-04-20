@@ -96,12 +96,12 @@ export function ProfileContent({ user, profile, setProfile }: ProfileContentProp
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      <Card className="border border-gray-200 shadow-sm bg-white">
-        <CardHeader className="bg-white rounded-t-lg border-b border-gray-100">
-          <CardTitle className="text-center text-gray-900">Profile Settings</CardTitle>
+    <div className="max-w-4xl mx-auto space-y-8 p-6">
+      <Card className="border border-gray-200 shadow-sm bg-white overflow-hidden">
+        <CardHeader className="bg-white rounded-t-lg border-b border-gray-100 px-6 py-4">
+          <CardTitle className="text-center text-gray-900 text-xl">Profile Settings</CardTitle>
         </CardHeader>
-        <CardContent className="bg-white rounded-b-lg pt-6">
+        <CardContent className="bg-white rounded-b-lg pt-6 px-6">
           <div className="space-y-8">
             <UserAvatar
               userId={user.id}
