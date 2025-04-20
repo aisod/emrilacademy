@@ -97,11 +97,11 @@ export function ProfileContent({ user, profile, setProfile }: ProfileContentProp
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
-      <Card className="bg-white border border-gray-200 shadow-sm">
-        <CardHeader className="text-center bg-white">
-          <CardTitle>Profile Settings</CardTitle>
+      <Card className="border border-gray-200 shadow-sm">
+        <CardHeader className="bg-white rounded-t-lg">
+          <CardTitle className="text-center">Profile Settings</CardTitle>
         </CardHeader>
-        <CardContent className="bg-white">
+        <CardContent className="bg-white rounded-b-lg">
           <div className="space-y-8">
             <UserAvatar
               userId={user.id}
@@ -113,8 +113,8 @@ export function ProfileContent({ user, profile, setProfile }: ProfileContentProp
 
             <Tabs defaultValue="profile" className="w-full">
               <TabsList className="grid w-full grid-cols-2 bg-gray-100">
-                <TabsTrigger value="profile" className="data-[state=active]:bg-white">Profile</TabsTrigger>
-                <TabsTrigger value="security" className="data-[state=active]:bg-white">Security</TabsTrigger>
+                <TabsTrigger value="profile" className="bg-white data-[state=active]:bg-primary data-[state=active]:text-white">Profile</TabsTrigger>
+                <TabsTrigger value="security" className="bg-white data-[state=active]:bg-primary data-[state=active]:text-white">Security</TabsTrigger>
               </TabsList>
               <TabsContent value="profile" className="pt-4 bg-white">
                 <ProfileForm

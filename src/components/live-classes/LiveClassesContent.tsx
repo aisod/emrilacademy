@@ -89,12 +89,12 @@ export function LiveClassesContent() {
       />
 
       <Tabs defaultValue="active" className="w-full" value={activeTab} onValueChange={handleTabChange}>
-        <TabsList className="w-full mb-4 h-10">
-          <TabsTrigger value="active" data-testid="active-tab" className="flex-1">Active Sessions</TabsTrigger>
-          <TabsTrigger value="history" data-testid="history-tab" className="flex-1">Session History</TabsTrigger>
+        <TabsList className="w-full mb-4 h-10 bg-gray-100">
+          <TabsTrigger value="active" data-testid="active-tab" className="flex-1 bg-white data-[state=active]:bg-white">Active Sessions</TabsTrigger>
+          <TabsTrigger value="history" data-testid="history-tab" className="flex-1 bg-white data-[state=active]:bg-white">Session History</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="active">
+        <TabsContent value="active" className="bg-white rounded-md border border-gray-200 shadow-sm p-4">
           <ActiveSessionsList 
             activeSessions={filteredActiveSessions} 
             isLoading={activeSessionsLoading}
@@ -104,7 +104,7 @@ export function LiveClassesContent() {
           )}
         </TabsContent>
         
-        <TabsContent value="history">
+        <TabsContent value="history" className="bg-white rounded-md border border-gray-200 shadow-sm p-4">
           <SessionHistoryList 
             sessionHistory={filteredHistorySessions || []} 
             isLoading={historyLoading}

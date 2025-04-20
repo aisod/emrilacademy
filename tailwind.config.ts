@@ -92,6 +92,7 @@ export default {
           bg: "#FFFFFF",
           border: "#E5E7EB",
           text: "#1A1A1A",
+          shadow: "rgba(0, 0, 0, 0.15)",
         },
         tooltip: {
           bg: "#1A1A1A",

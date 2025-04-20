@@ -44,7 +44,7 @@ export function SingleClassView({ classId }: SingleClassViewProps) {
   if (isLoading) {
     return (
       <div className="p-6">
-        <Card className="mb-6 border border-card-border shadow-sm">
+        <Card className="mb-6 border border-card-border shadow-sm bg-white">
           <CardHeader>
             <Skeleton className="h-8 w-3/4" />
             <Skeleton className="h-4 w-1/2" />
@@ -64,7 +64,7 @@ export function SingleClassView({ classId }: SingleClassViewProps) {
   if (error || !classDetails) {
     return (
       <div className="p-6">
-        <Card className="border border-card-border shadow-sm">
+        <Card className="border border-card-border shadow-sm bg-white">
           <CardHeader>
             <CardTitle className="flex items-center text-gray-900 dark:text-white">
               <AlertTriangle className="h-5 w-5 mr-2 text-amber-500" />

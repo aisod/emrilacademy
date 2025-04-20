@@ -121,7 +121,7 @@ export function LiveClassRoom({
           />
         )}
       </div>
-      <div className="w-80 bg-white border-l">
+      <div className="w-80 bg-white border-l border-gray-200 shadow-sm">
         <LiveChat classId={classId} />
       </div>
     </div>
