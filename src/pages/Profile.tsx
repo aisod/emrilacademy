@@ -12,8 +12,8 @@ export default function Profile() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6 bg-white p-4 sm:p-6 rounded-lg border border-gray-200 shadow-md">
-        <Breadcrumb className="bg-white p-2 rounded-md shadow-sm border border-gray-200">
+      <div className="space-y-6 bg-card p-4 sm:p-6 rounded-lg border border-card-border shadow-md">
+        <Breadcrumb className="bg-card p-2 rounded-md shadow-sm border border-gray-200">
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
               <Link to="/dashboard" className="text-primary hover:text-primary/80 flex items-center">
@@ -30,13 +30,13 @@ export default function Profile() {
         {loading ? (
           <ProfileLoadingState />
         ) : !user || !profile ? (
-          <div className="text-center p-8 bg-white rounded-lg border border-gray-200 shadow-sm">
-            <p className="text-lg text-gray-600">
+          <div className="text-center p-8 bg-card rounded-lg border border-card-border shadow-sm">
+            <p className="text-lg text-text-DEFAULT">
               Please sign in to view your profile.
             </p>
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow-md border border-gray-200">
+          <div className="bg-card rounded-lg shadow-md border border-card-border">
             <ProfileContent 
               user={user} 
               profile={profile} 

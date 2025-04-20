@@ -96,12 +96,12 @@ export function ProfileContent({ user, profile, setProfile }: ProfileContentProp
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 p-6 bg-white">
-      <Card className="border border-gray-200 shadow-md bg-white overflow-hidden">
-        <CardHeader className="bg-white rounded-t-lg border-b border-gray-100 px-6 py-4">
-          <CardTitle className="text-center text-gray-900 text-xl">Profile Settings</CardTitle>
+    <div className="max-w-4xl mx-auto space-y-8 p-6 bg-card">
+      <Card className="border border-card-border shadow-md bg-card overflow-hidden">
+        <CardHeader className="bg-card rounded-t-lg border-b border-card-border px-6 py-4">
+          <CardTitle className="text-center text-text-DEFAULT text-xl">Profile Settings</CardTitle>
         </CardHeader>
-        <CardContent className="bg-white rounded-b-lg pt-6 px-6">
+        <CardContent className="bg-card rounded-b-lg pt-6 px-6">
           <div className="space-y-8">
             <UserAvatar
               userId={user.id}
@@ -112,23 +112,23 @@ export function ProfileContent({ user, profile, setProfile }: ProfileContentProp
             />
 
             <Tabs defaultValue="profile" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 bg-gray-100">
+              <TabsList className="grid w-full grid-cols-2 bg-tabs-bg">
                 <TabsTrigger 
                   value="profile" 
-                  className="bg-white data-[state=active]:bg-primary data-[state=active]:text-white hover:bg-gray-50"
+                  className="bg-tabs-active data-[state=active]:bg-primary data-[state=active]:text-primary-foreground hover:bg-tabs-hover"
                 >
                   Profile
                 </TabsTrigger>
                 <TabsTrigger 
                   value="security" 
-                  className="bg-white data-[state=active]:bg-primary data-[state=active]:text-white hover:bg-gray-50"
+                  className="bg-tabs-active data-[state=active]:bg-primary data-[state=active]:text-primary-foreground hover:bg-tabs-hover"
                 >
                   Security
                 </TabsTrigger>
               </TabsList>
               <TabsContent 
                 value="profile" 
-                className="bg-white border border-gray-200 shadow-sm rounded-md p-6 mt-4"
+                className="bg-card border border-card-border shadow-sm rounded-md p-6 mt-4"
               >
                 <ProfileForm
                   user={user}
@@ -138,7 +138,7 @@ export function ProfileContent({ user, profile, setProfile }: ProfileContentProp
               </TabsContent>
               <TabsContent 
                 value="security" 
-                className="bg-white border border-gray-200 shadow-sm rounded-md p-6 mt-4"
+                className="bg-card border border-card-border shadow-sm rounded-md p-6 mt-4"
               >
                 <PasswordForm onSubmit={handlePasswordUpdate} />
               </TabsContent>
