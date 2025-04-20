@@ -40,11 +40,11 @@ export function PasswordForm({ onSubmit }: PasswordFormProps) {
   });
 
   return (
-    <Card className="border border-gray-300 bg-white shadow-sm">
-      <CardHeader className="bg-white border-b border-gray-200">
-        <CardTitle className="text-gray-800">Change Password</CardTitle>
+    <Card className="border border-gray-300 bg-white shadow-md">
+      <CardHeader className="bg-white border-b border-gray-300 pb-4">
+        <CardTitle className="text-gray-800 font-medium">Change Password</CardTitle>
       </CardHeader>
-      <CardContent className="bg-white pt-4">
+      <CardContent className="bg-white pt-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
@@ -52,12 +52,12 @@ export function PasswordForm({ onSubmit }: PasswordFormProps) {
               name="currentPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-800">Current Password</FormLabel>
+                  <FormLabel className="text-gray-800 font-medium">Current Password</FormLabel>
                   <FormControl>
                     <Input 
                       type="password" 
                       {...field} 
-                      className="border-gray-300 bg-white text-gray-800" 
+                      className="border-gray-300 bg-white text-gray-800 shadow-sm" 
                     />
                   </FormControl>
                   <FormMessage className="text-red-600" />
@@ -70,12 +70,12 @@ export function PasswordForm({ onSubmit }: PasswordFormProps) {
               name="newPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-800">New Password</FormLabel>
+                  <FormLabel className="text-gray-800 font-medium">New Password</FormLabel>
                   <FormControl>
                     <Input 
                       type="password" 
                       {...field} 
-                      className="border-gray-300 bg-white text-gray-800" 
+                      className="border-gray-300 bg-white text-gray-800 shadow-sm" 
                     />
                   </FormControl>
                   <FormMessage className="text-red-600" />
@@ -88,12 +88,12 @@ export function PasswordForm({ onSubmit }: PasswordFormProps) {
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-800">Confirm New Password</FormLabel>
+                  <FormLabel className="text-gray-800 font-medium">Confirm New Password</FormLabel>
                   <FormControl>
                     <Input 
                       type="password" 
                       {...field} 
-                      className="border-gray-300 bg-white text-gray-800" 
+                      className="border-gray-300 bg-white text-gray-800 shadow-sm" 
                     />
                   </FormControl>
                   <FormMessage className="text-red-600" />
@@ -103,7 +103,7 @@ export function PasswordForm({ onSubmit }: PasswordFormProps) {
 
             <Button 
               type="submit" 
-              className="w-full bg-primary hover:bg-primary/90 text-white" 
+              className="w-full bg-primary hover:bg-primary/90 text-white font-medium" 
               disabled={form.formState.isSubmitting}
             >
               {form.formState.isSubmitting ? "Updating..." : "Update Password"}

@@ -39,7 +39,7 @@ export function ProfileForm({ profile, onSubmit }: ProfileFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="bg-white p-4 rounded-md border border-gray-300 space-y-6">
+        <div className="bg-white p-6 rounded-md border border-gray-300 space-y-6 shadow-sm">
           <FormField
             control={form.control}
             name="firstName"
@@ -77,7 +77,7 @@ export function ProfileForm({ profile, onSubmit }: ProfileFormProps) {
 
         <Button 
           type="submit" 
-          className="w-full bg-primary hover:bg-primary/90 text-white" 
+          className="w-full bg-primary hover:bg-primary/90 text-white font-medium" 
           disabled={form.formState.isSubmitting}
         >
           {form.formState.isSubmitting ? "Saving..." : "Save Changes"}

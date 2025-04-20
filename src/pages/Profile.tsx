@@ -16,14 +16,14 @@ export default function Profile() {
         <Breadcrumb className="bg-white p-2 rounded-md shadow-sm border border-gray-300">
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link to="/dashboard" className="text-primary hover:text-primary/80 flex items-center">
+              <Link to="/dashboard" className="text-primary hover:text-primary/80 flex items-center font-medium">
                 <Home className="h-4 w-4 mr-1" />
                 Dashboard
               </Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbItem>
-            <BreadcrumbPage className="text-gray-800">Profile</BreadcrumbPage>
+            <BreadcrumbPage className="text-gray-800 font-medium">Profile</BreadcrumbPage>
           </BreadcrumbItem>
         </Breadcrumb>
         
@@ -31,7 +31,7 @@ export default function Profile() {
           <ProfileLoadingState />
         ) : !user || !profile ? (
           <div className="text-center p-8 bg-white rounded-lg border border-gray-300 shadow-sm">
-            <p className="text-lg text-gray-800">
+            <p className="text-lg text-gray-800 font-medium">
               Please sign in to view your profile.
             </p>
           </div>

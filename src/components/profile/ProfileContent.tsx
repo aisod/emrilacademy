@@ -112,23 +112,23 @@ export function ProfileContent({ user, profile, setProfile }: ProfileContentProp
             />
 
             <Tabs defaultValue="profile" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 bg-gray-100 mb-4">
+              <TabsList className="grid w-full grid-cols-2 mb-6 border border-gray-300 rounded-md overflow-hidden">
                 <TabsTrigger 
                   value="profile" 
-                  className="data-[state=active]:bg-primary data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-800 hover:bg-gray-200 py-2 font-medium"
+                  className="data-[state=active]:bg-primary data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-800 py-3 font-medium text-base"
                 >
                   Profile
                 </TabsTrigger>
                 <TabsTrigger 
                   value="security" 
-                  className="data-[state=active]:bg-primary data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-800 hover:bg-gray-200 py-2 font-medium"
+                  className="data-[state=active]:bg-primary data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-800 py-3 font-medium text-base"
                 >
                   Security
                 </TabsTrigger>
               </TabsList>
               <TabsContent 
                 value="profile" 
-                className="bg-white border border-gray-300 shadow-sm rounded-md p-6"
+                className="bg-white rounded-md"
               >
                 <ProfileForm
                   user={user}
@@ -138,7 +138,7 @@ export function ProfileContent({ user, profile, setProfile }: ProfileContentProp
               </TabsContent>
               <TabsContent 
                 value="security" 
-                className="bg-white border border-gray-300 shadow-sm rounded-md p-6"
+                className="bg-white rounded-md"
               >
                 <PasswordForm onSubmit={handlePasswordUpdate} />
               </TabsContent>

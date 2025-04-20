@@ -25,7 +25,7 @@ const PopoverContent = React.forwardRef<
         backgroundColor: "#FFFFFF",
         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
         border: "1px solid #d1d5db",
-        color: "#1A1A1A"
+        color: "#333333"
       }}
       {...props}
     />

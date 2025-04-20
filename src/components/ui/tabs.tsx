@@ -58,7 +58,7 @@ const TabsContent = React.forwardRef<
       className
     )}
     style={{
-      backgroundColor: "white",
+      backgroundColor: "#FFFFFF",
       border: "1px solid #d1d5db",
       color: "#1A1A1A",
       boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)"
