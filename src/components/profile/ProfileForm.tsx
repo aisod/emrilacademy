@@ -39,35 +39,41 @@ export function ProfileForm({ profile, onSubmit }: ProfileFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="firstName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>First Name</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        <FormField
-          control={form.control}
-          name="lastName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Last Name</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="bg-white p-4 rounded-md border border-gray-200 space-y-6">
+          <FormField
+            control={form.control}
+            name="firstName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-gray-800 font-medium">First Name</FormLabel>
+                <FormControl>
+                  <Input {...field} className="border-gray-300 focus:border-primary" />
+                </FormControl>
+                <FormMessage className="text-red-600" />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="lastName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-gray-800 font-medium">Last Name</FormLabel>
+                <FormControl>
+                  <Input {...field} className="border-gray-300 focus:border-primary" />
+                </FormControl>
+                <FormMessage className="text-red-600" />
+              </FormItem>
+            )}
+          />
+        </div>
 
-        <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+        <Button 
+          type="submit" 
+          className="w-full bg-primary hover:bg-primary/90 text-white" 
+          disabled={form.formState.isSubmitting}
+        >
           {form.formState.isSubmitting ? "Saving..." : "Save Changes"}
         </Button>
       </form>

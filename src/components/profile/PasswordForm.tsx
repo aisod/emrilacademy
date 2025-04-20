@@ -40,11 +40,11 @@ export function PasswordForm({ onSubmit }: PasswordFormProps) {
   });
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Change Password</CardTitle>
+    <Card className="border border-gray-200 bg-white">
+      <CardHeader className="bg-white border-b border-gray-100">
+        <CardTitle className="text-gray-800">Change Password</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="bg-white pt-4">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
@@ -52,11 +52,11 @@ export function PasswordForm({ onSubmit }: PasswordFormProps) {
               name="currentPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Current Password</FormLabel>
+                  <FormLabel className="text-gray-800">Current Password</FormLabel>
                   <FormControl>
-                    <Input type="password" {...field} />
+                    <Input type="password" {...field} className="border-gray-300" />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-red-600" />
                 </FormItem>
               )}
             />
@@ -66,11 +66,11 @@ export function PasswordForm({ onSubmit }: PasswordFormProps) {
               name="newPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>New Password</FormLabel>
+                  <FormLabel className="text-gray-800">New Password</FormLabel>
                   <FormControl>
-                    <Input type="password" {...field} />
+                    <Input type="password" {...field} className="border-gray-300" />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-red-600" />
                 </FormItem>
               )}
             />
@@ -80,16 +80,20 @@ export function PasswordForm({ onSubmit }: PasswordFormProps) {
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confirm New Password</FormLabel>
+                  <FormLabel className="text-gray-800">Confirm New Password</FormLabel>
                   <FormControl>
-                    <Input type="password" {...field} />
+                    <Input type="password" {...field} className="border-gray-300" />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-red-600" />
                 </FormItem>
               )}
             />
 
-            <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+            <Button 
+              type="submit" 
+              className="w-full bg-primary hover:bg-primary/90 text-white" 
+              disabled={form.formState.isSubmitting}
+            >
               {form.formState.isSubmitting ? "Updating..." : "Update Password"}
             </Button>
           </form>
