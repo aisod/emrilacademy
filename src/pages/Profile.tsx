@@ -30,17 +30,19 @@ export default function Profile() {
         {loading ? (
           <ProfileLoadingState />
         ) : !user || !profile ? (
-          <div className="text-center">
-            <p className="text-lg text-gray-600 dark:text-gray-400">
+          <div className="text-center p-8 bg-white rounded-lg border border-gray-200 shadow-sm">
+            <p className="text-lg text-gray-600">
               Please sign in to view your profile.
             </p>
           </div>
         ) : (
-          <ProfileContent 
-            user={user} 
-            profile={profile} 
-            setProfile={setProfile}
-          />
+          <div className="bg-transparent">
+            <ProfileContent 
+              user={user} 
+              profile={profile} 
+              setProfile={setProfile}
+            />
+          </div>
         )}
       </div>
     </DashboardLayout>

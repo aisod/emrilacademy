@@ -78,13 +78,34 @@ export default {
           purple: "#8B5CF6",
           red: "#EF4444",
         },
-        // Define dropdown colors explicitly
+        // Explicitly define dropdown and popup colors
         dropdown: {
           bg: "#FFFFFF",
           hover: "#F3F4F6",
           border: "#E5E7EB",
           text: "#1A1A1A",
           shadow: "rgba(0, 0, 0, 0.1)",
+          selected: "#F0F7FF",
+          itemHover: "#F0F7FF",
+        },
+        popover: {
+          bg: "#FFFFFF",
+          border: "#E5E7EB",
+          text: "#1A1A1A",
+        },
+        tooltip: {
+          bg: "#1A1A1A",
+          text: "#FFFFFF",
+        },
+        modal: {
+          bg: "#FFFFFF",
+          overlay: "rgba(0, 0, 0, 0.5)",
+        },
+        tabs: {
+          bg: "#FFFFFF",
+          active: "#FFFFFF",
+          hover: "#F3F4F6",
+          border: "#E5E7EB",
         }
       },
       fontFamily: {
@@ -156,6 +177,8 @@ export default {
       boxShadow: {
         card: "0 2px 8px rgba(0, 0, 0, 0.08)",
         dropdown: "0 4px 12px rgba(0, 0, 0, 0.1)",
+        popover: "0 4px 12px rgba(0, 0, 0, 0.1)",
+        modal: "0 10px 25px rgba(0, 0, 0, 0.15)",
       },
     },
   },
