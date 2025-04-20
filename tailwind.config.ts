@@ -103,10 +103,27 @@ export default {
           overlay: "rgba(0, 0, 0, 0.5)",
         },
         tabs: {
-          bg: "#FFFFFF",
+          bg: "#F5F7FA",
           active: "#FFFFFF",
           hover: "#F3F4F6",
           border: "#E5E7EB",
+          text: "#1A1A1A",
+          activeText: "#0288D1",
+        },
+        // Added new colors for better consistency
+        dialog: {
+          bg: "#FFFFFF",
+          border: "#E5E7EB",
+        },
+        sheet: {
+          bg: "#FFFFFF",
+          border: "#E5E7EB",
+        },
+        command: {
+          bg: "#FFFFFF",
+          border: "#E5E7EB",
+          input: "#FFFFFF",
+          itemHover: "#F3F4F6",
         }
       },
       fontFamily: {
@@ -180,6 +197,9 @@ export default {
         dropdown: "0 4px 12px rgba(0, 0, 0, 0.1)",
         popover: "0 4px 12px rgba(0, 0, 0, 0.1)",
         modal: "0 10px 25px rgba(0, 0, 0, 0.15)",
+        sm: "0 1px 3px rgba(0, 0, 0, 0.08)",
+        md: "0 4px 6px rgba(0, 0, 0, 0.1)",
+        lg: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
       },
     },
   },

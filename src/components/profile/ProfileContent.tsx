@@ -97,11 +97,11 @@ export function ProfileContent({ user, profile, setProfile }: ProfileContentProp
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
-      <Card className="border border-gray-200 shadow-sm">
-        <CardHeader className="bg-white rounded-t-lg">
-          <CardTitle className="text-center">Profile Settings</CardTitle>
+      <Card className="border border-gray-200 shadow-sm bg-white">
+        <CardHeader className="bg-white rounded-t-lg border-b border-gray-100">
+          <CardTitle className="text-center text-gray-900">Profile Settings</CardTitle>
         </CardHeader>
-        <CardContent className="bg-white rounded-b-lg">
+        <CardContent className="bg-white rounded-b-lg pt-6">
           <div className="space-y-8">
             <UserAvatar
               userId={user.id}
@@ -116,14 +116,14 @@ export function ProfileContent({ user, profile, setProfile }: ProfileContentProp
                 <TabsTrigger value="profile" className="bg-white data-[state=active]:bg-primary data-[state=active]:text-white">Profile</TabsTrigger>
                 <TabsTrigger value="security" className="bg-white data-[state=active]:bg-primary data-[state=active]:text-white">Security</TabsTrigger>
               </TabsList>
-              <TabsContent value="profile" className="pt-4 bg-white">
+              <TabsContent value="profile" className="pt-4 bg-white border border-gray-100 rounded-b-md shadow-sm mt-2">
                 <ProfileForm
                   user={user}
                   profile={profile}
                   onSubmit={handleProfileUpdate}
                 />
               </TabsContent>
-              <TabsContent value="security" className="pt-4 bg-white">
+              <TabsContent value="security" className="pt-4 bg-white border border-gray-100 rounded-b-md shadow-sm mt-2">
                 <PasswordForm onSubmit={handlePasswordUpdate} />
               </TabsContent>
             </Tabs>

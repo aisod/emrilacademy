@@ -12,18 +12,18 @@ export default function Profile() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
-        <Breadcrumb>
+      <div className="space-y-6 bg-gray-50 p-4 sm:p-6 rounded-lg">
+        <Breadcrumb className="bg-white p-2 rounded-md shadow-sm">
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link to="/dashboard">
+              <Link to="/dashboard" className="text-primary hover:text-primary/80 flex items-center">
                 <Home className="h-4 w-4 mr-1" />
                 Dashboard
               </Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbItem>
-            <BreadcrumbPage>Profile</BreadcrumbPage>
+            <BreadcrumbPage className="text-gray-700">Profile</BreadcrumbPage>
           </BreadcrumbItem>
         </Breadcrumb>
         
