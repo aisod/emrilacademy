@@ -12,31 +12,31 @@ export default function Profile() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6 bg-white p-4 sm:p-6 rounded-lg border-2 border-gray-300 shadow-md">
-        <Breadcrumb className="bg-white p-2 rounded-md shadow-sm border-2 border-gray-300">
+      <div className="space-y-6 bg-white p-4 sm:p-6 rounded-lg border-2 border-gray-400 shadow-lg">
+        <Breadcrumb className="bg-white p-2 rounded-md shadow-md border-2 border-gray-400">
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link to="/dashboard" className="text-primary hover:text-primary/80 flex items-center font-medium">
+              <Link to="/dashboard" className="text-primary hover:text-primary/80 flex items-center font-bold">
                 <Home className="h-4 w-4 mr-1" />
                 Dashboard
               </Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbItem>
-            <BreadcrumbPage className="text-gray-800 font-medium">Profile</BreadcrumbPage>
+            <BreadcrumbPage className="text-gray-900 font-bold">Profile</BreadcrumbPage>
           </BreadcrumbItem>
         </Breadcrumb>
         
         {loading ? (
           <ProfileLoadingState />
         ) : !user || !profile ? (
-          <div className="text-center p-8 bg-white rounded-lg border-2 border-gray-300 shadow-sm">
-            <p className="text-lg text-gray-800 font-medium">
+          <div className="text-center p-8 bg-white rounded-lg border-2 border-gray-400 shadow-md">
+            <p className="text-lg text-gray-900 font-bold">
               Please sign in to view your profile.
             </p>
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow-md border-2 border-gray-300">
+          <div className="bg-white rounded-lg shadow-lg border-2 border-gray-400">
             <ProfileContent 
               user={user} 
               profile={profile} 

@@ -39,21 +39,21 @@ export function ProfileForm({ profile, onSubmit }: ProfileFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="bg-white p-6 space-y-6 shadow-sm">
+        <div className="bg-white p-6 space-y-6 shadow-md">
           <FormField
             control={form.control}
             name="firstName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gray-800 font-medium">First Name</FormLabel>
+                <FormLabel className="text-gray-900 font-semibold">First Name</FormLabel>
                 <FormControl>
                   <Input 
                     {...field} 
-                    className="border-2 border-gray-300 focus:border-primary bg-white text-gray-800" 
-                    style={{ backgroundColor: "white", color: "#222222" }}
+                    className="border-2 border-gray-400 focus:border-primary bg-white text-gray-900 shadow-md" 
+                    style={{ backgroundColor: "white", color: "#000000" }}
                   />
                 </FormControl>
-                <FormMessage className="text-red-600" />
+                <FormMessage className="text-red-600 font-semibold" />
               </FormItem>
             )}
           />
@@ -63,15 +63,15 @@ export function ProfileForm({ profile, onSubmit }: ProfileFormProps) {
             name="lastName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gray-800 font-medium">Last Name</FormLabel>
+                <FormLabel className="text-gray-900 font-semibold">Last Name</FormLabel>
                 <FormControl>
                   <Input 
                     {...field} 
-                    className="border-2 border-gray-300 focus:border-primary bg-white text-gray-800" 
-                    style={{ backgroundColor: "white", color: "#222222" }}
+                    className="border-2 border-gray-400 focus:border-primary bg-white text-gray-900 shadow-md" 
+                    style={{ backgroundColor: "white", color: "#000000" }}
                   />
                 </FormControl>
-                <FormMessage className="text-red-600" />
+                <FormMessage className="text-red-600 font-semibold" />
               </FormItem>
             )}
           />
@@ -79,13 +79,13 @@ export function ProfileForm({ profile, onSubmit }: ProfileFormProps) {
 
         <Button 
           type="submit" 
-          className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 rounded-md border-2 border-primary shadow-md" 
+          className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-md border-2 border-primary shadow-lg" 
           style={{ 
             backgroundColor: "#0288D1",
             color: "white", 
-            fontWeight: 600, 
+            fontWeight: 700, 
             padding: "0.75rem 1rem",
-            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
             border: "2px solid #0288D1"
           }}
           disabled={form.formState.isSubmitting}

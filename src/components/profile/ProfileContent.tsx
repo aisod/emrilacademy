@@ -97,9 +97,9 @@ export function ProfileContent({ user, profile, setProfile }: ProfileContentProp
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 p-6 bg-white">
-      <Card className="border-2 border-gray-300 shadow-md bg-white overflow-hidden">
-        <CardHeader className="bg-white rounded-t-lg border-b-2 border-gray-300 px-6 py-4">
-          <CardTitle className="text-center text-gray-800 text-xl font-semibold">Profile Settings</CardTitle>
+      <Card className="border-2 border-gray-400 shadow-lg bg-white overflow-hidden">
+        <CardHeader className="bg-white rounded-t-lg border-b-2 border-gray-400 px-6 py-4">
+          <CardTitle className="text-center text-gray-900 text-xl font-bold">Profile Settings</CardTitle>
         </CardHeader>
         <CardContent className="bg-white rounded-b-lg pt-6 px-6">
           <div className="space-y-8">
@@ -112,25 +112,25 @@ export function ProfileContent({ user, profile, setProfile }: ProfileContentProp
             />
 
             <Tabs defaultValue="profile" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6 border-2 border-gray-300 rounded-md overflow-hidden">
+              <TabsList className="grid w-full grid-cols-2 mb-6 border-2 border-gray-400 rounded-md overflow-hidden">
                 <TabsTrigger 
                   value="profile" 
-                  className="data-[state=active]:bg-primary data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-800 py-3 font-medium text-base"
-                  style={{ backgroundColor: "white", color: "#222222" }}
+                  className="data-[state=active]:bg-primary data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-900 py-3 font-bold text-base"
+                  style={{ backgroundColor: "white", color: "#000000" }}
                 >
                   Profile
                 </TabsTrigger>
                 <TabsTrigger 
                   value="security" 
-                  className="data-[state=active]:bg-primary data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-800 py-3 font-medium text-base"
-                  style={{ backgroundColor: "white", color: "#222222" }}
+                  className="data-[state=active]:bg-primary data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-900 py-3 font-bold text-base"
+                  style={{ backgroundColor: "white", color: "#000000" }}
                 >
                   Security
                 </TabsTrigger>
               </TabsList>
               <TabsContent 
                 value="profile" 
-                className="bg-white rounded-md border-2 border-gray-300 p-0"
+                className="bg-white rounded-md border-2 border-gray-400 p-0"
                 style={{ backgroundColor: "#FFFFFF" }}
               >
                 <ProfileForm
@@ -141,7 +141,7 @@ export function ProfileContent({ user, profile, setProfile }: ProfileContentProp
               </TabsContent>
               <TabsContent 
                 value="security" 
-                className="bg-white rounded-md border-2 border-gray-300 p-0"
+                className="bg-white rounded-md border-2 border-gray-400 p-0"
                 style={{ backgroundColor: "#FFFFFF" }}
               >
                 <PasswordForm onSubmit={handlePasswordUpdate} />

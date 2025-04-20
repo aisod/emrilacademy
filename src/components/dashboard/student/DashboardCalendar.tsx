@@ -4,9 +4,9 @@ import { ClassCalendar } from "@/components/calendar/ClassCalendar";
 
 export function DashboardCalendar() {
   return (
-    <Card className="border-2 border-gray-300 shadow-md bg-white">
-      <CardHeader className="border-b-2 border-gray-300 bg-white">
-        <CardTitle className="text-xl font-heading font-semibold text-gray-800">
+    <Card className="border-2 border-gray-400 shadow-lg bg-white">
+      <CardHeader className="border-b-2 border-gray-400 bg-white">
+        <CardTitle className="text-xl font-heading font-bold text-gray-900">
           Class Schedule
         </CardTitle>
       </CardHeader>

@@ -41,8 +41,8 @@ export function PasswordForm({ onSubmit }: PasswordFormProps) {
 
   return (
     <Card className="border-0 bg-white shadow-none">
-      <CardHeader className="bg-white border-b-2 border-gray-300 pb-4">
-        <CardTitle className="text-gray-800 font-medium">Change Password</CardTitle>
+      <CardHeader className="bg-white border-b-2 border-gray-400 pb-4">
+        <CardTitle className="text-gray-900 font-bold">Change Password</CardTitle>
       </CardHeader>
       <CardContent className="bg-white pt-6">
         <Form {...form}>
@@ -52,16 +52,16 @@ export function PasswordForm({ onSubmit }: PasswordFormProps) {
               name="currentPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-800 font-medium">Current Password</FormLabel>
+                  <FormLabel className="text-gray-900 font-semibold">Current Password</FormLabel>
                   <FormControl>
                     <Input 
                       type="password" 
                       {...field} 
-                      className="border-2 border-gray-300 bg-white text-gray-800 shadow-sm" 
-                      style={{ backgroundColor: "white", color: "#222222" }}
+                      className="border-2 border-gray-400 bg-white text-gray-900 shadow-md" 
+                      style={{ backgroundColor: "white", color: "#000000" }}
                     />
                   </FormControl>
-                  <FormMessage className="text-red-600" />
+                  <FormMessage className="text-red-600 font-semibold" />
                 </FormItem>
               )}
             />
@@ -71,16 +71,16 @@ export function PasswordForm({ onSubmit }: PasswordFormProps) {
               name="newPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-800 font-medium">New Password</FormLabel>
+                  <FormLabel className="text-gray-900 font-semibold">New Password</FormLabel>
                   <FormControl>
                     <Input 
                       type="password" 
                       {...field} 
-                      className="border-2 border-gray-300 bg-white text-gray-800 shadow-sm" 
-                      style={{ backgroundColor: "white", color: "#222222" }}
+                      className="border-2 border-gray-400 bg-white text-gray-900 shadow-md" 
+                      style={{ backgroundColor: "white", color: "#000000" }}
                     />
                   </FormControl>
-                  <FormMessage className="text-red-600" />
+                  <FormMessage className="text-red-600 font-semibold" />
                 </FormItem>
               )}
             />
@@ -90,29 +90,29 @@ export function PasswordForm({ onSubmit }: PasswordFormProps) {
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-800 font-medium">Confirm New Password</FormLabel>
+                  <FormLabel className="text-gray-900 font-semibold">Confirm New Password</FormLabel>
                   <FormControl>
                     <Input 
                       type="password" 
                       {...field} 
-                      className="border-2 border-gray-300 bg-white text-gray-800 shadow-sm" 
-                      style={{ backgroundColor: "white", color: "#222222" }}
+                      className="border-2 border-gray-400 bg-white text-gray-900 shadow-md" 
+                      style={{ backgroundColor: "white", color: "#000000" }}
                     />
                   </FormControl>
-                  <FormMessage className="text-red-600" />
+                  <FormMessage className="text-red-600 font-semibold" />
                 </FormItem>
               )}
             />
 
             <Button 
               type="submit" 
-              className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 rounded-md border-2 border-primary shadow-md" 
+              className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-md border-2 border-primary shadow-lg" 
               style={{ 
                 backgroundColor: "#0288D1",
                 color: "white", 
-                fontWeight: 600, 
+                fontWeight: 700, 
                 padding: "0.75rem 1rem",
-                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
                 border: "2px solid #0288D1"
               }}
               disabled={form.formState.isSubmitting}
