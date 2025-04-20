@@ -12,7 +12,7 @@ export default function TeachersPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, first_name, last_name, bio, avatar_url")
+        .select("id, first_name, last_name, avatar_url")
         .eq("role", "teacher");
       
       if (error) throw error;
