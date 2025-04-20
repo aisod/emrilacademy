@@ -39,7 +39,7 @@ export function ProfileForm({ profile, onSubmit }: ProfileFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="bg-white p-4 rounded-md border border-gray-200 space-y-6">
+        <div className="bg-white p-4 rounded-md border border-gray-300 space-y-6">
           <FormField
             control={form.control}
             name="firstName"
@@ -47,7 +47,10 @@ export function ProfileForm({ profile, onSubmit }: ProfileFormProps) {
               <FormItem>
                 <FormLabel className="text-gray-800 font-medium">First Name</FormLabel>
                 <FormControl>
-                  <Input {...field} className="border-gray-300 focus:border-primary" />
+                  <Input 
+                    {...field} 
+                    className="border-gray-300 focus:border-primary bg-white text-gray-800" 
+                  />
                 </FormControl>
                 <FormMessage className="text-red-600" />
               </FormItem>
@@ -61,7 +64,10 @@ export function ProfileForm({ profile, onSubmit }: ProfileFormProps) {
               <FormItem>
                 <FormLabel className="text-gray-800 font-medium">Last Name</FormLabel>
                 <FormControl>
-                  <Input {...field} className="border-gray-300 focus:border-primary" />
+                  <Input 
+                    {...field} 
+                    className="border-gray-300 focus:border-primary bg-white text-gray-800" 
+                  />
                 </FormControl>
                 <FormMessage className="text-red-600" />
               </FormItem>

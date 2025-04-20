@@ -97,8 +97,8 @@ export function ProfileContent({ user, profile, setProfile }: ProfileContentProp
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 p-6 bg-white">
-      <Card className="border border-gray-200 shadow-md bg-white overflow-hidden">
-        <CardHeader className="bg-white rounded-t-lg border-b border-gray-200 px-6 py-4">
+      <Card className="border border-gray-300 shadow-md bg-white overflow-hidden">
+        <CardHeader className="bg-white rounded-t-lg border-b border-gray-300 px-6 py-4">
           <CardTitle className="text-center text-gray-800 text-xl font-semibold">Profile Settings</CardTitle>
         </CardHeader>
         <CardContent className="bg-white rounded-b-lg pt-6 px-6">
@@ -112,23 +112,23 @@ export function ProfileContent({ user, profile, setProfile }: ProfileContentProp
             />
 
             <Tabs defaultValue="profile" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 bg-gray-100">
+              <TabsList className="grid w-full grid-cols-2 bg-gray-100 mb-4">
                 <TabsTrigger 
                   value="profile" 
-                  className="data-[state=active]:bg-primary data-[state=active]:text-white hover:bg-gray-200"
+                  className="data-[state=active]:bg-primary data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-800 hover:bg-gray-200 py-2 font-medium"
                 >
                   Profile
                 </TabsTrigger>
                 <TabsTrigger 
                   value="security" 
-                  className="data-[state=active]:bg-primary data-[state=active]:text-white hover:bg-gray-200"
+                  className="data-[state=active]:bg-primary data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-800 hover:bg-gray-200 py-2 font-medium"
                 >
                   Security
                 </TabsTrigger>
               </TabsList>
               <TabsContent 
                 value="profile" 
-                className="bg-white border border-gray-200 shadow-sm rounded-md p-6 mt-4"
+                className="bg-white border border-gray-300 shadow-sm rounded-md p-6"
               >
                 <ProfileForm
                   user={user}
@@ -138,7 +138,7 @@ export function ProfileContent({ user, profile, setProfile }: ProfileContentProp
               </TabsContent>
               <TabsContent 
                 value="security" 
-                className="bg-white border border-gray-200 shadow-sm rounded-md p-6 mt-4"
+                className="bg-white border border-gray-300 shadow-sm rounded-md p-6"
               >
                 <PasswordForm onSubmit={handlePasswordUpdate} />
               </TabsContent>

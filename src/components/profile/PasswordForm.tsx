@@ -40,8 +40,8 @@ export function PasswordForm({ onSubmit }: PasswordFormProps) {
   });
 
   return (
-    <Card className="border border-gray-200 bg-white">
-      <CardHeader className="bg-white border-b border-gray-100">
+    <Card className="border border-gray-300 bg-white shadow-sm">
+      <CardHeader className="bg-white border-b border-gray-200">
         <CardTitle className="text-gray-800">Change Password</CardTitle>
       </CardHeader>
       <CardContent className="bg-white pt-4">
@@ -54,7 +54,11 @@ export function PasswordForm({ onSubmit }: PasswordFormProps) {
                 <FormItem>
                   <FormLabel className="text-gray-800">Current Password</FormLabel>
                   <FormControl>
-                    <Input type="password" {...field} className="border-gray-300" />
+                    <Input 
+                      type="password" 
+                      {...field} 
+                      className="border-gray-300 bg-white text-gray-800" 
+                    />
                   </FormControl>
                   <FormMessage className="text-red-600" />
                 </FormItem>
@@ -68,7 +72,11 @@ export function PasswordForm({ onSubmit }: PasswordFormProps) {
                 <FormItem>
                   <FormLabel className="text-gray-800">New Password</FormLabel>
                   <FormControl>
-                    <Input type="password" {...field} className="border-gray-300" />
+                    <Input 
+                      type="password" 
+                      {...field} 
+                      className="border-gray-300 bg-white text-gray-800" 
+                    />
                   </FormControl>
                   <FormMessage className="text-red-600" />
                 </FormItem>
@@ -82,7 +90,11 @@ export function PasswordForm({ onSubmit }: PasswordFormProps) {
                 <FormItem>
                   <FormLabel className="text-gray-800">Confirm New Password</FormLabel>
                   <FormControl>
-                    <Input type="password" {...field} className="border-gray-300" />
+                    <Input 
+                      type="password" 
+                      {...field} 
+                      className="border-gray-300 bg-white text-gray-800" 
+                    />
                   </FormControl>
                   <FormMessage className="text-red-600" />
                 </FormItem>
