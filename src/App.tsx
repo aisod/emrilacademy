@@ -13,6 +13,7 @@ import Dashboard from "./pages/Dashboard";
 import Messages from "./pages/Messages";
 import ResourcesPage from "./pages/ResourcesPage";
 import Profile from './pages/Profile';
+import TeachersPage from "./pages/TeachersPage";
 
 const StudentDashboard = lazy(() => import("./pages/StudentDashboard"));
 const TeacherDashboard = lazy(() => import("./pages/TeacherDashboard"));
@@ -182,6 +183,16 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Profile />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/teachers" 
+              element={
+                <ProtectedRoute>
+                  <Suspense fallback={<LoadingFallback />}>
+                    <TeachersPage />
+                  </Suspense>
                 </ProtectedRoute>
               } 
             />
