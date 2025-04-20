@@ -115,20 +115,20 @@ export function ProfileContent({ user, profile, setProfile }: ProfileContentProp
               <TabsList className="grid w-full grid-cols-2 bg-gray-100">
                 <TabsTrigger 
                   value="profile" 
-                  className="bg-white data-[state=active]:bg-primary data-[state=active]:text-white hover:bg-gray-50 transition-colors"
+                  className="data-[state=active]:bg-primary data-[state=active]:text-white"
                 >
                   Profile
                 </TabsTrigger>
                 <TabsTrigger 
                   value="security" 
-                  className="bg-white data-[state=active]:bg-primary data-[state=active]:text-white hover:bg-gray-50 transition-colors"
+                  className="data-[state=active]:bg-primary data-[state=active]:text-white"
                 >
                   Security
                 </TabsTrigger>
               </TabsList>
               <TabsContent 
                 value="profile" 
-                className="pt-4 bg-white border border-gray-100 rounded-b-md shadow-sm mt-2 p-4"
+                className="border border-gray-100 rounded-md shadow-sm mt-4 p-4 bg-white"
               >
                 <ProfileForm
                   user={user}
@@ -138,7 +138,7 @@ export function ProfileContent({ user, profile, setProfile }: ProfileContentProp
               </TabsContent>
               <TabsContent 
                 value="security" 
-                className="pt-4 bg-white border border-gray-100 rounded-b-md shadow-sm mt-2 p-4"
+                className="border border-gray-100 rounded-md shadow-sm mt-4 p-4 bg-white"
               >
                 <PasswordForm onSubmit={handlePasswordUpdate} />
               </TabsContent>
