@@ -39,7 +39,7 @@ export function ProfileForm({ profile, onSubmit }: ProfileFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="bg-white p-6 rounded-md border border-gray-300 space-y-6 shadow-sm">
+        <div className="bg-white p-6 space-y-6 shadow-sm">
           <FormField
             control={form.control}
             name="firstName"
@@ -49,7 +49,8 @@ export function ProfileForm({ profile, onSubmit }: ProfileFormProps) {
                 <FormControl>
                   <Input 
                     {...field} 
-                    className="border-gray-300 focus:border-primary bg-white text-gray-800" 
+                    className="border-2 border-gray-300 focus:border-primary bg-white text-gray-800" 
+                    style={{ backgroundColor: "white", color: "#222222" }}
                   />
                 </FormControl>
                 <FormMessage className="text-red-600" />
@@ -66,7 +67,8 @@ export function ProfileForm({ profile, onSubmit }: ProfileFormProps) {
                 <FormControl>
                   <Input 
                     {...field} 
-                    className="border-gray-300 focus:border-primary bg-white text-gray-800" 
+                    className="border-2 border-gray-300 focus:border-primary bg-white text-gray-800" 
+                    style={{ backgroundColor: "white", color: "#222222" }}
                   />
                 </FormControl>
                 <FormMessage className="text-red-600" />
@@ -77,7 +79,15 @@ export function ProfileForm({ profile, onSubmit }: ProfileFormProps) {
 
         <Button 
           type="submit" 
-          className="w-full bg-primary hover:bg-primary/90 text-white font-medium" 
+          className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 rounded-md border-2 border-primary shadow-md" 
+          style={{ 
+            backgroundColor: "#0288D1",
+            color: "white", 
+            fontWeight: 600, 
+            padding: "0.75rem 1rem",
+            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+            border: "2px solid #0288D1"
+          }}
           disabled={form.formState.isSubmitting}
         >
           {form.formState.isSubmitting ? "Saving..." : "Save Changes"}

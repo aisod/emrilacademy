@@ -40,8 +40,8 @@ export function PasswordForm({ onSubmit }: PasswordFormProps) {
   });
 
   return (
-    <Card className="border border-gray-300 bg-white shadow-md">
-      <CardHeader className="bg-white border-b border-gray-300 pb-4">
+    <Card className="border-0 bg-white shadow-none">
+      <CardHeader className="bg-white border-b-2 border-gray-300 pb-4">
         <CardTitle className="text-gray-800 font-medium">Change Password</CardTitle>
       </CardHeader>
       <CardContent className="bg-white pt-6">
@@ -57,7 +57,8 @@ export function PasswordForm({ onSubmit }: PasswordFormProps) {
                     <Input 
                       type="password" 
                       {...field} 
-                      className="border-gray-300 bg-white text-gray-800 shadow-sm" 
+                      className="border-2 border-gray-300 bg-white text-gray-800 shadow-sm" 
+                      style={{ backgroundColor: "white", color: "#222222" }}
                     />
                   </FormControl>
                   <FormMessage className="text-red-600" />
@@ -75,7 +76,8 @@ export function PasswordForm({ onSubmit }: PasswordFormProps) {
                     <Input 
                       type="password" 
                       {...field} 
-                      className="border-gray-300 bg-white text-gray-800 shadow-sm" 
+                      className="border-2 border-gray-300 bg-white text-gray-800 shadow-sm" 
+                      style={{ backgroundColor: "white", color: "#222222" }}
                     />
                   </FormControl>
                   <FormMessage className="text-red-600" />
@@ -93,7 +95,8 @@ export function PasswordForm({ onSubmit }: PasswordFormProps) {
                     <Input 
                       type="password" 
                       {...field} 
-                      className="border-gray-300 bg-white text-gray-800 shadow-sm" 
+                      className="border-2 border-gray-300 bg-white text-gray-800 shadow-sm" 
+                      style={{ backgroundColor: "white", color: "#222222" }}
                     />
                   </FormControl>
                   <FormMessage className="text-red-600" />
@@ -103,7 +106,15 @@ export function PasswordForm({ onSubmit }: PasswordFormProps) {
 
             <Button 
               type="submit" 
-              className="w-full bg-primary hover:bg-primary/90 text-white font-medium" 
+              className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 rounded-md border-2 border-primary shadow-md" 
+              style={{ 
+                backgroundColor: "#0288D1",
+                color: "white", 
+                fontWeight: 600, 
+                padding: "0.75rem 1rem",
+                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                border: "2px solid #0288D1"
+              }}
               disabled={form.formState.isSubmitting}
             >
               {form.formState.isSubmitting ? "Updating..." : "Update Password"}
