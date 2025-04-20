@@ -35,7 +35,8 @@ const TabsTrigger = React.forwardRef<
     style={{
       backgroundColor: "white",
       border: "1px solid transparent",
-      "--tw-ring-color": "#0288D1"
+      // Fix: Remove the CSS custom property and use a standard CSS property instead
+      outlineColor: "#0288D1" 
     }}
     {...props}
   />
