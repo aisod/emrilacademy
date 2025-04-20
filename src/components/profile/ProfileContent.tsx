@@ -113,17 +113,33 @@ export function ProfileContent({ user, profile, setProfile }: ProfileContentProp
 
             <Tabs defaultValue="profile" className="w-full">
               <TabsList className="grid w-full grid-cols-2 bg-gray-100">
-                <TabsTrigger value="profile" className="bg-white data-[state=active]:bg-primary data-[state=active]:text-white">Profile</TabsTrigger>
-                <TabsTrigger value="security" className="bg-white data-[state=active]:bg-primary data-[state=active]:text-white">Security</TabsTrigger>
+                <TabsTrigger 
+                  value="profile" 
+                  className="bg-white data-[state=active]:bg-primary data-[state=active]:text-white hover:bg-gray-50 transition-colors"
+                >
+                  Profile
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="security" 
+                  className="bg-white data-[state=active]:bg-primary data-[state=active]:text-white hover:bg-gray-50 transition-colors"
+                >
+                  Security
+                </TabsTrigger>
               </TabsList>
-              <TabsContent value="profile" className="pt-4 bg-white border border-gray-100 rounded-b-md shadow-sm mt-2">
+              <TabsContent 
+                value="profile" 
+                className="pt-4 bg-white border border-gray-100 rounded-b-md shadow-sm mt-2 p-4"
+              >
                 <ProfileForm
                   user={user}
                   profile={profile}
                   onSubmit={handleProfileUpdate}
                 />
               </TabsContent>
-              <TabsContent value="security" className="pt-4 bg-white border border-gray-100 rounded-b-md shadow-sm mt-2">
+              <TabsContent 
+                value="security" 
+                className="pt-4 bg-white border border-gray-100 rounded-b-md shadow-sm mt-2 p-4"
+              >
                 <PasswordForm onSubmit={handlePasswordUpdate} />
               </TabsContent>
             </Tabs>

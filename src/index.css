@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -230,8 +229,10 @@ body {
 /* Fix for profile and tabs content */
 .tabs-content,
 .profile-content,
-.card-content {
+.card-content,
+.TabsContent {
   background-color: white !important;
+  border: 1px solid #e5e7eb !important;
 }
 
 /* Fix for calendar cells */
@@ -266,6 +267,26 @@ button,
 
 .TabsTrigger[data-state="active"],
 [role="tab"][data-state="active"] {
+  background-color: #0288D1 !important;
+  color: white !important;
+}
+
+[role="tab"] {
+  background-color: white !important;
+}
+
+/* Fix for card backgrounds */
+.card,
+[data-radix-card] {
+  background-color: white !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Fix for form fields and inputs */
+.form-field,
+.form-input,
+.input-wrapper {
   background-color: white !important;
 }
 
@@ -345,4 +366,36 @@ button,
 .radix-state-open,
 .radix-state-on {
   background-color: white !important;
+}
+
+/* Fix for profile page specific components */
+.profile-card .card-header,
+.profile-card .card-content,
+.profile-form,
+.profile-avatar {
+  background-color: white !important;
+}
+
+/* Additional fixes for form elements in profile */
+.profile-form input,
+.profile-form textarea,
+.profile-form select {
+  background-color: white !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+/* Fix for Tab Content */
+.TabsContent[data-state="active"] {
+  background-color: white !important;
+  border: 1px solid #e5e7eb !important;
+  padding: 1rem !important;
+}
+
+/* Force background colors for popover and sheet content */
+.PopoverContent,
+.SheetContent,
+.DialogContent {
+  background-color: white !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
 }

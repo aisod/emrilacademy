@@ -13,7 +13,7 @@ export default function Profile() {
   return (
     <DashboardLayout>
       <div className="space-y-6 bg-gray-50 p-4 sm:p-6 rounded-lg">
-        <Breadcrumb className="bg-white p-2 rounded-md shadow-sm">
+        <Breadcrumb className="bg-white p-2 rounded-md shadow-sm border border-gray-200">
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
               <Link to="/dashboard" className="text-primary hover:text-primary/80 flex items-center">
