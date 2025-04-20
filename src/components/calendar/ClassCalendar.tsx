@@ -89,40 +89,40 @@ export function ClassCalendar({ role }: ClassCalendarProps) {
     const hasReminder = reminders.some(r => !r.sent_at);
 
     return (
-      <div className="p-4 rounded-lg border border-card-border bg-white shadow-card space-y-3 hover:bg-card-hover transition-colors">
+      <div className="p-4 rounded-lg border border-gray-200 bg-white shadow-sm space-y-3">
         <div className="flex items-center justify-between">
-          <h4 className="font-medium text-text-DEFAULT text-base">{classItem.title}</h4>
+          <h4 className="font-medium text-gray-900 text-base">{classItem.title}</h4>
           <div className="flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button 
                   variant={hasReminder ? "default" : "outline"} 
                   size="sm"
-                  className="flex items-center gap-1 shadow-sm"
+                  className="flex items-center gap-1 shadow-sm text-gray-700"
                 >
                   <Bell className="h-4 w-4" />
                   <span className="font-medium">{hasReminder ? "Reminder Set" : "Set Reminder"}</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-white shadow-dropdown border-card-border">
-                <DropdownMenuItem className="hover:bg-calendar-hover" onClick={() => handleSetReminder("15_minutes")}>
+              <DropdownMenuContent align="end" className="bg-white shadow-md border-gray-200">
+                <DropdownMenuItem className="hover:bg-gray-50 text-gray-700" onClick={() => handleSetReminder("15_minutes")}>
                   15 minutes before
                 </DropdownMenuItem>
-                <DropdownMenuItem className="hover:bg-calendar-hover" onClick={() => handleSetReminder("30_minutes")}>
+                <DropdownMenuItem className="hover:bg-gray-50 text-gray-700" onClick={() => handleSetReminder("30_minutes")}>
                   30 minutes before
                 </DropdownMenuItem>
-                <DropdownMenuItem className="hover:bg-calendar-hover" onClick={() => handleSetReminder("1_hour")}>
+                <DropdownMenuItem className="hover:bg-gray-50 text-gray-700" onClick={() => handleSetReminder("1_hour")}>
                   1 hour before
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Badge variant="outline" className="bg-calendar-today text-text-DEFAULT font-medium">
+            <Badge variant="outline" className="bg-gray-50 text-gray-700 font-medium">
               {format(new Date(classItem.start_time), "h:mm a")}
             </Badge>
           </div>
         </div>
         {role === "student" && (
-          <p className="text-sm text-text-muted">
+          <p className="text-sm text-gray-600">
             Teacher: {classItem.teacher.first_name} {classItem.teacher.last_name}
           </p>
         )}
@@ -131,43 +131,43 @@ export function ClassCalendar({ role }: ClassCalendarProps) {
   }
 
   return (
-    <Card className="flex-1 border-card-border shadow-card">
+    <Card className="flex-1 border-gray-200 shadow-sm">
       <CardContent className="p-6">
         <div className="flex flex-col lg:flex-row gap-8">
           <Calendar
             mode="single"
             selected={date}
             onSelect={(date) => date && setDate(date)}
-            className="rounded-lg border border-card-border bg-calendar p-6 shadow-sm w-full lg:w-auto"
+            className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm w-full lg:w-auto"
             classNames={{
               months: "space-y-4",
               month: "space-y-4",
               caption: "flex justify-center pt-1 relative items-center",
-              caption_label: "text-base font-medium text-text-DEFAULT",
+              caption_label: "text-base font-medium text-gray-900",
               nav: "space-x-1 flex items-center",
-              nav_button: "h-8 w-8 bg-transparent p-0 hover:bg-calendar-hover rounded-md text-text-muted",
+              nav_button: "h-8 w-8 bg-transparent p-0 hover:bg-gray-50 rounded-md text-gray-600",
               nav_button_previous: "absolute left-1",
               nav_button_next: "absolute right-1",
               table: "w-full border-collapse space-y-1",
               head_row: "flex",
-              head_cell: "w-9 font-medium text-text-muted rounded-md",
+              head_cell: "w-9 font-medium text-gray-600 rounded-md",
               row: "flex w-full mt-2",
-              cell: "w-9 h-9 text-center text-sm relative p-0 hover:bg-calendar-hover rounded-md",
-              day: "h-9 w-9 p-0 font-normal text-text-DEFAULT hover:bg-calendar-hover rounded-md",
-              day_today: "bg-calendar-today text-text-DEFAULT font-semibold hover:bg-calendar-hover",
-              day_selected: "bg-calendar-selected text-calendar-text-selected hover:bg-calendar-selected hover:text-calendar-text-selected focus:bg-calendar-selected focus:text-calendar-text-selected",
-              day_outside: "text-text-muted opacity-50",
-              day_disabled: "text-text-muted opacity-50",
+              cell: "w-9 h-9 text-center text-sm relative p-0 hover:bg-gray-50 rounded-md",
+              day: "h-9 w-9 p-0 font-normal text-gray-900 hover:bg-gray-50 rounded-md",
+              day_today: "bg-gray-50 text-gray-900 font-semibold hover:bg-gray-100",
+              day_selected: "bg-primary text-white hover:bg-primary hover:text-white focus:bg-primary focus:text-white",
+              day_outside: "text-gray-400 opacity-50",
+              day_disabled: "text-gray-400 opacity-50",
               day_hidden: "invisible",
             }}
           />
 
           <div className="flex-1 space-y-4">
-            <h3 className="font-heading text-xl font-semibold text-text-DEFAULT">
+            <h3 className="font-heading text-xl font-semibold text-gray-900">
               Classes for {format(date, "MMMM d, yyyy")}
             </h3>
             {classesForSelectedDate.length === 0 ? (
-              <p className="text-text-muted">No classes scheduled</p>
+              <p className="text-gray-600">No classes scheduled</p>
             ) : (
               <div className="space-y-4">
                 {classesForSelectedDate.map((class_) => (
