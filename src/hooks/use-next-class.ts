@@ -9,6 +9,7 @@ export function useNextClass() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("Not authenticated");
 
+      // Using the correct join syntax to get only enrolled classes for the student
       const { data, error } = await supabase
         .from("classes")
         .select(`
