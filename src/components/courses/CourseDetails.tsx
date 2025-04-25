@@ -114,7 +114,7 @@ export function CourseDetails({ slug }: CourseDetailsProps) {
             <div className="flex items-start gap-2">
               <User className="h-4 w-4 text-muted-foreground mt-0.5" />
               <div>
-                <dt className="font-medium text-muted-foreground">Teacher ID</dt>
+                <dt className="font-medium text-muted-foreground">Instructor</dt>
                 <dd className="truncate">{course.teacher_id}</dd>
               </div>
             </div>

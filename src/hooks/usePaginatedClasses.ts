@@ -2,6 +2,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 
 export interface Class {
   id: string;
@@ -17,10 +18,15 @@ export interface Class {
 
 export interface ClassFilters {
   searchTerm?: string;
-  classType?: string;
+  classType?: Database["public"]["Enums"]["class_type"] | null;
   teacherId?: string;
   startDateMin?: string;
   startDateMax?: string;
+}
+
+interface ClassesResponse {
+  classes: Class[];
+  totalCount: number;
 }
 
 export function usePaginatedClasses(courseId?: string, initialFilters: ClassFilters = {}) {
@@ -43,7 +49,7 @@ export function usePaginatedClasses(courseId?: string, initialFilters: ClassFilt
     setCurrentPage(1);
   }, [searchTerm, sort, courseId, filters]);
 
-  const fetchClasses = async () => {
+  const fetchClasses = async (): Promise<ClassesResponse> => {
     let query = supabase
       .from("classes")
       .select("*", { count: 'exact' })
@@ -154,16 +160,16 @@ export function usePaginatedClasses(courseId?: string, initialFilters: ClassFilt
         }
       }
       
-      query.then(({ data }) => {
-        if (data) {
+      query.then(({ data: prefetchedData }) => {
+        if (prefetchedData) {
           queryClient.setQueryData(
             ["classes", currentPage + 1, pageSize, sort, searchTerm, filters, courseId],
-            { classes: data, totalCount: data?.totalCount || 0 }
+            { classes: prefetchedData, totalCount: data?.totalCount || 0 }
           );
         }
       });
     }
-  }, [currentPage, pageSize, sort, searchTerm, filters, courseId, data?.totalCount, queryClient]);
+  }, [currentPage, pageSize, sort, searchTerm, filters, courseId, queryClient, data?.totalCount]);
 
   // Setup the query with proper caching
   const { data, isLoading, refetch, isFetching } = useQuery({

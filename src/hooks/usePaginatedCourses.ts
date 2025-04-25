@@ -13,6 +13,11 @@ export interface CourseFilters {
   teacherId?: string;
 }
 
+interface CoursesResponse {
+  courses: Course[];
+  totalCount: number;
+}
+
 export function usePaginatedCourses(initialFilters: CourseFilters = {}) {
   const queryClient = useQueryClient();
   const [currentPage, setCurrentPage] = useState(1);
@@ -33,7 +38,7 @@ export function usePaginatedCourses(initialFilters: CourseFilters = {}) {
     setCurrentPage(1);
   }, [searchTerm, sort, filters]);
 
-  const fetchCourses = async () => {
+  const fetchCourses = async (): Promise<CoursesResponse> => {
     let query = supabase
       .from("courses")
       .select("*", { count: 'exact' })
@@ -137,16 +142,16 @@ export function usePaginatedCourses(initialFilters: CourseFilters = {}) {
         }
       }
       
-      query.then(({ data }) => {
-        if (data) {
+      query.then(({ data: prefetchedData }) => {
+        if (prefetchedData) {
           queryClient.setQueryData(
             ["courses", currentPage + 1, pageSize, sort, searchTerm, filters],
-            { courses: data, totalCount: data?.totalCount || 0 }
+            { courses: prefetchedData, totalCount: data?.totalCount || 0 }
           );
         }
       });
     }
-  }, [currentPage, pageSize, sort, searchTerm, filters, data?.totalCount, queryClient]);
+  }, [currentPage, pageSize, sort, searchTerm, filters, queryClient, data?.totalCount]);
 
   // Setup the query with proper caching
   const { data, isLoading, refetch, isFetching } = useQuery({
