@@ -2,8 +2,48 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Class } from '@/components/classes/types';
 import { usePagination } from './usePagination';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
-export function usePaginatedClasses(classes: Class[], searchTerm: string) {
+export function usePaginatedClasses() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sort, setSort] = useState('newest');
+  
+  // Fetch classes from database
+  const { data, isLoading, refetch, isFetching } = useQuery({
+    queryKey: ['classes'],
+    queryFn: async () => {
+      let query = supabase
+        .from('classes')
+        .select(`
+          *,
+          enrollments:enrollments(count)
+        `);
+
+      // Apply sorting
+      if (sort === 'newest') {
+        query = query.order('created_at', { ascending: false });
+      } else if (sort === 'oldest') {
+        query = query.order('created_at', { ascending: true });
+      } else if (sort === 'upcoming') {
+        query = query.order('start_time', { ascending: true });
+      } else if (sort === 'title-asc') {
+        query = query.order('title', { ascending: true });
+      } else if (sort === 'title-desc') {
+        query = query.order('title', { ascending: false });
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error('Error fetching classes:', error);
+        throw error;
+      }
+      
+      return data || [];
+    }
+  });
+
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
 
   useEffect(() => {
@@ -14,10 +54,9 @@ export function usePaginatedClasses(classes: Class[], searchTerm: string) {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  const filteredClasses = classes?.filter(cls => 
+  const filteredClasses = data?.filter(cls => 
     cls.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-    cls.description?.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-    `${cls.teacher.first_name} ${cls.teacher.last_name}`.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+    cls.description?.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
   ) ?? [];
 
   const { 
@@ -45,12 +84,23 @@ export function usePaginatedClasses(classes: Class[], searchTerm: string) {
   return {
     filteredClasses,
     paginatedClasses,
+    classes: paginatedClasses, // Provide classes alias for backward compatibility
+    isLoading,
+    isFetching,
     currentPage,
     nextPage,
     prevPage,
     totalPages,
     pageSize,
-    changePageSize,
+    sort,
+    setSort,
+    setSearchTerm,
+    changePageSize: (size: number) => {
+      changePageSize(size);
+    },
+    setPageSize: changePageSize, // Provide setPageSize alias for backward compatibility
     goToPage,
+    refetch,
+    resetPagination
   };
 }

@@ -9,7 +9,7 @@ interface ClassGridProps {
   teacherView?: boolean;
 }
 
-export function ClassGrid({ classes, isLoading, teacherView = false }: ClassGridProps) {
+export function ClassGrid({ classes = [], isLoading, teacherView = false }: ClassGridProps) {
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -28,7 +28,7 @@ export function ClassGrid({ classes, isLoading, teacherView = false }: ClassGrid
     );
   }
 
-  if (!classes.length) {
+  if (!Array.isArray(classes) || classes.length === 0) {
     return (
       <Card>
         <CardContent className="py-8">
