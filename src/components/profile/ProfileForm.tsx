@@ -1,11 +1,12 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { User } from "@supabase/supabase-js";
+import type { User } from "@supabase/supabase-js";
 import { profileFormSchema, type ProfileFormValues } from "./validation/profileValidation";
 import { NameFields } from "./components/NameFields";
+import { FormActions } from "./components/FormActions";
+import { useProfileForm } from "./hooks/useProfileForm";
 
 interface ProfileFormProps {
   user: User;
@@ -17,31 +18,24 @@ interface ProfileFormProps {
 }
 
 export function ProfileForm({
+  user,
   profile,
   onSubmit
 }: ProfileFormProps) {
+  const { handleSubmit, defaultValues } = useProfileForm({ user, profile, onSubmit });
+  
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
-    defaultValues: {
-      firstName: profile.first_name || "",
-      lastName: profile.last_name || ""
-    }
+    defaultValues
   });
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
         <div className="bg-white p-6 space-y-6 shadow-md">
           <NameFields form={form} />
         </div>
-
-        <Button 
-          type="submit" 
-          disabled={form.formState.isSubmitting} 
-          className="w-full text-primary hover:text-primary-dark font-bold py-3 rounded-md border-2 border-primary shadow-lg"
-        >
-          {form.formState.isSubmitting ? "Saving..." : "Save Changes"}
-        </Button>
+        <FormActions form={form} />
       </form>
     </Form>
   );
