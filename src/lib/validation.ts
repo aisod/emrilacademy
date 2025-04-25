@@ -1,4 +1,3 @@
-
 import { z } from "zod";
 
 // Email validation schema with detailed error messages
@@ -14,7 +13,7 @@ export const teacherEmailSchema = z
   .email({ message: "Please enter a valid email address" })
   .refine(
     (email) => email.endsWith("@emrilacademy.com") || email.endsWith("@emrilacademy.tech"),
-    { message: "Teacher email must end with @emrilacademy.com or @emrilacademy.tech" }
+    { message: "To register as a teacher, you need an EmRil Academy email address" }
   );
 
 // Password validation with strength requirements
@@ -80,7 +79,7 @@ export const registerFormSchema = z.object({
         !email.endsWith("@emrilacademy.tech")) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Teacher email must end with @emrilacademy.com or @emrilacademy.tech",
+        message: "To register as a teacher, you need an EmRil Academy email address",
       });
     }
   }),
