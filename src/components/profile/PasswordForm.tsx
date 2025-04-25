@@ -81,7 +81,7 @@ export function PasswordForm({
             padding: "0.75rem 1rem",
             boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
             border: "2px solid #0288D1"
-          }} disabled={form.formState.isSubmitting} className="w-full bg-primary hover:bg-primary/90 font-bold py-3 rounded-md border-2 border-primary shadow-lg text-sky-500">
+          }} disabled={form.formState.isSubmitting} className="w-full bg-primary hover:bg-primary/90 font-bold py-3 rounded-md border-2 border-primary shadow-lg text-primary-DEFAULT">
               {form.formState.isSubmitting ? "Updating..." : "Update Password"}
             </Button>
           </form>
