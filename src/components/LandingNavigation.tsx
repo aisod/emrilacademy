@@ -1,4 +1,3 @@
-
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -35,7 +34,6 @@ export function LandingNavigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
@@ -45,7 +43,6 @@ export function LandingNavigation() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu on route change
   const location = useLocation();
   useEffect(() => {
     setIsOpen(false);
