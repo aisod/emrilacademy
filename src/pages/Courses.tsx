@@ -10,42 +10,34 @@ import { Plus } from "lucide-react";
 import { CourseList } from "@/components/courses/CourseList";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { CourseForm } from "@/components/courses/CourseForm";
-
 export default function Courses() {
-  const { data: userRole, isLoading } = useUserRole();
+  const {
+    data: userRole,
+    isLoading
+  } = useUserRole();
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("enrolled");
-
   if (isLoading) {
-    return (
-      <DashboardLayout>
+    return <DashboardLayout>
         <div className="flex items-center justify-center h-[calc(100vh-200px)]">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
-      </DashboardLayout>
-    );
+      </DashboardLayout>;
   }
-
   const isTeacher = userRole === "teacher";
-
-  return (
-    <DashboardLayout>
+  return <DashboardLayout>
       <div className="container max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold">Courses</h1>
             <p className="text-gray-500 mt-1">
-              {userRole === "teacher" 
-                ? "Manage your courses and create new ones" 
-                : "Browse available courses"}
+              {userRole === "teacher" ? "Manage your courses and create new ones" : "Browse available courses"}
             </p>
           </div>
-          {userRole === "teacher" && (
-            <Button onClick={() => setShowCreateForm(true)}>
+          {userRole === "teacher" && <Button onClick={() => setShowCreateForm(true)} className="text-sky-500">
               <Plus className="h-4 w-4 mr-2" />
               Create Course
-            </Button>
-          )}
+            </Button>}
         </div>
 
         <CourseList />
@@ -59,6 +51,5 @@ export default function Courses() {
           </DialogContent>
         </Dialog>
       </div>
-    </DashboardLayout>
-  );
+    </DashboardLayout>;
 }
