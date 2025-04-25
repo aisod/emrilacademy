@@ -1,4 +1,3 @@
-
 import { z } from "zod";
 
 // Email validation schema with detailed error messages
@@ -6,6 +5,16 @@ export const emailSchema = z
   .string()
   .min(1, { message: "Email is required" })
   .email({ message: "Please enter a valid email address" });
+
+// Teacher email validation schema
+export const teacherEmailSchema = z
+  .string()
+  .min(1, { message: "Email is required" })
+  .email({ message: "Please enter a valid email address" })
+  .refine(
+    (email) => email.endsWith("@emrilacademy.com") || email.endsWith("@emrilacademy.tech"),
+    { message: "Teacher email must end with @emrilacademy.com or @emrilacademy.tech" }
+  );
 
 // Password validation with strength requirements
 export const passwordSchema = z
@@ -42,9 +51,36 @@ export const loginFormSchema = z.object({
   password: simplePasswordSchema,
 });
 
-// Registration form schema
+// Registration form schema with conditional email validation
 export const registerFormSchema = z.object({
-  email: emailSchema,
+  email: z.string().superRefine((email, ctx) => {
+    // Basic email validation first
+    if (!email) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Email is required",
+      });
+      return;
+    }
+
+    if (!email.includes("@") || !email.includes(".")) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Please enter a valid email address",
+      });
+      return;
+    }
+
+    // Check teacher email domains if registering as a teacher
+    if (ctx.parent.role === "teacher" && 
+        !email.endsWith("@emrilacademy.com") && 
+        !email.endsWith("@emrilacademy.tech")) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Teacher email must end with @emrilacademy.com or @emrilacademy.tech",
+      });
+    }
+  }),
   password: passwordSchema,
   firstName: nameSchema,
   lastName: nameSchema,
