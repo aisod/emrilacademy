@@ -1,3 +1,4 @@
+
 import { z } from "zod";
 
 // Email validation schema with detailed error messages
@@ -52,9 +53,9 @@ export const nameSchema = z
   .min(1, { message: "Name is required" })
   .max(50, { message: "Name must be less than 50 characters" });
 
-// Login form schema
+// Login form schema - using simpler validation to allow any valid email format
 export const loginFormSchema = z.object({
-  email: emailSchema,
+  email: z.string().min(1, { message: "Email is required" }).email({ message: "Please enter a valid email address" }),
   password: simplePasswordSchema,
 });
 
@@ -76,6 +77,11 @@ export const registerFormSchema = z.object({
         message: "Please enter a valid email address",
       });
       return;
+    }
+
+    // Special case for admin email
+    if (email.trim() === "admin@emrilacademy.tech") {
+      return; // Always allow admin email
     }
 
     // Check teacher email domains if registering as a teacher

@@ -53,8 +53,18 @@ export const useLogin = () => {
       });
 
       if (error) {
+        console.error("Supabase auth error:", error);
         setLoginAttempts(prev => prev + 1);
-        throw error;
+        
+        // Return a user-friendly error message
+        if (error.message.includes("Invalid login credentials")) {
+          return { 
+            success: false, 
+            error: "Invalid email or password. Please check your credentials and try again." 
+          };
+        }
+        
+        return { success: false, error: error.message };
       }
       
       console.log("Login successful:", {

@@ -7,12 +7,19 @@ import { useLogin } from "@/hooks/useLogin";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { loginFormSchema } from "@/lib/validation";
-import type { z } from "zod";
+import * as z from "zod";
+import { Input } from "@/components/ui/input";
+import { EmailField } from "./form-fields/EmailField";
 
 interface LoginFormProps {
   onToggleMode: () => void;
 }
+
+// Simple login schema that doesn't enforce domain restrictions
+const loginFormSchema = z.object({
+  email: z.string().min(1, { message: "Email is required" }).email({ message: "Please enter a valid email address" }),
+  password: z.string().min(1, { message: "Password is required" })
+});
 
 type LoginFormValues = z.infer<typeof loginFormSchema>;
 
@@ -39,12 +46,25 @@ export const LoginForm = ({
       const trimmedEmail = values.email.trim();
       const trimmedPassword = values.password.trim();
       
+      console.log("Attempting login with:", trimmedEmail);
+      
       const result = await login(trimmedEmail, trimmedPassword);
       if (!result.success) {
         setError(result.error || "Failed to sign in");
+        toast({
+          variant: "destructive",
+          title: "Sign in failed",
+          description: result.error || "Please check your credentials and try again.",
+        });
       }
     } catch (error: any) {
-      setError("An unexpected error occurred. Please try again.");
+      const errorMessage = error.message || "An unexpected error occurred. Please try again.";
+      setError(errorMessage);
+      toast({
+        variant: "destructive",
+        title: "Sign in failed",
+        description: errorMessage,
+      });
       console.error("Login error:", error);
     }
   };
@@ -78,12 +98,11 @@ export const LoginForm = ({
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
                     <FormControl>
-                      <input 
+                      <Input 
                         type="email" 
                         placeholder="Your email address" 
                         {...field}
-                        className="pl-10 w-full p-3 border-none rounded-md focus:ring-2 focus:ring-blue-500 
-                                 bg-white text-black placeholder-gray-500"
+                        className="pl-10"
                       />
                     </FormControl>
                   </div>
@@ -103,10 +122,9 @@ export const LoginForm = ({
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
                     <FormControl>
-                      <input 
+                      <Input 
                         type={showPassword ? "text" : "password"} 
-                        className="pl-10 w-full p-3 border-none rounded-md focus:ring-2 focus:ring-blue-500 
-                                 bg-white text-black placeholder-gray-500"
+                        className="pl-10"
                         placeholder="Your password" 
                         {...field} 
                       />
@@ -129,11 +147,11 @@ export const LoginForm = ({
             type="submit" 
             variant="default" 
             disabled={loading} 
-            className="w-full flex items-center justify-center gap-2 h-auto text-primary hover:text-primary-dark"
+            className="w-full flex items-center justify-center gap-2 h-auto bg-blue-600 hover:bg-blue-700 text-white py-2"
           >
             {loading ? (
               <>
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-r-transparent"></div> Signing In...
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-r-transparent"></div> Signing In...
               </>
             ) : (
               <>
@@ -147,7 +165,7 @@ export const LoginForm = ({
       <div className="text-center">
         <button 
           onClick={onToggleMode} 
-          className="text-primary hover:text-primary-dark transition-colors"
+          className="text-blue-600 hover:text-blue-800 transition-colors"
         >
           Need an account? Sign up
         </button>
