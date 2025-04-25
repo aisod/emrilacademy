@@ -61,7 +61,7 @@ export function LandingNavigation() {
                 </Button>
               </Link>
               <Link to="/auth?mode=signup" onClick={closeMenu}>
-                <Button variant="default" aria-label="Create a new account" className="w-full md:w-auto font-semibold text-slate-500">
+                <Button variant="default" aria-label="Create a new account" className="w-full md:w-auto font-semibold text-sky-600">
                   Sign Up
                 </Button>
               </Link>

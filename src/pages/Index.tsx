@@ -5,11 +5,12 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useUserRole } from "@/hooks/use-user-role";
 import { useEffect } from "react";
-
 const Index = () => {
   const navigate = useNavigate();
-  const { data: role, isLoading } = useUserRole();
-
+  const {
+    data: role,
+    isLoading
+  } = useUserRole();
   useEffect(() => {
     if (!isLoading && role) {
       // Redirect based on role
@@ -20,13 +21,10 @@ const Index = () => {
       }
     }
   }, [role, isLoading, navigate]);
-
   if (isLoading) {
     return null;
   }
-
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 font-['Inter']">
+  return <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 font-['Inter']">
       <LandingNavigation />
       
       <section className="pt-24 md:pt-32 pb-16 md:pb-20 px-4">
@@ -39,32 +37,16 @@ const Index = () => {
               Join our interactive online classes with expert teachers and a supportive global learning community. Start your educational journey today.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button 
-                size="lg"
-                onClick={() => navigate("/auth?mode=signup")}
-                className="bg-primary text-white hover:bg-primary/90 font-semibold shadow-lg hover:shadow-xl transition-all"
-                aria-label="Get started with EmRil Academy"
-              >
+              <Button size="lg" onClick={() => navigate("/auth?mode=signup")} aria-label="Get started with EmRil Academy" className="bg-primary hover:bg-primary/90 font-semibold shadow-lg hover:shadow-xl transition-all text-sky-600">
                 Get Started <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
-              <Button 
-                variant="outline"
-                size="lg"
-                onClick={() => navigate("/courses")}
-                className="border-2 border-primary bg-white text-primary hover:bg-primary/10 font-medium shadow-md hover:shadow-lg transition-all"
-                aria-label="Browse available courses"
-              >
+              <Button variant="outline" size="lg" onClick={() => navigate("/courses")} className="border-2 border-primary bg-white text-primary hover:bg-primary/10 font-medium shadow-md hover:shadow-lg transition-all" aria-label="Browse available courses">
                 Browse Courses
               </Button>
             </div>
           </div>
           <div className="relative animate-fade-in mt-8 md:mt-0">
-            <img 
-              alt="Video conference interface" 
-              className="rounded-lg shadow-2xl w-full h-auto mx-auto" 
-              src="/lovable-uploads/265014d0-c0a9-483b-98b2-1922c400afd1.jpg"
-              loading="eager"
-            />
+            <img alt="Video conference interface" className="rounded-lg shadow-2xl w-full h-auto mx-auto" src="/lovable-uploads/265014d0-c0a9-483b-98b2-1922c400afd1.jpg" loading="eager" />
           </div>
         </div>
       </section>
@@ -89,26 +71,24 @@ const Index = () => {
           <h2 className="text-2xl md:text-3xl font-bold text-center mb-12 md:mb-16 dark:text-white">How EmRil Academy Works</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {[{
-              step: "1",
-              title: "Sign Up",
-              description: "Create your account and choose your courses"
-            }, {
-              step: "2",
-              title: "Join Live Classes",
-              description: "Attend interactive live sessions with your teachers"
-            }, {
-              step: "3",
-              title: "Learn & Grow",
-              description: "Access resources, take assessments, and track your progress"
-            }].map(item => (
-              <div key={item.step} className="text-center animate-fade-up bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+            step: "1",
+            title: "Sign Up",
+            description: "Create your account and choose your courses"
+          }, {
+            step: "2",
+            title: "Join Live Classes",
+            description: "Attend interactive live sessions with your teachers"
+          }, {
+            step: "3",
+            title: "Learn & Grow",
+            description: "Access resources, take assessments, and track your progress"
+          }].map(item => <div key={item.step} className="text-center animate-fade-up bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
                 <div className="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-4">
                   {item.step}
                 </div>
                 <h3 className="text-xl font-semibold mb-2 dark:text-white">{item.title}</h3>
                 <p className="text-gray-600 dark:text-gray-300">{item.description}</p>
-              </div>
-            ))}
+              </div>)}
           </div>
         </div>
       </section>
@@ -120,19 +100,10 @@ const Index = () => {
             Join thousands of students already learning with EmRil Academy. Get access to expert teachers and a supportive learning community.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Button
-              onClick={() => navigate("/auth?mode=signup")}
-              className="bg-white text-primary hover:bg-gray-100 font-semibold shadow-lg hover:shadow-xl transition-all w-full sm:w-auto border border-white"
-              size="lg"
-            >
+            <Button onClick={() => navigate("/auth?mode=signup")} className="bg-white text-primary hover:bg-gray-100 font-semibold shadow-lg hover:shadow-xl transition-all w-full sm:w-auto border border-white" size="lg">
               Get Started Now
             </Button>
-            <Button
-              variant="outline"
-              onClick={() => navigate("/courses")}
-              className="border-2 border-white hover:bg-white/10 text-white font-medium transition-all w-full sm:w-auto"
-              size="lg"
-            >
+            <Button variant="outline" onClick={() => navigate("/courses")} size="lg" className="border-2 border-white hover:bg-white/10 font-medium transition-all w-full sm:w-auto text-sky-600">
               Learn More
             </Button>
           </div>
@@ -185,8 +156,6 @@ const Index = () => {
           </div>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
