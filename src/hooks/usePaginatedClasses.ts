@@ -1,6 +1,6 @@
 
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useCallback, useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 export interface Class {
@@ -15,12 +15,33 @@ export interface Class {
   updated_at: string;
 }
 
-export function usePaginatedClasses(courseId?: string) {
+export interface ClassFilters {
+  searchTerm?: string;
+  classType?: string;
+  teacherId?: string;
+  startDateMin?: string;
+  startDateMax?: string;
+}
+
+export function usePaginatedClasses(courseId?: string, initialFilters: ClassFilters = {}) {
+  const queryClient = useQueryClient();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [sort, setSort] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState(initialFilters.searchTerm || "");
+  const [filters, setFilters] = useState<ClassFilters>({
+    classType: initialFilters.classType,
+    teacherId: initialFilters.teacherId,
+    startDateMin: initialFilters.startDateMin,
+    startDateMax: initialFilters.startDateMax,
+  });
 
   const offset = (currentPage - 1) * pageSize;
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, sort, courseId, filters]);
 
   const fetchClasses = async () => {
     let query = supabase
@@ -30,6 +51,29 @@ export function usePaginatedClasses(courseId?: string) {
     
     if (courseId) {
       query = query.eq("course_id", courseId);
+    }
+
+    // Add search filter if provided
+    if (searchTerm) {
+      query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
+    }
+
+    // Apply class type filter
+    if (filters.classType) {
+      query = query.eq('class_type', filters.classType);
+    }
+
+    // Apply teacher filter
+    if (filters.teacherId) {
+      query = query.eq('teacher_id', filters.teacherId);
+    }
+
+    // Apply date range filters
+    if (filters.startDateMin) {
+      query = query.gte('start_time', filters.startDateMin);
+    }
+    if (filters.startDateMax) {
+      query = query.lte('start_time', filters.startDateMax);
     }
 
     // Add sorting with proper column mapping
@@ -66,11 +110,75 @@ export function usePaginatedClasses(courseId?: string) {
     };
   };
 
+  // Prefetch next page
+  const prefetchNextPage = useCallback(() => {
+    if (currentPage < Math.ceil((data?.totalCount || 0) / pageSize)) {
+      const nextPageOffset = currentPage * pageSize;
+      
+      let query = supabase
+        .from("classes")
+        .select("*")
+        .range(nextPageOffset, nextPageOffset + pageSize - 1);
+      
+      if (courseId) {
+        query = query.eq("course_id", courseId);
+      }
+      
+      // Apply the same filters as the current query
+      if (searchTerm) {
+        query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
+      }
+
+      if (filters.classType) {
+        query = query.eq('class_type', filters.classType);
+      }
+
+      if (sort) {
+        // Apply the same sort
+        switch (sort) {
+          case "newest":
+            query = query.order("created_at", { ascending: false });
+            break;
+          case "oldest":
+            query = query.order("created_at", { ascending: true });
+            break;
+          case "upcoming":
+            query = query.order("start_time", { ascending: true });
+            break;
+          case "title-asc":
+            query = query.order("title", { ascending: true });
+            break;
+          case "title-desc":
+            query = query.order("title", { ascending: false });
+            break;
+        }
+      }
+      
+      query.then(({ data }) => {
+        if (data) {
+          queryClient.setQueryData(
+            ["classes", currentPage + 1, pageSize, sort, searchTerm, filters, courseId],
+            { classes: data, totalCount: data?.totalCount || 0 }
+          );
+        }
+      });
+    }
+  }, [currentPage, pageSize, sort, searchTerm, filters, courseId, data?.totalCount, queryClient]);
+
+  // Setup the query with proper caching
   const { data, isLoading, refetch, isFetching } = useQuery({
-    queryKey: ["classes", currentPage, pageSize, sort, courseId],
+    queryKey: ["classes", currentPage, pageSize, sort, searchTerm, filters, courseId],
     queryFn: fetchClasses,
+    staleTime: 5 * 60 * 1000, // 5 minutes
     placeholderData: (previousData) => previousData,
   });
+
+  // Prefetch the next page when current page data is available
+  useEffect(() => {
+    if (data && !isLoading && !isFetching) {
+      prefetchNextPage();
+    }
+  }, [data, isLoading, isFetching, prefetchNextPage]);
 
   const paginatedClasses = data?.classes || [];
   const totalCount = data?.totalCount || 0;
@@ -93,17 +201,27 @@ export function usePaginatedClasses(courseId?: string) {
     setCurrentPage((prev) => Math.max(prev - 1, 1));
   };
 
+  const updateFilters = (newFilters: Partial<ClassFilters>) => {
+    setFilters(prev => ({ ...prev, ...newFilters }));
+    setCurrentPage(1); // Reset to first page when filters change
+  };
+
   return {
     paginatedClasses,
     isLoading,
+    isFetching,
     sort,
     setSort,
+    searchTerm,
+    setSearchTerm,
+    filters,
+    updateFilters,
     pageSize,
     changePageSize,
     refetch,
-    isFetching,
     currentPage,
     totalPages,
+    totalCount,
     goToPage,
     nextPage,
     prevPage

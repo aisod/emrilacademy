@@ -1,22 +1,32 @@
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { generateSlug, isValidSlug } from "@/utils/slug-utils";
 import { useCourses, type Course } from "@/hooks/use-courses";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const courseFormSchema = z.object({
   title: z.string().min(3, { message: "Title must be at least 3 characters" }),
   description: z.string().optional(),
-  duration_weeks: z.coerce.number().positive({ message: "Duration must be a positive number" }),
+  duration_weeks: z.coerce.number()
+    .positive({ message: "Duration must be a positive number" })
+    .min(1, { message: "Duration must be at least 1 week" })
+    .max(52, { message: "Duration cannot exceed 52 weeks" }),
   slug: z.string()
     .min(3, { message: "Slug must be at least 3 characters" })
     .max(50, { message: "Slug cannot be longer than 50 characters" })
     .regex(/^[a-z0-9-]+$/, { 
       message: "Slug can only contain lowercase letters, numbers, and hyphens" 
     })
+    .refine(val => !val.startsWith('-') && !val.endsWith('-'), {
+      message: "Slug cannot start or end with a hyphen"
+    }),
+  status: z.enum(["draft", "published"]).default("draft")
 });
 
 type CourseFormData = z.infer<typeof courseFormSchema>;
@@ -33,7 +43,8 @@ export function CourseForm({ initialData, onSuccess }: CourseFormProps) {
       title: initialData?.title || "",
       description: initialData?.description || "",
       duration_weeks: initialData?.duration_weeks || 1,
-      slug: initialData?.slug || ""
+      slug: initialData?.slug || "",
+      status: (initialData?.status as "draft" | "published") || "draft"
     }
   });
   
@@ -49,7 +60,8 @@ export function CourseForm({ initialData, onSuccess }: CourseFormProps) {
             title: data.title,
             slug: data.slug,
             description: data.description,
-            duration_weeks: Number(data.duration_weeks)
+            duration_weeks: Number(data.duration_weeks),
+            status: data.status
           }
         });
       } else {
@@ -57,7 +69,7 @@ export function CourseForm({ initialData, onSuccess }: CourseFormProps) {
           title: data.title,
           slug: data.slug,
           description: data.description,
-          status: "draft",
+          status: data.status,
           duration_weeks: Number(data.duration_weeks)
         });
       }
@@ -69,19 +81,12 @@ export function CourseForm({ initialData, onSuccess }: CourseFormProps) {
     }
   };
 
-  const generateSlug = (title: string) => {
-    return title
-      .toLowerCase()
-      .trim()
-      .replace(/[^\w\s-]/g, '') // Remove special chars
-      .replace(/\s+/g, '-') // Replace spaces with hyphens
-      .replace(/-+/g, '-'); // Remove consecutive hyphens
-  };
-
+  // Generate slug based on title
   const handleTitleChange = (value: string) => {
     const currentSlug = form.getValues("slug");
     if (!currentSlug || currentSlug === "") {
-      form.setValue("slug", generateSlug(value));
+      const newSlug = generateSlug(value);
+      form.setValue("slug", newSlug);
     }
   };
 
@@ -101,6 +106,7 @@ export function CourseForm({ initialData, onSuccess }: CourseFormProps) {
                     field.onChange(e);
                     handleTitleChange(e.target.value);
                   }}
+                  placeholder="Introduction to Programming"
                 />
               </FormControl>
               <FormMessage />
@@ -115,26 +121,64 @@ export function CourseForm({ initialData, onSuccess }: CourseFormProps) {
             <FormItem>
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Textarea {...field} />
+                <Textarea 
+                  {...field} 
+                  placeholder="A comprehensive guide to programming basics..."
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="duration_weeks"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Duration (weeks)</FormLabel>
-              <FormControl>
-                <Input type="number" min="1" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <FormField
+            control={form.control}
+            name="duration_weeks"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Duration (weeks)</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="number" 
+                    min="1" 
+                    max="52" 
+                    {...field} 
+                  />
+                </FormControl>
+                <FormDescription>
+                  Between 1-52 weeks
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="status"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Status</FormLabel>
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="draft">Draft</SelectItem>
+                    <SelectItem value="published">Published</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormDescription>
+                  Draft courses are only visible to you
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         <FormField
           control={form.control}
@@ -145,16 +189,17 @@ export function CourseForm({ initialData, onSuccess }: CourseFormProps) {
               <FormControl>
                 <Input {...field} placeholder="course-url-slug" />
               </FormControl>
-              <FormMessage className="text-xs">
+              <FormDescription>
                 Letters, numbers and hyphens only. Will be used for the course URL.
-              </FormMessage>
+              </FormDescription>
+              <FormMessage />
             </FormItem>
           )}
         />
 
         <Button 
           type="submit" 
-          className="w-full text-sky-500"
+          className="w-full"
           disabled={createCourse.isPending || updateCourse.isPending}
         >
           {isEditing 
