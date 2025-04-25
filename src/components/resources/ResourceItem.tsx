@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { Download, Trash2 } from "lucide-react";
+import { Download, Trash2, FileText, File, Image, Music, Video, Archive, Code } from "lucide-react";
 import { getCategoryLabel, getCategoryColor, getFileIcon } from "./utils/resourceUtils";
 import { Resource } from "@/types/resources";
 
@@ -15,10 +15,8 @@ interface ResourceItemProps {
 export function ResourceItem({ resource, isTeacher, onDelete }: ResourceItemProps) {
   const iconName = getFileIcon(resource.file_url);
   
-  // Import icons dynamically based on the file type
+  // Return the appropriate icon component based on the file type
   const getIconComponent = () => {
-    const { FileText, File, Image, Music, Video, Archive, Code } = require("lucide-react");
-    
     switch (iconName) {
       case 'file-text':
         return <FileText className="h-4 w-4" />;
