@@ -53,7 +53,7 @@ export function ClassGrid({ classes = [], isLoading, teacherView = false }: Clas
           startTime={class_.start_time}
           endTime={class_.end_time}
           classType={class_.class_type}
-          enrollmentCount={class_.enrollments[0]?.count || 0}
+          enrollmentCount={class_.enrollments?.[0]?.count || 0}
           capacity={class_.capacity}
           teacherView={teacherView}
         />

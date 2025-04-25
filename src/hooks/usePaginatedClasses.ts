@@ -11,7 +11,7 @@ export function usePaginatedClasses() {
   
   // Fetch classes from database
   const { data, isLoading, refetch, isFetching } = useQuery({
-    queryKey: ['classes'],
+    queryKey: ['classes', sort],
     queryFn: async () => {
       let query = supabase
         .from('classes')
@@ -84,7 +84,6 @@ export function usePaginatedClasses() {
   return {
     filteredClasses,
     paginatedClasses,
-    classes: paginatedClasses, // Provide classes alias for backward compatibility
     isLoading,
     isFetching,
     currentPage,
@@ -95,12 +94,11 @@ export function usePaginatedClasses() {
     sort,
     setSort,
     setSearchTerm,
-    changePageSize: (size: number) => {
-      changePageSize(size);
-    },
-    setPageSize: changePageSize, // Provide setPageSize alias for backward compatibility
+    changePageSize,
+    setPageSize: changePageSize, // Alias for backward compatibility
     goToPage,
     refetch,
-    resetPagination
+    resetPagination,
+    classes: paginatedClasses // Provide classes alias for backward compatibility
   };
 }

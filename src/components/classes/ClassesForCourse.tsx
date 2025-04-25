@@ -12,12 +12,12 @@ import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, Pagi
 export function ClassesForCourse() {
   const [showCreateClassForm, setShowCreateClassForm] = useState(false);
   const {
-    classes,
+    paginatedClasses,
     isLoading,
     sort,
     setSort,
     pageSize,
-    setPageSize,
+    changePageSize,
     refetch,
     isFetching,
     currentPage,
@@ -41,19 +41,19 @@ export function ClassesForCourse() {
         sort={sort}
         onSortChange={setSort}
         pageSize={pageSize}
-        onPageSizeChange={setPageSize}
+        onPageSizeChange={changePageSize}
         onRefresh={refetch}
         isFetching={isFetching}
       />
 
       <ClassGrid 
-        classes={classes || []} 
+        classes={paginatedClasses || []} 
         isLoading={isLoading} 
         teacherView={true}
       />
 
       {/* Pagination controls */}
-      {!isLoading && classes && classes.length > 0 && (
+      {!isLoading && paginatedClasses && paginatedClasses.length > 0 && (
         <Pagination>
           <PaginationContent>
             <PaginationItem>

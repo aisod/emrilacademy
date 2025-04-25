@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,10 +7,11 @@ import { useToast } from "@/hooks/use-toast";
 import { SearchBar } from "./SearchBar";
 import { ClassFilters } from "./ClassFilters";
 import { PaginationControls } from "./PaginationControls";
-import { usePaginatedClasses } from "@/hooks/usePaginatedClasses";
+import { usePagination } from "@/hooks/usePagination";
 import { LoadingState } from "./LoadingState";
 import { ErrorState } from "./ErrorState";
 import { RefreshCw } from "lucide-react";
+import { Class } from "./types";
 
 interface StudentClassesViewProps {
   type: "enrolled" | "completed" | "saved";
@@ -18,6 +20,7 @@ interface StudentClassesViewProps {
 export function StudentClassesView({ type }: StudentClassesViewProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [sort, setSort] = useState<string>("newest");
+  const [pageSize, setPageSize] = useState(8);
   const { toast } = useToast();
   
   const { data, isLoading, error, isFetching, refetch } = useQuery({
@@ -62,10 +65,11 @@ export function StudentClassesView({ type }: StudentClassesViewProps) {
 
         if (error) throw error;
 
+        // Transform data to match Class type
         const classes = data.map(item => ({
           ...item,
           isEnrolled: true,
-        }));
+        })) as unknown as Class[];
 
         return {
           classes,
@@ -80,17 +84,30 @@ export function StudentClassesView({ type }: StudentClassesViewProps) {
     refetchOnWindowFocus: true,
   });
 
-  const {
-    filteredClasses,
-    paginatedClasses,
+  // Filter classes based on search term
+  const filteredClasses = data?.classes?.filter(
+    cls => 
+      cls.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      cls.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  ) || [];
+
+  // Set up pagination
+  const { 
     currentPage,
     nextPage,
     prevPage,
+    paginatedData,
     totalPages,
-    pageSize,
     changePageSize,
     goToPage,
-  } = usePaginatedClasses(data?.classes || [], searchTerm);
+  } = usePagination({
+    initialPage: 1,
+    initialPageSize: pageSize,
+    totalItems: filteredClasses.length
+  });
+
+  // Get paginated classes
+  const paginatedClasses = paginatedData(filteredClasses);
 
   const handleRefresh = () => {
     refetch();
@@ -116,14 +133,17 @@ export function StudentClassesView({ type }: StudentClassesViewProps) {
           sort={sort}
           onSortChange={setSort}
           pageSize={pageSize}
-          onPageSizeChange={changePageSize}
+          onPageSizeChange={(size) => {
+            setPageSize(size);
+            changePageSize(size);
+          }}
           onRefresh={handleRefresh}
           isFetching={isFetching}
         />
       </div>
 
       <ClassList 
-        classes={paginatedClasses} 
+        classes={paginatedClasses as Class[]} 
         isLoading={isLoading} 
       />
 
