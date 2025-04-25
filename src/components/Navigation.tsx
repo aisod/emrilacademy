@@ -102,7 +102,7 @@ export function Navigation() {
   };
 
   const getDashboardLink = () => {
-    if (!userProfile) return '/dashboard';
+    if (!userProfile) return '/student';
     return userProfile.role === 'teacher' ? '/teacher' : '/student';
   };
 
