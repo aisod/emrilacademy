@@ -13,7 +13,7 @@ interface ClassesForCourseProps {
   courseId?: string;
 }
 
-export function ClassesForCourse({ courseId }: ClassesForCourseProps = {}) {
+export function ClassesForCourse({ courseId }: ClassesForCourseProps) {
   const [showCreateClassForm, setShowCreateClassForm] = useState(false);
   const {
     paginatedClasses,

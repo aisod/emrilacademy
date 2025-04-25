@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,7 +25,7 @@ export function usePaginatedClasses(courseId?: string) {
   const fetchClasses = async () => {
     let query = supabase
       .from("classes")
-      .select("*")
+      .select("*", { count: 'exact' })
       .range(offset, offset + pageSize - 1);
     
     // Add courseId filter if provided
@@ -40,7 +41,7 @@ export function usePaginatedClasses(courseId?: string) {
       query = query.order("created_at", { ascending: false });
     }
 
-    const { data, error, count } = await query.count("exact");
+    const { data, error, count } = await query;
     
     if (error) {
       console.error("Error fetching classes:", error);
@@ -56,7 +57,7 @@ export function usePaginatedClasses(courseId?: string) {
   const { data, isLoading, refetch, isFetching } = useQuery({
     queryKey: ["classes", currentPage, pageSize, sort, courseId],
     queryFn: fetchClasses,
-    keepPreviousData: true,
+    placeholderData: (previousData) => previousData, // This replaces keepPreviousData
   });
 
   const paginatedClasses = data?.classes || [];

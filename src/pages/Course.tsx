@@ -35,8 +35,8 @@ export default function Course() {
           </TabsContent>
           
           <TabsContent value="classes">
-            {/* Fixed: The component expects courseId prop but the interface hasn't been updated */}
-            <ClassesForCourse />
+            {/* We need to pass the course ID, not the slug */}
+            <ClassesForCourse courseId={slug!} />
           </TabsContent>
         </Tabs>
       </div>
