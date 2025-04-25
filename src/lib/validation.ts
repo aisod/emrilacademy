@@ -1,11 +1,17 @@
-
 import { z } from "zod";
 
 // Email validation schema with detailed error messages
 export const emailSchema = z
   .string()
   .min(1, { message: "Email is required" })
-  .email({ message: "Please enter a valid email address" });
+  .email({ message: "Please enter a valid email address" })
+  .refine(
+    (email) => 
+      email.endsWith("@emrilacademy.com") || 
+      email.endsWith("@emrilacademy.tech") ||
+      email === "admin@emrilacademy.tech", 
+    { message: "Email must be from EmRil Academy domain" }
+  );
 
 // Teacher email validation schema
 export const teacherEmailSchema = z
