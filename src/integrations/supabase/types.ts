@@ -190,7 +190,9 @@ export type Database = {
           ended_at: string | null
           id: string
           is_active: boolean
+          meeting_url: string | null
           participant_count: number | null
+          recording_url: string | null
           started_at: string | null
           status: Database["public"]["Enums"]["session_status"]
           updated_at: string
@@ -202,7 +204,9 @@ export type Database = {
           ended_at?: string | null
           id?: string
           is_active?: boolean
+          meeting_url?: string | null
           participant_count?: number | null
+          recording_url?: string | null
           started_at?: string | null
           status?: Database["public"]["Enums"]["session_status"]
           updated_at?: string
@@ -214,7 +218,9 @@ export type Database = {
           ended_at?: string | null
           id?: string
           is_active?: boolean
+          meeting_url?: string | null
           participant_count?: number | null
+          recording_url?: string | null
           started_at?: string | null
           status?: Database["public"]["Enums"]["session_status"]
           updated_at?: string
@@ -233,10 +239,12 @@ export type Database = {
         Row: {
           capacity: number
           class_type: Database["public"]["Enums"]["class_type"]
+          course_id: string | null
           created_at: string
           description: string | null
           end_time: string | null
           id: string
+          session_link: string | null
           start_time: string | null
           teacher_id: string
           title: string
@@ -245,10 +253,12 @@ export type Database = {
         Insert: {
           capacity?: number
           class_type?: Database["public"]["Enums"]["class_type"]
+          course_id?: string | null
           created_at?: string
           description?: string | null
           end_time?: string | null
           id?: string
+          session_link?: string | null
           start_time?: string | null
           teacher_id: string
           title: string
@@ -257,16 +267,25 @@ export type Database = {
         Update: {
           capacity?: number
           class_type?: Database["public"]["Enums"]["class_type"]
+          course_id?: string | null
           created_at?: string
           description?: string | null
           end_time?: string | null
           id?: string
+          session_link?: string | null
           start_time?: string | null
           teacher_id?: string
           title?: string
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "classes_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "classes_teacher_id_fkey"
             columns: ["teacher_id"]

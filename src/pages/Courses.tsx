@@ -1,46 +1,56 @@
+
 import { useState } from "react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { StudentClassesView } from "@/components/classes/StudentClassesView";
-import { TeacherClassesView } from "@/components/classes/TeacherClassesView";
-import { useUserRole } from "@/hooks/use-user-role";
-import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { CourseList } from "@/components/courses/CourseList";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { CourseForm } from "@/components/courses/CourseForm";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ClassesForCourse } from "@/components/classes/ClassesForCourse";
+import { useUserRole } from "@/hooks/use-user-role";
+
 export default function Courses() {
-  const {
-    data: userRole,
-    isLoading
-  } = useUserRole();
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [activeTab, setActiveTab] = useState<string>("enrolled");
-  if (isLoading) {
-    return <DashboardLayout>
-        <div className="flex items-center justify-center h-[calc(100vh-200px)]">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </div>
-      </DashboardLayout>;
-  }
+  const [activeTab, setActiveTab] = useState<string>("courses");
+  const { data: userRole } = useUserRole();
+
   const isTeacher = userRole === "teacher";
-  return <DashboardLayout>
+
+  return (
+    <DashboardLayout>
       <div className="container max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold">Courses</h1>
+            <h1 className="text-3xl font-bold">Courses & Classes</h1>
             <p className="text-gray-500 mt-1">
-              {userRole === "teacher" ? "Manage your courses and create new ones" : "Browse available courses"}
+              {isTeacher 
+                ? "Manage your courses and create new classes" 
+                : "Browse available courses and classes"}
             </p>
           </div>
-          {userRole === "teacher" && <Button onClick={() => setShowCreateForm(true)} className="text-sky-500">
+          {isTeacher && (
+            <Button onClick={() => setShowCreateForm(true)}>
               <Plus className="h-4 w-4 mr-2" />
               Create Course
-            </Button>}
+            </Button>
+          )}
         </div>
 
-        <CourseList />
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="mb-4">
+            <TabsTrigger value="courses">Courses</TabsTrigger>
+            <TabsTrigger value="classes">All Classes</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="courses">
+            <CourseList />
+          </TabsContent>
+
+          <TabsContent value="classes">
+            <ClassesForCourse />
+          </TabsContent>
+        </Tabs>
 
         <Dialog open={showCreateForm} onOpenChange={setShowCreateForm}>
           <DialogContent>
@@ -51,5 +61,6 @@ export default function Courses() {
           </DialogContent>
         </Dialog>
       </div>
-    </DashboardLayout>;
+    </DashboardLayout>
+  );
 }
