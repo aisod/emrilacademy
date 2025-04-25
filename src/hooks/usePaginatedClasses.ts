@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -116,7 +115,15 @@ export function usePaginatedClasses(courseId?: string, initialFilters: ClassFilt
     };
   };
 
-  // Prefetch next page
+  // Setup the query with proper caching
+  const { data, isLoading, refetch, isFetching } = useQuery({
+    queryKey: ["classes", currentPage, pageSize, sort, searchTerm, filters, courseId],
+    queryFn: fetchClasses,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    placeholderData: (previousData) => previousData,
+  });
+
+  // Prefetch next page - fixed to use data from the query result instead of a local variable
   const prefetchNextPage = useCallback(() => {
     if (currentPage < Math.ceil((data?.totalCount || 0) / pageSize)) {
       const nextPageOffset = currentPage * pageSize;
@@ -169,15 +176,7 @@ export function usePaginatedClasses(courseId?: string, initialFilters: ClassFilt
         }
       });
     }
-  }, [currentPage, pageSize, sort, searchTerm, filters, courseId, queryClient, data?.totalCount]);
-
-  // Setup the query with proper caching
-  const { data, isLoading, refetch, isFetching } = useQuery({
-    queryKey: ["classes", currentPage, pageSize, sort, searchTerm, filters, courseId],
-    queryFn: fetchClasses,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    placeholderData: (previousData) => previousData,
-  });
+  }, [currentPage, pageSize, sort, searchTerm, filters, courseId, queryClient, data]);
 
   // Prefetch the next page when current page data is available
   useEffect(() => {
