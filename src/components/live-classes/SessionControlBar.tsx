@@ -21,7 +21,7 @@ export function SessionControlBar({
         {participantCount} participant{participantCount !== 1 ? 's' : ''}
       </Button>
       
-      <Button variant="outline" className="bg-black/70 text-white hover:bg-black/80 border-gray-600">
+      <Button variant="outline" className="bg-black/70 hover:bg-black/80 border-gray-600 text-sky-500">
         <Clock className="mr-2 h-4 w-4" />
         {formatDuration(sessionDuration)}
       </Button>
