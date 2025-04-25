@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Mail, Lock, ArrowRight, Eye, EyeOff, LogIn } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, LogIn } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { useLogin } from "@/hooks/useLogin";
@@ -111,9 +111,9 @@ export const LoginForm = ({
 
           <Button 
             type="submit" 
-            disabled={loading} 
             variant="default" 
-            className="w-full flex items-center justify-center gap-2 h-auto text-white"
+            disabled={loading} 
+            className="w-full flex items-center justify-center gap-2 h-auto text-white bg-blue-500 hover:bg-blue-600"
           >
             {loading ? <>
                 <EyeOff className="h-4 w-4 animate-spin" /> Signing In...
