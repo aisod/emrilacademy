@@ -11,7 +11,7 @@ interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
   ({ id, label, type = "text", icon: Icon, error, className, ...props }, ref) => {
-    // Determine if this is a password field to apply dark styling
+    // Determine if this is a password field to apply appropriate styling
     const isPassword = type === "password";
     
     return (
@@ -27,9 +27,12 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
             ref={ref}
             className={`pl-10 w-full p-3 rounded-md focus:ring-2 focus:ring-primary ${
               isPassword 
-                ? "bg-gray-800 text-white border-none" 
-                : "bg-gray-200/80 border-none focus:bg-gray-100"
+                ? "bg-gray-800 text-white border-gray-700" 
+                : "bg-gray-100 border-gray-300 text-gray-900"
             } ${error ? "ring-2 ring-red-500" : ""} ${className || ""}`}
+            style={{
+              boxShadow: error ? "0 0 0 2px rgba(239, 68, 68, 0.2)" : "none"
+            }}
             {...props}
           />
         </div>
