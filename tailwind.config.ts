@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -11,29 +10,8 @@ export default {
   ],
   prefix: "",
   theme: {
-    container: {
-      center: true,
-      padding: {
-        DEFAULT: "1rem",
-        sm: "2rem",
-        lg: "4rem",
-        xl: "5rem",
-      },
-      screens: {
-        sm: "640px",
-        md: "768px",
-        lg: "1024px",
-        xl: "1280px",
-        "2xl": "1400px",
-      },
-    },
     extend: {
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
         primary: {
           DEFAULT: "#0288D1",
           light: "#B3E5FC",
@@ -78,7 +56,6 @@ export default {
           purple: "#8B5CF6",
           red: "#EF4444",
         },
-        // Explicitly define dropdown and popup colors
         dropdown: {
           bg: "#FFFFFF",
           hover: "#F3F4F6",
@@ -110,7 +87,6 @@ export default {
           text: "#1A1A1A",
           activeText: "#0288D1",
         },
-        // Added new colors for better consistency
         dialog: {
           bg: "#FFFFFF",
           border: "#E5E7EB",
