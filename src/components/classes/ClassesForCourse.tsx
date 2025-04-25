@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -7,7 +8,12 @@ import { ClassGrid } from "./ClassGrid";
 import { usePaginatedClasses } from "@/hooks/usePaginatedClasses";
 import { ClassFilters } from "./ClassFilters";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "../ui/pagination";
-export function ClassesForCourse() {
+
+interface ClassesForCourseProps {
+  courseId?: string;
+}
+
+export function ClassesForCourse({ courseId }: ClassesForCourseProps = {}) {
   const [showCreateClassForm, setShowCreateClassForm] = useState(false);
   const {
     paginatedClasses,
@@ -23,7 +29,8 @@ export function ClassesForCourse() {
     goToPage,
     nextPage,
     prevPage
-  } = usePaginatedClasses();
+  } = usePaginatedClasses(courseId);
+
   return <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-semibold">Manage Classes</h2>

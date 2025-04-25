@@ -1,104 +1,98 @@
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { Class } from '@/components/classes/types';
-import { usePagination } from './usePagination';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+export interface Class {
+  id: string;
+  title: string;
+  description: string | null;
+  start_time: string;
+  end_time: string;
+  teacher_id: string;
+  course_id: string;
+  created_at: string;
+  updated_at: string;
+}
 
-export function usePaginatedClasses() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sort, setSort] = useState('newest');
-  
-  // Fetch classes from database
-  const { data, isLoading, refetch, isFetching } = useQuery({
-    queryKey: ['classes', sort],
-    queryFn: async () => {
-      let query = supabase
-        .from('classes')
-        .select(`
-          *,
-          enrollments:enrollments(count)
-        `);
+export function usePaginatedClasses(courseId?: string) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [sort, setSort] = useState<string | null>(null);
 
-      // Apply sorting
-      if (sort === 'newest') {
-        query = query.order('created_at', { ascending: false });
-      } else if (sort === 'oldest') {
-        query = query.order('created_at', { ascending: true });
-      } else if (sort === 'upcoming') {
-        query = query.order('start_time', { ascending: true });
-      } else if (sort === 'title-asc') {
-        query = query.order('title', { ascending: true });
-      } else if (sort === 'title-desc') {
-        query = query.order('title', { ascending: false });
-      }
+  const offset = (currentPage - 1) * pageSize;
 
-      const { data, error } = await query;
-
-      if (error) {
-        console.error('Error fetching classes:', error);
-        throw error;
-      }
-      
-      return data || [];
-    }
-  });
-
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
-    }, 300);
+  const fetchClasses = async () => {
+    let query = supabase
+      .from("classes")
+      .select("*")
+      .range(offset, offset + pageSize - 1);
     
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
+    // Add courseId filter if provided
+    if (courseId) {
+      query = query.eq("course_id", courseId);
+    }
 
-  const filteredClasses = data?.filter(cls => 
-    cls.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-    cls.description?.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
-  ) ?? [];
+    // Add sorting
+    if (sort) {
+      const [column, direction] = sort.split(":");
+      query = query.order(column, { ascending: direction === "asc" });
+    } else {
+      query = query.order("created_at", { ascending: false });
+    }
 
-  const { 
-    currentPage,
-    nextPage,
-    prevPage,
-    paginatedData,
-    totalPages,
-    pageSize,
-    changePageSize,
-    resetPagination,
-    goToPage,
-  } = usePagination({
-    initialPage: 1,
-    initialPageSize: 8,
-    totalItems: filteredClasses.length
+    const { data, error, count } = await query.count("exact");
+    
+    if (error) {
+      console.error("Error fetching classes:", error);
+      return { classes: [], totalCount: 0 };
+    }
+    
+    return { 
+      classes: data || [], 
+      totalCount: count || 0 
+    };
+  };
+
+  const { data, isLoading, refetch, isFetching } = useQuery({
+    queryKey: ["classes", currentPage, pageSize, sort, courseId],
+    queryFn: fetchClasses,
+    keepPreviousData: true,
   });
 
-  const paginatedClasses = paginatedData(filteredClasses);
+  const paginatedClasses = data?.classes || [];
+  const totalCount = data?.totalCount || 0;
+  const totalPages = Math.ceil(totalCount / pageSize);
 
-  useEffect(() => {
-    resetPagination();
-  }, [debouncedSearchTerm, resetPagination]);
+  const changePageSize = (size: number) => {
+    setPageSize(size);
+    setCurrentPage(1); // Reset to first page when page size changes
+  };
+
+  const goToPage = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const nextPage = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  };
+
+  const prevPage = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
 
   return {
-    filteredClasses,
     paginatedClasses,
     isLoading,
-    isFetching,
-    currentPage,
-    nextPage,
-    prevPage,
-    totalPages,
-    pageSize,
     sort,
     setSort,
-    setSearchTerm,
+    pageSize,
     changePageSize,
-    setPageSize: changePageSize, // Alias for backward compatibility
-    goToPage,
     refetch,
-    resetPagination,
-    classes: paginatedClasses // Provide classes alias for backward compatibility
+    isFetching,
+    currentPage,
+    totalPages,
+    goToPage,
+    nextPage,
+    prevPage
   };
 }
