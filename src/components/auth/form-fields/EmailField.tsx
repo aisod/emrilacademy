@@ -12,8 +12,6 @@ interface EmailFieldProps {
 }
 
 export const EmailField = ({ form }: EmailFieldProps) => {
-  const isTeacher = form.watch("role") === "teacher";
-
   return (
     <FormField
       control={form.control}
@@ -28,11 +26,7 @@ export const EmailField = ({ form }: EmailFieldProps) => {
                 <input
                   type="email"
                   className="pl-10 w-full p-3 bg-white border-none rounded-md focus:ring-2 focus:ring-blue-500 text-black placeholder-gray-500"
-                  placeholder={
-                    isTeacher
-                      ? "Input your email" 
-                      : "Input your email"
-                  }
+                  placeholder="Input your email"
                   {...field}
                 />
               </FormControl>

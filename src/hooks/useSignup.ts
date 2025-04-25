@@ -74,11 +74,11 @@ export const useSignup = () => {
         throw new Error(errorMessage);
       }
 
-      // Special handling for teacher emails
+      // Special handling for teacher emails - use more generic error message
       if (data.role === 'teacher' && 
           !data.email.endsWith('@emrilacademy.com') && 
           !data.email.endsWith('@emrilacademy.tech')) {
-        throw new Error("Teacher email must end with @emrilacademy.com or @emrilacademy.tech");
+        throw new Error("To register as a teacher, you need an EmRil Academy email address");
       }
       
       // Use absolute URLs for redirects - these must match your Supabase configuration
