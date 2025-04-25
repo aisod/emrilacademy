@@ -42,7 +42,8 @@ const Index = () => {
               <Button 
                 size="lg"
                 onClick={() => navigate("/auth?mode=signup")}
-                className="bg-primary text-white hover:bg-primary/90 font-semibold shadow-lg hover:shadow-xl transition-all border border-primary"
+                className="bg-primary text-white hover:bg-primary/90 font-semibold shadow-lg hover:shadow-xl transition-all"
+                aria-label="Get started with EmRil Academy"
               >
                 Get Started <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
@@ -51,6 +52,7 @@ const Index = () => {
                 size="lg"
                 onClick={() => navigate("/courses")}
                 className="border-2 border-primary bg-white text-primary hover:bg-primary/10 font-medium shadow-md hover:shadow-lg transition-all"
+                aria-label="Browse available courses"
               >
                 Browse Courses
               </Button>

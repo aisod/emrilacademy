@@ -96,18 +96,19 @@ export function LandingNavigation() {
               <NavLink to="/contact" onClick={closeMenu}>Contact</NavLink>
             </div>
             <div className="flex flex-col md:flex-row gap-3 md:items-center mt-4 md:mt-0 p-4 border-t md:border-none border-gray-200 dark:border-gray-700 md:p-0">
-              <Link to="/auth?mode=signin" className="w-full md:w-auto" onClick={closeMenu}>
+              <Link to="/auth?mode=signin">
                 <Button 
                   variant="outline" 
-                  className="w-full md:w-auto border-2 border-primary bg-white text-primary hover:bg-primary/10"
+                  className="w-full md:w-auto"
                   aria-label="Sign in to your account"
                 >
                   Sign In
                 </Button>
               </Link>
-              <Link to="/auth?mode=signup" className="w-full md:w-auto" onClick={closeMenu}>
+              <Link to="/auth?mode=signup">
                 <Button 
-                  className="w-full md:w-auto bg-primary text-white font-semibold"
+                  variant="default"
+                  className="w-full md:w-auto"
                   aria-label="Create a new account"
                 >
                   Sign Up
