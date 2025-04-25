@@ -1,5 +1,401 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@import './styles/base.css';
-@import './styles/animations.css';
-@import './styles/utilities.css';
-@import './styles/components.css';
+/* Only show focus outlines for keyboard users */
+:focus {
+  outline: none;
+}
+
+body.keyboard-user :focus {
+  outline: 2px solid #0ea5e9;
+  outline-offset: 2px;
+}
+
+body.keyboard-user :focus:not(:focus-visible) {
+  outline: none;
+}
+
+body.keyboard-user :focus-visible {
+  outline: 2px solid #0ea5e9;
+  outline-offset: 2px;
+}
+
+/* Error states for forms */
+.form-error-shake {
+  animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+  10%, 90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+  20%, 80% {
+    transform: translate3d(2px, 0, 0);
+  }
+  30%, 50%, 70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+  40%, 60% {
+    transform: translate3d(4px, 0, 0);
+  }
+}
+
+/* Improved toast animations */
+.toast-enter {
+  transform: translateX(100%);
+}
+
+.toast-enter-active {
+  transform: translateX(0);
+  transition: transform 300ms;
+}
+
+.toast-exit {
+  transform: translateX(0);
+}
+
+.toast-exit-active {
+  transform: translateX(100%);
+  transition: transform 300ms;
+}
+
+/* Skip to content link for accessibility */
+.skip-to-content {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  padding: 8px 16px;
+  background-color: #0ea5e9;
+  color: white;
+  z-index: 100;
+  transition: top 0.3s;
+}
+
+.skip-to-content:focus {
+  top: 0;
+}
+
+/* Improved animation for loading states */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse-improved {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Loading button state */
+.loading-spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Hide scrollbars but maintain functionality */
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+/* Add safe area insets for modern mobile browsers */
+.safe-area-inset-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.safe-area-inset-top {
+  padding-top: env(safe-area-inset-top, 0);
+}
+
+/* Improve mobile tap targets */
+.tap-highlight-none {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Fix overscrolling on iOS */
+html {
+  overflow-x: hidden;
+  position: relative;
+  height: 100%;
+}
+
+body {
+  overflow-x: hidden;
+  height: 100%;
+  overscroll-behavior-y: none;
+}
+
+/* Enhanced Popover and dropdown styling fixes */
+[data-radix-popper-content-wrapper] {
+  z-index: 100 !important;
+}
+
+/* Completely fix transparent backgrounds */
+.radix-dropdown-content,
+[data-radix-popper-content-wrapper] > div,
+.radix-popover-content,
+[role="dialog"],
+[role="menu"],
+[role="listbox"],
+[data-radix-select-content],
+[data-radix-tooltip-content] {
+  background-color: white !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  border-radius: 0.375rem !important;
+  backdrop-filter: none !important;
+  color: #1A1A1A !important;
+}
+
+/* Fix for transparent dropdowns */
+[data-radix-select-viewport],
+[data-radix-menu-viewport],
+[data-radix-dropdown-menu-content],
+[data-radix-popover-content] {
+  background-color: white !important;
+  color: #1a1a1a !important;
+  border-radius: 0.375rem !important;
+  overflow: hidden !important;
+}
+
+/* Fix for tab panel transparency */
+[role="tabpanel"] {
+  background-color: white !important;
+  border-radius: 0.375rem !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Explicit bg for dropdowns and popovers */
+[data-state="open"] [data-radix-select-viewport],
+[data-state="open"] [data-radix-popper-content-wrapper] > div {
+  background-color: white !important;
+  color: #1a1a1a !important;
+}
+
+/* Improve contrast for UI components */
+.bg-popover {
+  background-color: white !important;
+}
+
+.text-popover-foreground {
+  color: #1a1a1a !important;
+}
+
+/* Better mobile dropdown visibility */
+@media (max-width: 768px) {
+  [data-radix-popper-content-wrapper] {
+    transform: none !important;
+  }
+}
+
+/* Menu item hover states */
+[role="menuitem"]:hover,
+[role="option"]:hover {
+  background-color: #f3f4f6 !important;
+}
+
+/* Select items visibility */
+[data-radix-select-item] {
+  background-color: transparent;
+}
+
+[data-radix-select-item]:hover,
+[data-radix-select-item][data-highlighted],
+[data-highlighted] {
+  background-color: #f3f4f6 !important;
+  color: #1a1a1a !important;
+}
+
+/* Fix for profile and tabs content */
+.tabs-content,
+.profile-content,
+.card-content,
+.TabsContent {
+  background-color: white !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+/* Fix for calendar cells */
+.rdp-cell .rdp-button {
+  background-color: transparent !important;
+}
+
+.rdp-cell .rdp-button:hover {
+  background-color: #f0f7ff !important;
+}
+
+/* Fix for any modal dialogs */
+[role="dialog"] {
+  background-color: white !important;
+}
+
+/* Fix for form elements, inputs and selects */
+select,
+input,
+textarea,
+button,
+.select-trigger,
+.input-wrapper {
+  background-color: white !important;
+}
+
+/* Fix for TabsList and TabsTrigger components */
+[data-orientation="horizontal"].TabsList,
+[role="tablist"] {
+  background-color: #F5F7FA !important;
+}
+
+.TabsTrigger[data-state="active"],
+[role="tab"][data-state="active"] {
+  background-color: #0288D1 !important;
+  color: white !important;
+}
+
+[role="tab"] {
+  background-color: white !important;
+}
+
+/* Fix for card backgrounds */
+.card,
+[data-radix-card] {
+  background-color: white !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Fix for form fields and inputs */
+.form-field,
+.form-input,
+.input-wrapper {
+  background-color: white !important;
+}
+
+/* Fix for all dropdown content */
+.popover-content,
+.select-content,
+.dropdown-content,
+.context-menu-content,
+.dialog-content {
+  background-color: white !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Fix for any custom popover styles */
+.custom-popover,
+.custom-dropdown,
+.custom-select {
+  background-color: white !important;
+}
+
+/* Fix for Tab panels */
+.tab-panel,
+.panel-content,
+[role="tabpanel"] {
+  background-color: white !important;
+}
+
+/* Ensure all radix components have proper styling */
+[data-radix-dropdown-menu-content],
+[data-radix-popover-content],
+[data-radix-select-content],
+[data-radix-tooltip-content],
+[data-radix-dialog-content],
+[data-radix-context-menu-content],
+[data-radix-hover-card-content],
+[data-radix-menubar-content] {
+  background-color: white !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Additional fixes for sheets and cards */
+.card,
+.sheet-content,
+[data-radix-sheet-content] {
+  background-color: white !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+/* Fix for command dialog */
+[cmdk-dialog],
+[cmdk-input],
+[cmdk-item],
+[cmdk-list],
+[cmdk-root] {
+  background-color: white !important;
+  color: #1a1a1a !important;
+}
+
+/* Fix for hover state on tab triggers */
+[role="tab"]:hover {
+  background-color: #f3f4f6 !important;
+}
+
+/* Fix for toast/alerts */
+[role="alert"] {
+  background-color: white !important;
+  border: 1px solid #e5e7eb !important;
+  color: #1a1a1a !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Fix for any remaining component transparencies */
+.radix-state-active,
+.radix-state-checked,
+.radix-state-open,
+.radix-state-on {
+  background-color: white !important;
+}
+
+/* Fix for profile page specific components */
+.profile-card .card-header,
+.profile-card .card-content,
+.profile-form,
+.profile-avatar {
+  background-color: white !important;
+}
+
+/* Additional fixes for form elements in profile */
+.profile-form input,
+.profile-form textarea,
+.profile-form select {
+  background-color: white !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+/* Fix for Tab Content */
+.TabsContent[data-state="active"] {
+  background-color: white !important;
+  border: 1px solid #e5e7eb !important;
+  padding: 1rem !important;
+}
+
+/* Force background colors for popover and sheet content */
+.PopoverContent,
+.SheetContent,
+.DialogContent {
+  background-color: white !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}

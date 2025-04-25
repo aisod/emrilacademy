@@ -1,4 +1,3 @@
-
 import { LandingNavigation } from "@/components/LandingNavigation";
 import { FeatureCard } from "@/components/FeatureCard";
 import { ArrowRight, Video, BookOpen, Users, GraduationCap } from "lucide-react";
@@ -27,16 +26,16 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white font-['Inter']">
+    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 font-['Inter']">
       <LandingNavigation />
       
       <section className="pt-24 md:pt-32 pb-16 md:pb-20 px-4">
         <div className="container mx-auto grid md:grid-cols-2 gap-8 md:gap-12 items-center">
           <div className="space-y-6 animate-fade-up">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight text-gray-900">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight dark:text-white">
               Transform Your Learning Journey
             </h1>
-            <p className="text-lg md:text-xl text-gray-600">
+            <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300">
               Join our interactive online classes with expert teachers and a supportive global learning community. Start your educational journey today.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
@@ -68,11 +67,11 @@ const Index = () => {
         </div>
       </section>
 
-      <section className="py-16 md:py-20 px-4 bg-gray-50">
+      <section className="py-16 md:py-20 px-4 bg-secondary dark:bg-gray-800">
         <div className="container mx-auto">
           <div className="text-center mb-12 md:mb-16">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gray-900">Why Choose EmRil Academy?</h2>
-            <p className="text-gray-600">Discover the features that make our platform unique</p>
+            <h2 className="text-2xl md:text-3xl font-bold mb-4 dark:text-white">Why Choose EmRil Academy?</h2>
+            <p className="text-gray-600 dark:text-gray-300">Discover the features that make our platform unique</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
             <FeatureCard icon={Video} title="Live Interactive Classes" description="Engage in real-time with expert teachers and fellow students." />
@@ -83,9 +82,9 @@ const Index = () => {
         </div>
       </section>
 
-      <section className="py-16 md:py-20 px-4 bg-white">
+      <section className="py-16 md:py-20 px-4">
         <div className="container mx-auto">
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-12 md:mb-16 text-gray-900">How EmRil Academy Works</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-12 md:mb-16 dark:text-white">How EmRil Academy Works</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {[{
               step: "1",
@@ -100,12 +99,12 @@ const Index = () => {
               title: "Learn & Grow",
               description: "Access resources, take assessments, and track your progress"
             }].map(item => (
-              <div key={item.step} className="text-center animate-fade-up bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+              <div key={item.step} className="text-center animate-fade-up bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
                 <div className="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-4">
                   {item.step}
                 </div>
-                <h3 className="text-xl font-semibold mb-2 text-gray-900">{item.title}</h3>
-                <p className="text-gray-600">{item.description}</p>
+                <h3 className="text-xl font-semibold mb-2 dark:text-white">{item.title}</h3>
+                <p className="text-gray-600 dark:text-gray-300">{item.description}</p>
               </div>
             ))}
           </div>
