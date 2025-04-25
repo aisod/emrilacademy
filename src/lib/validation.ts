@@ -1,3 +1,4 @@
+
 import { z } from "zod";
 
 // Email validation schema with detailed error messages
@@ -51,6 +52,15 @@ export const loginFormSchema = z.object({
   password: simplePasswordSchema,
 });
 
+// Define the register form shape for typing the parent context
+const registerFormShape = {
+  email: z.string(),
+  password: z.string(),
+  firstName: z.string(),
+  lastName: z.string(),
+  role: z.enum(["student", "teacher"]),
+};
+
 // Registration form schema with conditional email validation
 export const registerFormSchema = z.object({
   email: z.string().superRefine((email, ctx) => {
@@ -72,7 +82,11 @@ export const registerFormSchema = z.object({
     }
 
     // Check teacher email domains if registering as a teacher
-    if (ctx.parent.role === "teacher" && 
+    const parentInput = ctx.path && ctx.path.length > 0 
+      ? (ctx as any).data 
+      : undefined;
+    
+    if (parentInput && parentInput.role === "teacher" && 
         !email.endsWith("@emrilacademy.com") && 
         !email.endsWith("@emrilacademy.tech")) {
       ctx.addIssue({
@@ -111,7 +125,7 @@ export const getPasswordStrength = (password: string): number => {
   return Math.min(strength, 5);
 };
 
-// Format validation error messages for display
+// Format validation errors for display
 export const formatValidationErrors = (errors: z.ZodFormattedError<any>): Record<string, string> => {
   const formattedErrors: Record<string, string> = {};
   
