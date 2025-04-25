@@ -46,6 +46,19 @@ export function useCourses() {
       const { data: session } = await supabase.auth.getSession();
       if (!session.session) throw new Error("Not authenticated");
 
+      // First check if slug is already used
+      const { data: existingCourse, error: checkError } = await supabase
+        .from("courses")
+        .select("id")
+        .eq("slug", data.slug)
+        .limit(1);
+        
+      if (checkError) throw checkError;
+      
+      if (existingCourse && existingCourse.length > 0) {
+        throw new Error(`A course with the slug "${data.slug}" already exists`);
+      }
+
       const { error } = await supabase
         .from("courses")
         .insert({
@@ -53,7 +66,10 @@ export function useCourses() {
           teacher_id: session.session.user.id,
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase error:", error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["courses"] });
@@ -62,11 +78,18 @@ export function useCourses() {
         description: "Your course has been created successfully.",
       });
     },
-    onError: (error) => {
+    onError: (error: Error) => {
+      console.error("Error in createCourse:", error);
+      
+      // Check if error is a duplicate slug error
+      const errorMessage = error.message.includes("already exists")
+        ? error.message
+        : "Failed to create course. Please check your inputs and try again.";
+      
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to create course. Please try again.",
+        description: errorMessage,
       });
     },
   });
