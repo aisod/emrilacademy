@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
@@ -16,6 +15,15 @@ export interface Course {
 }
 
 export interface CreateCourseDto {
+  title: string;
+  description?: string | null;
+  status?: string;
+  slug: string;
+  duration_weeks?: number;
+  thumbnail_url?: string | null;
+}
+
+export interface UpdateCourseDto {
   title: string;
   description?: string | null;
   status?: string;
@@ -94,9 +102,54 @@ export function useCourses() {
     },
   });
 
+  const updateCourse = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: UpdateCourseDto }) => {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session) throw new Error("Not authenticated");
+
+      // Check if new slug is already used by another course
+      if (data.slug) {
+        const { data: existingCourse, error: checkError } = await supabase
+          .from("courses")
+          .select("id")
+          .eq("slug", data.slug)
+          .neq("id", id)
+          .limit(1);
+          
+        if (checkError) throw checkError;
+        
+        if (existingCourse && existingCourse.length > 0) {
+          throw new Error(`A course with the slug "${data.slug}" already exists`);
+        }
+      }
+
+      const { error } = await supabase
+        .from("courses")
+        .update(data)
+        .eq("id", id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["courses"] });
+      toast({
+        title: "Course updated",
+        description: "Your course has been updated successfully.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to update course",
+      });
+    },
+  });
+
   return {
     courses,
     isLoading,
     createCourse,
+    updateCourse,
   };
 }

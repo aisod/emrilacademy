@@ -1,4 +1,3 @@
-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -6,9 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useCourses } from "@/hooks/use-courses";
+import { useCourses, type Course } from "@/hooks/use-courses";
 
-// Create schema for course form validation
 const courseFormSchema = z.object({
   title: z.string().min(3, { message: "Title must be at least 3 characters" }),
   description: z.string().optional(),
@@ -23,38 +21,54 @@ const courseFormSchema = z.object({
 
 type CourseFormData = z.infer<typeof courseFormSchema>;
 
-export function CourseForm() {
+interface CourseFormProps {
+  initialData?: Course;
+  onSuccess?: () => void;
+}
+
+export function CourseForm({ initialData, onSuccess }: CourseFormProps) {
   const form = useForm<CourseFormData>({
     resolver: zodResolver(courseFormSchema),
     defaultValues: {
-      title: "",
-      description: "",
-      duration_weeks: 1,
-      slug: ""
+      title: initialData?.title || "",
+      description: initialData?.description || "",
+      duration_weeks: initialData?.duration_weeks || 1,
+      slug: initialData?.slug || ""
     }
   });
   
-  const { createCourse } = useCourses();
+  const { createCourse, updateCourse } = useCourses();
+  const isEditing = !!initialData;
 
   const onSubmit = async (data: CourseFormData) => {
     try {
-      // Ensure title and slug are non-optional when sending to createCourse
-      await createCourse.mutateAsync({
-        title: data.title, // Explicitly include title to satisfy TypeScript
-        slug: data.slug,  // Slug is required too
-        description: data.description,
-        status: "draft",
-        duration_weeks: Number(data.duration_weeks)
-      });
+      if (isEditing) {
+        await updateCourse.mutateAsync({
+          id: initialData.id,
+          data: {
+            title: data.title,
+            slug: data.slug,
+            description: data.description,
+            duration_weeks: Number(data.duration_weeks)
+          }
+        });
+      } else {
+        await createCourse.mutateAsync({
+          title: data.title,
+          slug: data.slug,
+          description: data.description,
+          status: "draft",
+          duration_weeks: Number(data.duration_weeks)
+        });
+      }
       
-      // Reset form on successful creation
       form.reset();
+      onSuccess?.();
     } catch (error) {
-      console.error("Error creating course:", error);
+      console.error("Error saving course:", error);
     }
   };
 
-  // Generate slug from title automatically
   const generateSlug = (title: string) => {
     return title
       .toLowerCase()
@@ -64,7 +78,6 @@ export function CourseForm() {
       .replace(/-+/g, '-'); // Remove consecutive hyphens
   };
 
-  // Update slug when title changes
   const handleTitleChange = (value: string) => {
     const currentSlug = form.getValues("slug");
     if (!currentSlug || currentSlug === "") {
@@ -72,7 +85,8 @@ export function CourseForm() {
     }
   };
 
-  return <Form {...form}>
+  return (
+    <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
@@ -140,11 +154,15 @@ export function CourseForm() {
 
         <Button 
           type="submit" 
-          className="text-sky-500"
-          disabled={createCourse.isPending}
+          className="w-full text-sky-500"
+          disabled={createCourse.isPending || updateCourse.isPending}
         >
-          {createCourse.isPending ? "Creating..." : "Create Course"}
+          {isEditing 
+            ? (updateCourse.isPending ? "Saving..." : "Save Changes")
+            : (createCourse.isPending ? "Creating..." : "Create Course")
+          }
         </Button>
       </form>
-    </Form>;
+    </Form>
+  );
 }
