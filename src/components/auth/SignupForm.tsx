@@ -176,7 +176,11 @@ export const SignupForm = ({
                 </div>
               </FormItem>} />
 
-          <Button type="submit" disabled={loading} className="w-full bg-blue-500 hover:bg-blue-600 p-3 rounded-md flex items-center justify-center gap-2 h-auto text-white">
+          <Button 
+            type="submit" 
+            disabled={loading} 
+            className="w-full bg-white border-primary text-primary hover:bg-primary/10 hover:text-primary-dark flex items-center justify-center gap-2 h-auto"
+          >
             {loading ? <>
                 <Loader className="h-5 w-5 animate-spin" /> Creating Account...
               </> : <>
@@ -187,7 +191,10 @@ export const SignupForm = ({
       </Form>
 
       <div className="text-center">
-        <button onClick={onToggleMode} className="text-blue-500 hover:text-blue-600 transition-colors">
+        <button 
+          onClick={onToggleMode} 
+          className="text-primary hover:text-primary-dark transition-colors"
+        >
           Already have an account? Sign in
         </button>
       </div>

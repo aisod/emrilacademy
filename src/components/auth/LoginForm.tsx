@@ -113,7 +113,7 @@ export const LoginForm = ({
             type="submit" 
             variant="default" 
             disabled={loading} 
-            className="w-full flex items-center justify-center gap-2 h-auto text-white bg-blue-500 hover:bg-blue-600"
+            className="w-full flex items-center justify-center gap-2 h-auto text-primary hover:text-primary-dark"
           >
             {loading ? <>
                 <EyeOff className="h-4 w-4 animate-spin" /> Signing In...
@@ -125,7 +125,10 @@ export const LoginForm = ({
       </Form>
 
       <div className="text-center">
-        <button onClick={onToggleMode} className="text-blue-500 hover:text-blue-600 transition-colors">
+        <button 
+          onClick={onToggleMode} 
+          className="text-primary hover:text-primary-dark transition-colors"
+        >
           Need an account? Sign up
         </button>
       </div>
