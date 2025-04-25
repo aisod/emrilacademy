@@ -30,8 +30,8 @@ export const EmailField = ({ form }: EmailFieldProps) => {
                   className="pl-10 w-full p-3 bg-white border-none rounded-md focus:ring-2 focus:ring-blue-500 text-black placeholder-gray-500"
                   placeholder={
                     isTeacher
-                      ? "Your @emrilacademy.com or @emrilacademy.tech email"
-                      : "Your email address"
+                      ? "Input your email" 
+                      : "Input your email"
                   }
                   {...field}
                 />
