@@ -22,19 +22,23 @@ export function ClassCardActions({
   onToggleResourceUpload,
 }: ClassCardActionsProps) {
   return (
-    <div className="mt-6 flex gap-4">
+    <div className="mt-6 flex flex-wrap gap-3">
       {classType === "live" && (
         teacherView ? (
           <Button
             onClick={onStartLiveSession}
             disabled={isSessionActive}
+            className="flex-1 min-w-[140px] shadow-sm hover:shadow-md transition-all"
           >
             <Play className="mr-2 h-4 w-4" />
             {isSessionActive ? "Class in Progress" : "Start Live Session"}
           </Button>
         ) : (
           isSessionActive && (
-            <Button onClick={onJoinLiveSession}>
+            <Button 
+              onClick={onJoinLiveSession}
+              className="flex-1 min-w-[140px] shadow-sm hover:shadow-md transition-all"
+            >
               <Video className="mr-2 h-4 w-4" />
               Join Live Session
             </Button>
@@ -44,6 +48,7 @@ export function ClassCardActions({
       <Button
         variant="outline"
         onClick={onToggleResources}
+        className="flex-1 min-w-[140px] shadow-sm hover:shadow-md transition-all"
       >
         <Book className="mr-2 h-4 w-4" />
         Resources
@@ -52,6 +57,7 @@ export function ClassCardActions({
         <Button
           variant="outline"
           onClick={onToggleResourceUpload}
+          className="flex-1 min-w-[140px] shadow-sm hover:shadow-md transition-all"
         >
           Upload Resource
         </Button>

@@ -1,4 +1,3 @@
-
 import { LandingNavigation } from "@/components/LandingNavigation";
 import { FeatureCard } from "@/components/FeatureCard";
 import { ArrowRight, Video, BookOpen, Users, GraduationCap } from "lucide-react";
@@ -22,18 +21,14 @@ const Index = () => {
     }
   }, [role, isLoading, navigate]);
 
-  // If still loading, return null to prevent flash of content
   if (isLoading) {
     return null;
   }
 
-  // If user is authenticated and has a role, they will be redirected
-  // If not authenticated or no role, show landing page
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 font-['Inter']">
       <LandingNavigation />
       
-      {/* Hero Section */}
       <section className="pt-24 md:pt-32 pb-16 md:pb-20 px-4">
         <div className="container mx-auto grid md:grid-cols-2 gap-8 md:gap-12 items-center">
           <div className="space-y-6 animate-fade-up">
@@ -47,15 +42,15 @@ const Index = () => {
               <Button 
                 size="lg"
                 onClick={() => navigate("/auth?mode=signup")}
-                className="flex items-center justify-center gap-2 w-full sm:w-auto"
+                className="bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg hover:shadow-xl transition-all"
               >
-                Get Started <ArrowRight className="w-4 h-4" />
+                Get Started <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
               <Button 
                 variant="outline" 
                 size="lg"
                 onClick={() => navigate("/courses")}
-                className="w-full sm:w-auto"
+                className="border-2 border-primary/20 hover:border-primary/40 font-medium shadow-md hover:shadow-lg transition-all"
               >
                 Browse Courses
               </Button>
@@ -72,7 +67,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Features Section */}
       <section className="py-16 md:py-20 px-4 bg-secondary dark:bg-gray-800">
         <div className="container mx-auto">
           <div className="text-center mb-12 md:mb-16">
@@ -88,7 +82,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* How It Works Section */}
       <section className="py-16 md:py-20 px-4">
         <div className="container mx-auto">
           <h2 className="text-2xl md:text-3xl font-bold text-center mb-12 md:mb-16 dark:text-white">How EmRil Academy Works</h2>
@@ -118,24 +111,25 @@ const Index = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="py-16 md:py-20 px-4 bg-primary text-white">
         <div className="container mx-auto text-center">
           <h2 className="text-2xl md:text-3xl font-bold mb-4">Ready to Start Learning?</h2>
-          <p className="mb-8">
-            Join thousands of students already learning with Emmadex. Get access to expert teachers and a supportive learning community.
+          <p className="mb-8 text-white/90">
+            Join thousands of students already learning with EmRil Academy. Get access to expert teachers and a supportive learning community.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button
               onClick={() => navigate("/auth?mode=signup")}
-              className="px-6 py-3 bg-white text-primary rounded-md hover:bg-gray-100 transition-colors w-full sm:w-auto"
+              className="bg-white text-primary hover:bg-gray-100 font-semibold shadow-lg hover:shadow-xl transition-all w-full sm:w-auto"
+              size="lg"
             >
               Get Started Now
             </Button>
             <Button
               variant="outline"
               onClick={() => navigate("/courses")}
-              className="px-6 py-3 border border-white rounded-md hover:bg-primary/90 transition-colors w-full sm:w-auto"
+              className="border-2 border-white hover:bg-white/10 text-white font-medium transition-all w-full sm:w-auto"
+              size="lg"
             >
               Learn More
             </Button>
@@ -143,7 +137,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="bg-gray-900 text-gray-400 py-12">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
