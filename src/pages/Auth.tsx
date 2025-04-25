@@ -18,6 +18,13 @@ const Auth = () => {
   const toggleMode = () => {
     setSearchParams({ mode: mode === "signin" ? "signup" : "signin" });
   };
+  
+  // New function to handle returning to sign in from email confirmation
+  const handleBackToSignIn = () => {
+    setConfirmedEmail(null);
+    setUserId(null);
+    setSearchParams({ mode: "signin" });
+  };
 
   // Handle email confirmation and authentication state
   useEffect(() => {
@@ -158,11 +165,12 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center px-4">
+    <div className="min-h-screen bg-white dark:bg-gray-900 flex items-center justify-center px-4">
       {confirmedEmail ? (
         <EmailConfirmation 
           email={confirmedEmail} 
           userId={userId || undefined}
+          onBackToSignIn={handleBackToSignIn}
         />
       ) : mode === "signup" ? (
         <SignupForm onToggleMode={toggleMode} onSignupSuccess={handleSignupSuccess} />

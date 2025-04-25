@@ -9,9 +9,10 @@ import { useNavigate } from "react-router-dom";
 interface EmailConfirmationProps {
   email: string;
   userId?: string;
+  onBackToSignIn?: () => void; // Add prop for handling sign-in navigation
 }
 
-export const EmailConfirmation = ({ email }: EmailConfirmationProps) => {
+export const EmailConfirmation = ({ email, onBackToSignIn }: EmailConfirmationProps) => {
   const [resending, setResending] = useState(false);
   const [resent, setResent] = useState(false);
   const [countdown, setCountdown] = useState(0);
@@ -76,25 +77,31 @@ export const EmailConfirmation = ({ email }: EmailConfirmationProps) => {
 
   // Go to sign in page
   const handleSignInWithPassword = () => {
-    navigate("/auth?mode=signin");
+    if (onBackToSignIn) {
+      // Use the provided callback if available
+      onBackToSignIn();
+    } else {
+      // Fallback to direct navigation
+      navigate("/auth?mode=signin");
+    }
   };
 
   return (
-    <div className="w-full max-w-md space-y-8 bg-white p-8 rounded-lg shadow-md">
+    <div className="w-full max-w-md space-y-8 bg-white dark:bg-gray-900 p-8 rounded-lg shadow-md">
       <div className="text-center space-y-2">
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-4">
           <Mail className="h-8 w-8 text-green-600" />
         </div>
-        <h1 className="text-2xl font-bold text-gray-900">Success! Account Created</h1>
-        <p className="text-gray-600">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Success! Account Created</h1>
+        <p className="text-gray-600 dark:text-gray-300">
           Please check your email ({email}) to confirm your account.
         </p>
       </div>
 
-      <div className="bg-blue-50 p-4 rounded-md">
+      <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-md">
         <div className="flex gap-3">
-          <AlertCircle className="h-6 w-6 text-blue-600 flex-shrink-0" />
-          <div className="text-sm text-blue-800">
+          <AlertCircle className="h-6 w-6 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+          <div className="text-sm text-blue-800 dark:text-blue-200">
             <p className="font-medium">You need to verify your email before signing in</p>
             <p className="mt-1">Please check both your inbox and spam folder for the confirmation link</p>
           </div>
@@ -103,14 +110,14 @@ export const EmailConfirmation = ({ email }: EmailConfirmationProps) => {
 
       <div className="space-y-4">
         <div className="text-center">
-          <p className="text-sm text-gray-500">Didn't receive an email?</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Didn't receive an email?</p>
         </div>
 
         <Button
           onClick={handleResendEmail}
           disabled={resending || countdown > 0}
           variant="outline"
-          className="w-full flex gap-2 justify-center items-center border-blue-500 text-blue-600 hover:bg-blue-50"
+          className="w-full flex gap-2 justify-center items-center border-blue-500 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
         >
           {resending ? (
             <>
@@ -133,10 +140,10 @@ export const EmailConfirmation = ({ email }: EmailConfirmationProps) => {
 
         <div className="relative py-2">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300"></div>
+            <div className="w-full border-t border-gray-300 dark:border-gray-700"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white text-gray-500">or</span>
+            <span className="px-2 bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400">or</span>
           </div>
         </div>
 
