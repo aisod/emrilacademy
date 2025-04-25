@@ -38,8 +38,11 @@ export function CourseForm() {
 
   const onSubmit = async (data: CourseFormData) => {
     try {
+      // Ensure title and slug are non-optional when sending to createCourse
       await createCourse.mutateAsync({
-        ...data,
+        title: data.title, // Explicitly include title to satisfy TypeScript
+        slug: data.slug,  // Slug is required too
+        description: data.description,
         status: "draft",
         duration_weeks: Number(data.duration_weeks)
       });
