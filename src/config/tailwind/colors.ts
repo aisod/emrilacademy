@@ -95,4 +95,3 @@ export const colors = {
     itemHover: "#F3F4F6",
   }
 };
-

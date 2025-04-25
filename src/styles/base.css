@@ -8,6 +8,8 @@ body {
   overflow-x: hidden;
   height: 100%;
   overscroll-behavior-y: none;
+  color: #1A1A1A;
+  background-color: #FFFFFF;
 }
 
 html {
@@ -33,4 +35,47 @@ body.keyboard-user :focus:not(:focus-visible) {
 body.keyboard-user :focus-visible {
   outline: 2px solid #0ea5e9;
   outline-offset: 2px;
+}
+
+/* General text contrast improvements */
+h1, h2, h3, h4, h5, h6 {
+  color: #1A1A1A;
+}
+
+p {
+  color: #374151;
+}
+
+/* Fix form controls */
+input, textarea, select {
+  background-color: #FFFFFF;
+  border: 1px solid #E5E7EB;
+}
+
+/* Fix button styles globally */
+button {
+  font-weight: 500;
+}
+
+/* High contrast for important UI elements */
+.bg-primary {
+  background-color: #0288D1;
+}
+
+/* Ensure proper contrast in dark text on light backgrounds */
+.text-gray-600 {
+  color: #4B5563;
+}
+
+/* Ensure proper contrast in light text on dark backgrounds */
+.text-white {
+  color: #FFFFFF;
+}
+
+/* Link styling for better visibility */
+a:not([class]) {
+  color: #0288D1;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
 }

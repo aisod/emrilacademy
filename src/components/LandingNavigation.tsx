@@ -20,8 +20,8 @@ const NavLink = ({ to, children, className, onClick }: NavLinkProps) => {
     <Link
       to={to}
       className={cn(
-        "text-gray-700 dark:text-gray-300 hover:text-primary transition-colors",
-        isActive && "text-primary dark:text-primary-light font-medium",
+        "text-gray-700 hover:text-primary transition-colors",
+        isActive && "text-primary font-medium",
         className
       )}
       onClick={onClick}
@@ -57,7 +57,7 @@ export function LandingNavigation() {
     <nav 
       className={cn(
         "fixed w-full z-50 top-0 left-0 transition-all duration-200 mobile-safe-area",
-        isScrolled ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-sm" : "bg-transparent"
+        isScrolled ? "bg-white shadow-sm" : "bg-white"
       )}
       role="navigation"
       aria-label="Main navigation"
@@ -68,7 +68,7 @@ export function LandingNavigation() {
           className="flex items-center space-x-3"
           aria-label="Go to homepage"
         >
-          <span className="self-center text-xl md:text-2xl font-semibold">EmRil Academy</span>
+          <span className="self-center text-xl md:text-2xl font-semibold text-gray-900">EmRil Academy</span>
         </Link>
         
         <Button
@@ -87,7 +87,7 @@ export function LandingNavigation() {
           className={cn(
             "w-full md:block md:w-auto transition-all duration-200 ease-in-out",
             isOpen 
-              ? "block opacity-100 max-h-[80vh] overflow-y-auto bg-white dark:bg-gray-900 rounded-md shadow-lg absolute top-full left-0 right-0 mt-2 z-50" 
+              ? "block opacity-100 max-h-[80vh] overflow-y-auto bg-white rounded-md shadow-lg absolute top-full left-0 right-0 mt-2 z-50" 
               : "hidden md:opacity-100 opacity-0 max-h-0 md:max-h-none"
           )}
         >
@@ -98,7 +98,7 @@ export function LandingNavigation() {
               <NavLink to="/teachers" onClick={closeMenu}>Teachers</NavLink>
               <NavLink to="/contact" onClick={closeMenu}>Contact</NavLink>
             </div>
-            <div className="flex flex-col md:flex-row gap-3 md:items-center mt-4 md:mt-0 p-4 border-t md:border-none border-gray-200 dark:border-gray-700 md:p-0">
+            <div className="flex flex-col md:flex-row gap-3 md:items-center mt-4 md:mt-0 p-4 border-t md:border-none border-gray-200 md:p-0">
               <Link to="/auth?mode=signin" className="w-full md:w-auto" onClick={closeMenu}>
                 <Button 
                   variant="outline" 

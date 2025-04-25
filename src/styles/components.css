@@ -52,3 +52,39 @@
   border: 1px solid #e5e7eb !important;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1) !important;
 }
+
+/* Fix contrast issues for headings */
+h1, h2, h3, h4, h5, h6 {
+  color: #1a1a1a;
+}
+
+/* Fix button styling */
+button {
+  transition: all 0.2s ease;
+}
+
+/* Ensure buttons always have proper contrast */
+.bg-primary {
+  background-color: #0288D1;
+  color: white;
+}
+
+.bg-primary:hover {
+  background-color: #01579B;
+}
+
+/* Fix for landing navigation contrast */
+.bg-white\/95 {
+  background-color: rgba(255, 255, 255, 0.97) !important;
+}
+
+/* Fix feature card contrast */
+.feature-card {
+  background-color: white;
+  border: 1px solid #e5e7eb;
+}
+
+/* Fix footer text contrast */
+.text-gray-400 {
+  color: #9ca3af;
+}
