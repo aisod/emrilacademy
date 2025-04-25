@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -6,12 +7,23 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Suspense, lazy, useEffect } from "react";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 
+// Import lazy loaded components
 const StudentDashboard = lazy(() => import("./pages/StudentDashboard"));
 const TeacherDashboard = lazy(() => import("./pages/TeacherDashboard"));
 const BrowseClasses = lazy(() => import("./pages/BrowseClasses"));
 const LiveClasses = lazy(() => import("./pages/LiveClasses"));
 const Courses = lazy(() => import("./pages/Courses"));
 const Course = lazy(() => import("./pages/Course"));
+
+// Import non-lazy loaded components
+import Index from "./pages/Index";
+import Auth from "./pages/Auth";
+import Dashboard from "./pages/Dashboard";
+import Messages from "./pages/Messages";
+import ResourcesPage from "./pages/ResourcesPage";
+import Profile from "./pages/Profile";
+import TeachersPage from "./pages/TeachersPage";
+import NotFound from "./pages/NotFound";
 
 const LoadingFallback = () => (
   <div className="flex items-center justify-center min-h-screen">
