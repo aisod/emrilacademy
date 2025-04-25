@@ -165,7 +165,7 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       {confirmedEmail ? (
         <EmailConfirmation 
           email={confirmedEmail} 
