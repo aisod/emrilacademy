@@ -102,7 +102,7 @@ export function LandingNavigation() {
               <Link to="/auth?mode=signin" className="w-full md:w-auto" onClick={closeMenu}>
                 <Button 
                   variant="outline" 
-                  className="w-full md:w-auto border-2 border-primary text-primary hover:bg-primary/10"
+                  className="w-full md:w-auto border-2 border-primary bg-white text-primary hover:bg-primary/10"
                   aria-label="Sign in to your account"
                 >
                   Sign In
@@ -110,7 +110,7 @@ export function LandingNavigation() {
               </Link>
               <Link to="/auth?mode=signup" className="w-full md:w-auto" onClick={closeMenu}>
                 <Button 
-                  className="w-full md:w-auto font-semibold"
+                  className="w-full md:w-auto bg-primary text-white font-semibold"
                   aria-label="Create a new account"
                 >
                   Sign Up

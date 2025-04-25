@@ -1,4 +1,3 @@
-
 import { LandingNavigation } from "@/components/LandingNavigation";
 import { FeatureCard } from "@/components/FeatureCard";
 import { ArrowRight, Video, BookOpen, Users, GraduationCap } from "lucide-react";
@@ -51,7 +50,7 @@ const Index = () => {
                 variant="outline" 
                 size="lg"
                 onClick={() => navigate("/courses")}
-                className="border-2 border-primary hover:border-primary/60 font-medium shadow-md hover:shadow-lg transition-all"
+                className="border-2 border-primary bg-white text-primary hover:bg-primary/10 font-medium shadow-md hover:shadow-lg transition-all"
               >
                 Browse Courses
               </Button>
