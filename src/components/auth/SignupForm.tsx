@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Mail, Lock, User, ArrowRight, GraduationCap, BookOpen, Eye, EyeOff, Loader } from "lucide-react";
 import { useSignup } from "@/hooks/useSignup";
@@ -8,6 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+
 interface SignupFormProps {
   onToggleMode: () => void;
   onSignupSuccess: (email: string, userId?: string) => void;
@@ -24,6 +26,7 @@ const signupSchema = z.object({
   })
 });
 type SignupFormValues = z.infer<typeof signupSchema>;
+
 export const SignupForm = ({
   onToggleMode,
   onSignupSuccess
@@ -34,6 +37,7 @@ export const SignupForm = ({
     signup,
     loading
   } = useSignup();
+  
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -44,9 +48,11 @@ export const SignupForm = ({
       role: "student"
     }
   });
+  
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+  
   const handleSignup = async (values: SignupFormValues) => {
     setError(null);
     try {
@@ -70,6 +76,7 @@ export const SignupForm = ({
       console.error("Signup error:", error);
     }
   };
+  
   return <div className="w-full max-w-md bg-white dark:bg-gray-900 p-6 rounded-xl shadow-lg space-y-6 mx-auto px-4 sm:px-6 lg:px-8">
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Create Account</h2>
@@ -90,7 +97,12 @@ export const SignupForm = ({
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 h-5 w-5" />
                     <FormControl>
-                      <input type="text" placeholder="Your first name" className="pl-10 w-full p-3 border-none rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 bg-sky-200" />
+                      <input 
+                        type="text" 
+                        placeholder="Your first name" 
+                        className="pl-10 w-full p-3 bg-white dark:bg-gray-800 border-none rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 text-black dark:text-white placeholder-gray-500 dark:placeholder-gray-400" 
+                        {...field} 
+                      />
                     </FormControl>
                   </div>
                   <FormMessage className="text-sm text-red-500" />
@@ -105,7 +117,12 @@ export const SignupForm = ({
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 h-5 w-5" />
                     <FormControl>
-                      <input type="text" className="pl-10 w-full p-3 bg-gray-100 dark:bg-gray-800 border-none rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600" placeholder="Your last name" {...field} />
+                      <input 
+                        type="text" 
+                        className="pl-10 w-full p-3 bg-white dark:bg-gray-800 border-none rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 text-black dark:text-white placeholder-gray-500 dark:placeholder-gray-400" 
+                        placeholder="Your last name" 
+                        {...field} 
+                      />
                     </FormControl>
                   </div>
                   <FormMessage className="text-sm text-red-500" />
@@ -145,7 +162,12 @@ export const SignupForm = ({
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 h-5 w-5" />
                     <FormControl>
-                      <input type="email" className="pl-10 w-full p-3 bg-gray-100 dark:bg-gray-800 border-none rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600" placeholder="Your email address" {...field} />
+                      <input 
+                        type="email" 
+                        className="pl-10 w-full p-3 bg-white dark:bg-gray-800 border-none rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 text-black dark:text-white placeholder-gray-500 dark:placeholder-gray-400" 
+                        placeholder="Your email address" 
+                        {...field} 
+                      />
                     </FormControl>
                   </div>
                   <FormMessage className="text-sm text-red-500" />
@@ -160,7 +182,12 @@ export const SignupForm = ({
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 h-5 w-5" />
                     <FormControl>
-                      <input type={showPassword ? "text" : "password"} className="pl-10 w-full p-3 bg-gray-100 dark:bg-gray-800 border-none rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600" placeholder="Create a secure password" {...field} />
+                      <input 
+                        type={showPassword ? "text" : "password"} 
+                        className="pl-10 w-full p-3 bg-white dark:bg-gray-800 border-none rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 text-black dark:text-white placeholder-gray-500 dark:placeholder-gray-400" 
+                        placeholder="Create a secure password" 
+                        {...field} 
+                      />
                     </FormControl>
                     <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200" onClick={togglePasswordVisibility}>
                       {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
@@ -170,7 +197,7 @@ export const SignupForm = ({
                 </div>
               </FormItem>} />
 
-          <Button type="submit" disabled={loading} className="w-full bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 p-3 rounded-md flex items-center justify-center gap-2 h-auto text-sky-500">
+          <Button type="submit" disabled={loading} className="w-full bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 p-3 rounded-md flex items-center justify-center gap-2 h-auto text-white">
             {loading ? <>
                 <Loader className="h-5 w-5 animate-spin" /> Creating Account...
               </> : <>
