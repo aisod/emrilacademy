@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Mail, Lock, ArrowRight, Eye, EyeOff, Loader } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
@@ -8,7 +7,6 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-
 interface LoginFormProps {
   onToggleMode: () => void;
 }
@@ -16,28 +14,30 @@ interface LoginFormProps {
 // Login form schema with validation
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(1, "Password is required"),
+  password: z.string().min(1, "Password is required")
 });
-
 type LoginFormValues = z.infer<typeof loginSchema>;
-
-export const LoginForm = ({ onToggleMode }: LoginFormProps) => {
+export const LoginForm = ({
+  onToggleMode
+}: LoginFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { login, loading } = useLogin();
-  const { toast } = useToast();
-
+  const {
+    login,
+    loading
+  } = useLogin();
+  const {
+    toast
+  } = useToast();
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
-      password: "",
-    },
+      password: ""
+    }
   });
-
   const handleLogin = async (values: LoginFormValues) => {
     setError(null);
-    
     try {
       const result = await login(values.email, values.password);
       if (!result.success) {
@@ -48,107 +48,68 @@ export const LoginForm = ({ onToggleMode }: LoginFormProps) => {
       console.error("Login error:", error);
     }
   };
-
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-
-  return (
-    <div className="w-full max-w-md bg-white dark:bg-gray-900 p-6 rounded-xl shadow-lg space-y-6 mx-auto px-4 sm:px-6 lg:px-8">
+  return <div className="w-full max-w-md bg-white dark:bg-gray-900 p-6 rounded-xl shadow-lg space-y-6 mx-auto px-4 sm:px-6 lg:px-8">
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Welcome Back</h2>
         <p className="mt-2 text-gray-600 dark:text-gray-400">Sign in to your account</p>
       </div>
 
-      {error && (
-        <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded relative">
+      {error && <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded relative">
           <span className="block sm:inline">{error}</span>
-        </div>
-      )}
+        </div>}
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleLogin)} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
+          <FormField control={form.control} name="email" render={({
+          field
+        }) => <FormItem>
                 <div className="space-y-1">
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 h-5 w-5" />
                     <FormControl>
-                      <input
-                        type="email"
-                        className="pl-10 w-full p-3 bg-gray-100 dark:bg-gray-800 border-none rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600"
-                        placeholder="Your email address"
-                        {...field}
-                      />
+                      <input type="email" className="pl-10 w-full p-3 bg-gray-100 dark:bg-gray-800 border-none rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600" placeholder="Your email address" {...field} />
                     </FormControl>
                   </div>
                   <FormMessage className="text-sm text-red-500" />
                 </div>
-              </FormItem>
-            )}
-          />
+              </FormItem>} />
 
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
+          <FormField control={form.control} name="password" render={({
+          field
+        }) => <FormItem>
                 <div className="space-y-1">
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 h-5 w-5" />
                     <FormControl>
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        className="pl-10 w-full p-3 bg-gray-100 dark:bg-gray-800 border-none rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600"
-                        placeholder="Your password"
-                        {...field}
-                      />
+                      <input type={showPassword ? "text" : "password"} className="pl-10 w-full p-3 bg-gray-100 dark:bg-gray-800 border-none rounded-md focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600" placeholder="Your password" {...field} />
                     </FormControl>
-                    <button 
-                      type="button"
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-                      onClick={togglePasswordVisibility}
-                    >
+                    <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200" onClick={togglePasswordVisibility}>
                       {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                     </button>
                   </div>
                   <FormMessage className="text-sm text-red-500" />
                 </div>
-              </FormItem>
-            )}
-          />
+              </FormItem>} />
 
-          <Button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white p-3 rounded-md flex items-center justify-center gap-2 h-auto"
-          >
-            {loading ? (
-              <>
+          <Button type="submit" disabled={loading} className="w-full bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 p-3 rounded-md flex items-center justify-center gap-2 h-auto text-sky-500">
+            {loading ? <>
                 <Loader className="h-4 w-4 animate-spin" /> Signing In...
-              </>
-            ) : (
-              <>
+              </> : <>
                 Sign In <ArrowRight className="h-5 w-5" />
-              </>
-            )}
+              </>}
           </Button>
         </form>
       </Form>
 
       <div className="text-center">
-        <button
-          onClick={onToggleMode}
-          className="text-blue-500 dark:text-blue-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors"
-        >
+        <button onClick={onToggleMode} className="text-blue-500 dark:text-blue-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors">
           Need an account? Sign up
         </button>
       </div>
-    </div>
-  );
+    </div>;
 };
