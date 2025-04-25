@@ -1,4 +1,3 @@
-
 import { LandingNavigation } from "@/components/LandingNavigation";
 import { FeatureCard } from "@/components/FeatureCard";
 import { ArrowRight, Video, BookOpen, Users, GraduationCap } from "lucide-react";
