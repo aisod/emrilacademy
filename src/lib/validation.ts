@@ -52,15 +52,6 @@ export const loginFormSchema = z.object({
   password: simplePasswordSchema,
 });
 
-// Define the register form shape for typing the parent context
-const registerFormShape = {
-  email: z.string(),
-  password: z.string(),
-  firstName: z.string(),
-  lastName: z.string(),
-  role: z.enum(["student", "teacher"]),
-};
-
 // Registration form schema with conditional email validation
 export const registerFormSchema = z.object({
   email: z.string().superRefine((email, ctx) => {
@@ -82,11 +73,9 @@ export const registerFormSchema = z.object({
     }
 
     // Check teacher email domains if registering as a teacher
-    const parentInput = ctx.path && ctx.path.length > 0 
-      ? (ctx as any).data 
-      : undefined;
+    const formData = (ctx as any).data;
     
-    if (parentInput && parentInput.role === "teacher" && 
+    if (formData && formData.role === "teacher" && 
         !email.endsWith("@emrilacademy.com") && 
         !email.endsWith("@emrilacademy.tech")) {
       ctx.addIssue({

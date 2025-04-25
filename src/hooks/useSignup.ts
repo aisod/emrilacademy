@@ -1,6 +1,9 @@
+
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { registerFormSchema } from "@/lib/validation";
+import { z } from "zod";
 
 export type UserRole = 'student' | 'teacher';
 
@@ -44,22 +47,40 @@ export const useSignup = () => {
     setLoading(true);
 
     try {
-      // Check for required fields
-      if (!data.email || !data.password || !data.firstName || !data.lastName) {
-        throw new Error("All fields are required");
+      // Validate the data with the full schema
+      const validationResult = registerFormSchema.safeParse({
+        email: data.email,
+        password: data.password,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        role: data.role
+      });
+
+      if (!validationResult.success) {
+        const formattedErrors = validationResult.error.format();
+        let errorMessage = "Please fix the following issues:";
+        
+        // Extract specific error messages
+        if (formattedErrors.email?._errors[0]) {
+          errorMessage = formattedErrors.email._errors[0];
+        } else if (formattedErrors.password?._errors[0]) {
+          errorMessage = formattedErrors.password._errors[0];
+        } else if (formattedErrors.firstName?._errors[0]) {
+          errorMessage = formattedErrors.firstName._errors[0];
+        } else if (formattedErrors.lastName?._errors[0]) {
+          errorMessage = formattedErrors.lastName._errors[0];
+        }
+        
+        throw new Error(errorMessage);
       }
 
-      // Check password strength (at least 8 characters)
-      if (data.password.length < 8) {
-        throw new Error("Password must be at least 8 characters long");
+      // Special handling for teacher emails
+      if (data.role === 'teacher' && 
+          !data.email.endsWith('@emrilacademy.com') && 
+          !data.email.endsWith('@emrilacademy.tech')) {
+        throw new Error("Teacher email must end with @emrilacademy.com or @emrilacademy.tech");
       }
-
-      // Validate email format
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(data.email)) {
-        throw new Error("Please enter a valid email address");
-      }
-
+      
       // Use absolute URLs for redirects - these must match your Supabase configuration
       const siteUrl = window.location.origin;
       const redirectUrl = `${siteUrl}/auth`;

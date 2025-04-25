@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Mail, Lock, User, ArrowRight, GraduationCap, BookOpen, Eye, EyeOff, Loader } from "lucide-react";
 import { useSignup } from "@/hooks/useSignup";
 import { Button } from "@/components/ui/button";
@@ -8,23 +9,14 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { registerFormSchema } from "@/lib/validation";
 
 interface SignupFormProps {
   onToggleMode: () => void;
   onSignupSuccess: (email: string, userId?: string) => void;
 }
 
-const signupSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters long"),
-  role: z.enum(["student", "teacher"], {
-    required_error: "Please select a role"
-  })
-});
-
-type SignupFormValues = z.infer<typeof signupSchema>;
+type SignupFormValues = z.infer<typeof registerFormSchema>;
 
 export const SignupForm = ({
   onToggleMode,
@@ -32,21 +24,31 @@ export const SignupForm = ({
 }: SignupFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const {
-    signup,
-    loading
-  } = useSignup();
+  const { signup, loading } = useSignup();
 
   const form = useForm<SignupFormValues>({
-    resolver: zodResolver(signupSchema),
+    resolver: zodResolver(registerFormSchema),
     defaultValues: {
       firstName: "",
       lastName: "",
       email: "",
       password: "",
       role: "student"
-    }
+    },
+    mode: "onChange" // This enables validation as fields change
   });
+
+  // This effect will watch the role field and trigger email validation when role changes
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      if (name === "role") {
+        // Trigger validation for email field when role changes
+        form.trigger("email");
+      }
+    });
+    
+    return () => subscription.unsubscribe();
+  }, [form]);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -60,7 +62,7 @@ export const SignupForm = ({
         password: values.password,
         firstName: values.firstName,
         lastName: values.lastName,
-        role: values.role as "student" | "teacher"
+        role: values.role
       });
 
       if (result.success) {
@@ -151,7 +153,14 @@ export const SignupForm = ({
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
                     <FormControl>
-                      <input type="email" className="pl-10 w-full p-3 bg-white border-none rounded-md focus:ring-2 focus:ring-blue-500 text-black placeholder-gray-500" placeholder="Your email address" {...field} />
+                      <input 
+                        type="email" 
+                        className="pl-10 w-full p-3 bg-white border-none rounded-md focus:ring-2 focus:ring-blue-500 text-black placeholder-gray-500" 
+                        placeholder={form.watch("role") === "teacher" 
+                          ? "Your @emrilacademy.com or @emrilacademy.tech email" 
+                          : "Your email address"} 
+                        {...field} 
+                      />
                     </FormControl>
                   </div>
                   <FormMessage className="text-sm text-red-500" />
