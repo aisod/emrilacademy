@@ -28,17 +28,29 @@ export function usePaginatedClasses(courseId?: string) {
       .select("*", { count: 'exact' })
       .range(offset, offset + pageSize - 1);
     
-    // Add courseId filter if provided
     if (courseId) {
       query = query.eq("course_id", courseId);
     }
 
-    // Add sorting
-    if (sort) {
-      const [column, direction] = sort.split(":");
-      query = query.order(column, { ascending: direction === "asc" });
-    } else {
-      query = query.order("created_at", { ascending: false });
+    // Add sorting with proper column mapping
+    switch (sort) {
+      case "newest":
+        query = query.order("created_at", { ascending: false });
+        break;
+      case "oldest":
+        query = query.order("created_at", { ascending: true });
+        break;
+      case "upcoming":
+        query = query.order("start_time", { ascending: true });
+        break;
+      case "title-asc":
+        query = query.order("title", { ascending: true });
+        break;
+      case "title-desc":
+        query = query.order("title", { ascending: false });
+        break;
+      default:
+        query = query.order("created_at", { ascending: false });
     }
 
     const { data, error, count } = await query;
@@ -57,7 +69,7 @@ export function usePaginatedClasses(courseId?: string) {
   const { data, isLoading, refetch, isFetching } = useQuery({
     queryKey: ["classes", currentPage, pageSize, sort, courseId],
     queryFn: fetchClasses,
-    placeholderData: (previousData) => previousData, // This replaces keepPreviousData
+    placeholderData: (previousData) => previousData,
   });
 
   const paginatedClasses = data?.classes || [];
