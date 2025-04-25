@@ -1,3 +1,4 @@
+
 import { LandingNavigation } from "@/components/LandingNavigation";
 import { FeatureCard } from "@/components/FeatureCard";
 import { ArrowRight, Video, BookOpen, Users, GraduationCap } from "lucide-react";
@@ -42,7 +43,7 @@ const Index = () => {
               <Button 
                 size="lg"
                 onClick={() => navigate("/auth?mode=signup")}
-                className="bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg hover:shadow-xl transition-all"
+                className="bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg hover:shadow-xl transition-all border border-primary"
               >
                 Get Started <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
@@ -50,7 +51,7 @@ const Index = () => {
                 variant="outline" 
                 size="lg"
                 onClick={() => navigate("/courses")}
-                className="border-2 border-primary/20 hover:border-primary/40 font-medium shadow-md hover:shadow-lg transition-all"
+                className="border-2 border-primary hover:border-primary/60 font-medium shadow-md hover:shadow-lg transition-all"
               >
                 Browse Courses
               </Button>
@@ -120,7 +121,7 @@ const Index = () => {
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button
               onClick={() => navigate("/auth?mode=signup")}
-              className="bg-white text-primary hover:bg-gray-100 font-semibold shadow-lg hover:shadow-xl transition-all w-full sm:w-auto"
+              className="bg-white text-primary hover:bg-gray-100 font-semibold shadow-lg hover:shadow-xl transition-all w-full sm:w-auto border border-white"
               size="lg"
             >
               Get Started Now
