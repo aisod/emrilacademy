@@ -26,7 +26,7 @@ export function SessionControlBar({
         {formatDuration(sessionDuration)}
       </Button>
       
-      <Button variant="destructive" onClick={onEndSession} className="bg-red-600 hover:bg-red-700">
+      <Button variant="destructive" onClick={onEndSession} className="bg-red-600 hover:bg-red-700 text-sky-500">
         End Class Session
       </Button>
     </div>;
