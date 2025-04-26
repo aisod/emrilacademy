@@ -14,8 +14,9 @@ export default function Dashboard() {
         navigate('/teacher', { replace: true });
       } else if (role === 'student') {
         navigate('/student', { replace: true });
+      } else if (role === 'admin') {
+        navigate('/admin', { replace: true });
       } else {
-        // If no role, redirect to auth
         navigate('/auth', { replace: true });
       }
     }

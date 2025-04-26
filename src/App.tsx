@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -14,6 +13,7 @@ const BrowseClasses = lazy(() => import("./pages/BrowseClasses"));
 const LiveClasses = lazy(() => import("./pages/LiveClasses"));
 const Courses = lazy(() => import("./pages/Courses"));
 const Course = lazy(() => import("./pages/Course"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 
 // Import non-lazy loaded components
 import Index from "./pages/Index";
@@ -194,6 +194,16 @@ function App() {
               <ProtectedRoute>
                 <Suspense fallback={<LoadingFallback />}>
                   <TeachersPage />
+                </Suspense>
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin" 
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <Suspense fallback={<LoadingFallback />}>
+                  <AdminDashboard />
                 </Suspense>
               </ProtectedRoute>
             } 

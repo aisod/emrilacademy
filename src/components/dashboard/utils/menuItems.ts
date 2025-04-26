@@ -1,4 +1,3 @@
-
 export const commonMenuItems = [
   {
     label: "Messages",
@@ -12,6 +11,17 @@ export const commonMenuItems = [
     label: "Live Classes",
     path: "/live-classes",
   }
+];
+
+export const adminMenuItems = [
+  {
+    label: "Dashboard",
+    path: "/admin",
+  },
+  {
+    label: "Users",
+    path: "/admin/users",
+  },
 ];
 
 export const studentMenuItems = [
@@ -40,7 +50,11 @@ export const teacherMenuItems = [
   },
 ];
 
-export const getMenuItems = (userRole: "student" | "teacher" | null) => [
-  ...(userRole === "student" ? studentMenuItems : teacherMenuItems),
+export const getMenuItems = (userRole: "student" | "teacher" | "admin" | null) => [
+  ...(userRole === "student" 
+    ? studentMenuItems 
+    : userRole === "admin" 
+    ? adminMenuItems 
+    : teacherMenuItems),
   ...commonMenuItems,
 ];
