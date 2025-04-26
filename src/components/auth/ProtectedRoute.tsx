@@ -6,7 +6,7 @@ import { LoadingFallback } from '@/components/ui/loading-fallback';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requiredRole?: 'student' | 'teacher';
+  requiredRole?: 'student' | 'teacher' | 'admin';
 }
 
 export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) {

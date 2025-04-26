@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
-  requiredRole?: "student" | "teacher";
+  requiredRole?: "student" | "teacher" | "admin";
   className?: string;
 }
 
