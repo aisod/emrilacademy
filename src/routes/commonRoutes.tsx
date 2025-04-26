@@ -1,4 +1,3 @@
-
 import { Route } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
@@ -17,6 +16,7 @@ import NotFound from "@/pages/NotFound";
 // Import lazy loaded components
 const LiveClasses = lazy(() => import("@/pages/LiveClasses"));
 const Courses = lazy(() => import("@/pages/Courses"));
+const Course = lazy(() => import("@/pages/Course"));
 
 export const commonRoutes = [
   <Route key="index" path="/" element={<Index />} />,
