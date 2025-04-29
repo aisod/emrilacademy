@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Mail, Lock, Eye, EyeOff, LogIn } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
@@ -71,6 +72,31 @@ export const LoginForm = ({
       console.error("Login error:", error);
     }
   };
+  
+  const handleAdminLogin = async () => {
+    setError(null);
+    try {
+      const result = await login("admin@emrilacademy.tech", "admin1234");
+      if (!result.success) {
+        setError(result.error || "Failed to sign in as admin");
+        toast({
+          variant: "destructive",
+          title: "Admin sign in failed",
+          description: result.error || "Please check admin credentials in the database."
+        });
+      }
+    } catch (error: any) {
+      const errorMessage = error.message || "An unexpected error occurred. Please try again.";
+      setError(errorMessage);
+      toast({
+        variant: "destructive",
+        title: "Admin sign in failed",
+        description: errorMessage
+      });
+      console.error("Admin login error:", error);
+    }
+  };
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -128,6 +154,21 @@ export const LoginForm = ({
           </Button>
         </form>
       </Form>
+      
+      {/* Admin Quick Login Button */}
+      <div className="pt-2 border-t border-gray-200">
+        <Button 
+          variant="outline" 
+          onClick={handleAdminLogin}
+          disabled={loading}
+          className="w-full mt-2 text-gray-600 hover:bg-gray-50"
+        >
+          Quick Admin Login
+        </Button>
+        <p className="text-xs text-gray-500 mt-1 text-center">
+          (For testing admin features only)
+        </p>
+      </div>
 
       <div className="text-center">
         <button onClick={onToggleMode} className="text-blue-600 hover:text-blue-800 transition-colors">
