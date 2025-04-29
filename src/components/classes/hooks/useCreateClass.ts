@@ -4,12 +4,10 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ClassFormData } from "../types/CreateClassFormTypes";
 import { validateClassForm } from "../utils/form-validation";
-import { useUserRole } from "@/hooks/use-user-role";
 
 export const useCreateClass = (onSuccess: () => void) => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
-  const { data: userRole } = useUserRole();
   const [formData, setFormData] = useState<ClassFormData>({
     title: "",
     description: "",
@@ -23,11 +21,6 @@ export const useCreateClass = (onSuccess: () => void) => {
     setLoading(true);
 
     try {
-      // Check if user is admin
-      if (userRole !== "admin") {
-        throw new Error("Only administrators can create classes");
-      }
-      
       validateClassForm(formData);
       
       const { data: { session } } = await supabase.auth.getSession();

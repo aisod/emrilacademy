@@ -46,45 +46,7 @@ export const useLogin = () => {
       
       console.log("Attempting login for:", email);
       
-      // Special case for admin - hardcoded credentials matching
-      // Make email check case-insensitive
-      if (email.toLowerCase() === "admin@emrilacademy.tech" && password === "1Joel100%") {
-        console.log("Admin login detected, bypassing Supabase auth");
-        
-        // Create a more complete admin session object to store
-        const adminSession = {
-          access_token: 'admin-token',
-          refresh_token: 'admin-refresh-token',
-          expires_at: Date.now() + 3600 * 1000, // 1 hour from now
-          user: { 
-            id: 'admin-id',
-            email: 'admin@emrilacademy.tech',
-            user_metadata: { role: 'admin' }
-          }
-        };
-        
-        // Store admin session in local storage using the exact key format that Supabase checks for
-        localStorage.setItem('supabase.auth.token', JSON.stringify({
-          currentSession: adminSession,
-          expiresAt: adminSession.expires_at
-        }));
-        
-        toast({
-          title: "Admin signed in successfully",
-          description: "Welcome back, admin!",
-        });
-        
-        navigate('/admin');
-        setLoginAttempts(0);
-        
-        return { 
-          success: true, 
-          error: null,
-          session: adminSession
-        };
-      }
-      
-      // Sign in with Supabase for non-admin users
+      // Sign in with Supabase
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
@@ -134,8 +96,6 @@ export const useLogin = () => {
         navigate('/teacher');
       } else if (profile?.role === 'student') {
         navigate('/student');
-      } else if (profile?.role === 'admin') {
-        navigate('/admin');
       } else {
         navigate('/dashboard');
       }
@@ -169,9 +129,6 @@ export const useLogin = () => {
   const logout = useCallback(async () => {
     setLoading(true);
     try {
-      // First clear any special admin session if it exists
-      localStorage.removeItem('supabase.auth.token');
-      
       const { error } = await supabase.auth.signOut();
       
       if (error) throw error;

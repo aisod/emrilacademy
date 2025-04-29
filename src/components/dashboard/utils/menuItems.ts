@@ -1,16 +1,56 @@
+export const commonMenuItems = [
+  {
+    label: "Messages",
+    path: "/messages",
+  },
+  {
+    label: "Resources",
+    path: "/resources",
+  },
+  {
+    label: "Live Classes",
+    path: "/live-classes",
+  }
+];
 
-import { MenuItem, UserRole } from "../types/menuTypes";
-import { adminMenuItems } from "../menu/adminMenu";
-import { studentMenuItems } from "../menu/studentMenu";
-import { teacherMenuItems } from "../menu/teacherMenu";
-import { commonMenuItems } from "../menu/commonMenu";
+export const adminMenuItems = [
+  {
+    label: "Dashboard",
+    path: "/admin",
+  },
+  {
+    label: "Users",
+    path: "/admin/users",
+  },
+];
 
-export { commonMenuItems } from "../menu/commonMenu";
-export { adminMenuItems } from "../menu/adminMenu";
-export { studentMenuItems } from "../menu/studentMenu";
-export { teacherMenuItems } from "../menu/teacherMenu";
+export const studentMenuItems = [
+  {
+    label: "Dashboard",
+    path: "/student",
+  },
+  {
+    label: "My Classes",
+    path: "/courses",
+  },
+  {
+    label: "Browse Classes",
+    path: "/browse-classes",
+  },
+];
 
-export const getMenuItems = (userRole: UserRole): MenuItem[] => [
+export const teacherMenuItems = [
+  {
+    label: "Dashboard",
+    path: "/teacher",
+  },
+  {
+    label: "My Classes",
+    path: "/courses",
+  },
+];
+
+export const getMenuItems = (userRole: "student" | "teacher" | "admin" | null) => [
   ...(userRole === "student" 
     ? studentMenuItems 
     : userRole === "admin" 

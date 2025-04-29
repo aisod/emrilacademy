@@ -9,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Input } from "@/components/ui/input";
+import { EmailField } from "./form-fields/EmailField";
 
 interface LoginFormProps {
   onToggleMode: () => void;
@@ -16,14 +17,8 @@ interface LoginFormProps {
 
 // Simple login schema that doesn't enforce domain restrictions
 const loginFormSchema = z.object({
-  email: z.string().trim().min(1, {
-    message: "Email is required"
-  }).email({
-    message: "Please enter a valid email address"
-  }),
-  password: z.string().min(1, {
-    message: "Password is required"
-  })
+  email: z.string().min(1, { message: "Email is required" }).email({ message: "Please enter a valid email address" }),
+  password: z.string().min(1, { message: "Password is required" })
 });
 
 type LoginFormValues = z.infer<typeof loginFormSchema>;
@@ -48,18 +43,18 @@ export const LoginForm = ({
     setError(null);
     try {
       // Trim values to remove any whitespace
-      const trimmedEmail = values.email.trim().toLowerCase(); // Add toLowerCase() for case insensitivity
-      const trimmedPassword = values.password; // Don't trim password as it might contain intentional spaces
+      const trimmedEmail = values.email.trim();
+      const trimmedPassword = values.password.trim();
+      
       console.log("Attempting login with:", trimmedEmail);
       
       const result = await login(trimmedEmail, trimmedPassword);
-      
       if (!result.success) {
         setError(result.error || "Failed to sign in");
         toast({
           variant: "destructive",
           title: "Sign in failed",
-          description: result.error || "Please check your credentials and try again."
+          description: result.error || "Please check your credentials and try again.",
         });
       }
     } catch (error: any) {
@@ -68,7 +63,7 @@ export const LoginForm = ({
       toast({
         variant: "destructive",
         title: "Sign in failed",
-        description: errorMessage
+        description: errorMessage,
       });
       console.error("Login error:", error);
     }
@@ -78,27 +73,26 @@ export const LoginForm = ({
     setShowPassword(!showPassword);
   };
 
-  // Function to prefill admin credentials for testing
-  const fillAdminCredentials = () => {
-    form.setValue("email", "admin@emrilacademy.tech");
-    form.setValue("password", "1Joel100%");
-  };
-
-  return <div className="w-full max-w-md bg-white p-6 rounded-xl shadow-lg space-y-6 mx-auto px-4 sm:px-6 lg:px-8">
+  return (
+    <div className="w-full max-w-md bg-white p-6 rounded-xl shadow-lg space-y-6 mx-auto px-4 sm:px-6 lg:px-8">
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-800">Welcome Back</h2>
         <p className="mt-2 text-gray-600">Sign in to your account</p>
       </div>
 
-      {error && <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative">
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative">
           <span className="block sm:inline">{error}</span>
-        </div>}
+        </div>
+      )}
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleLogin)} className="space-y-4">
-          <FormField control={form.control} name="email" render={({
-          field
-        }) => <FormItem>
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
                 <div className="space-y-1">
                   <label className="block text-sm font-medium text-gray-700">Email</label>
                   <div className="relative">
@@ -107,19 +101,22 @@ export const LoginForm = ({
                       <Input 
                         type="email" 
                         placeholder="Your email address" 
-                        {...field} 
+                        {...field}
                         className="pl-10"
-                        autoComplete="email" 
                       />
                     </FormControl>
                   </div>
                   <FormMessage className="text-sm text-red-500" />
                 </div>
-              </FormItem>} />
+              </FormItem>
+            )}
+          />
 
-          <FormField control={form.control} name="password" render={({
-          field
-        }) => <FormItem>
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
                 <div className="space-y-1">
                   <label className="block text-sm font-medium text-gray-700">Password</label>
                   <div className="relative">
@@ -127,45 +124,52 @@ export const LoginForm = ({
                     <FormControl>
                       <Input 
                         type={showPassword ? "text" : "password"} 
-                        className="pl-10" 
+                        className="pl-10"
                         placeholder="Your password" 
                         {...field} 
-                        autoComplete="current-password" 
                       />
                     </FormControl>
-                    <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700" onClick={togglePasswordVisibility}>
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                      onClick={togglePasswordVisibility}
+                    >
                       {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                     </button>
                   </div>
                   <FormMessage className="text-sm text-red-500" />
                 </div>
-              </FormItem>} />
+              </FormItem>
+            )}
+          />
 
-          <Button type="submit" variant="default" disabled={loading} className="w-full flex items-center justify-center gap-2 h-auto py-2 text-base font-normal">
-            {loading ? <>
+          <Button 
+            type="submit" 
+            variant="default" 
+            disabled={loading} 
+            className="w-full flex items-center justify-center gap-2 h-auto bg-blue-600 hover:bg-blue-700 text-white py-2"
+          >
+            {loading ? (
+              <>
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-r-transparent"></div> Signing In...
-              </> : <>
-                Sign In <LogIn className="h-5 w-5 ml-1" />
-              </>}
+              </>
+            ) : (
+              <>
+                Sign In <LogIn className="h-5 w-5" />
+              </>
+            )}
           </Button>
-
-          {/* Admin login hint with clickable button */}
-          <div className="text-xs text-gray-500 text-center mt-2">
-            <button 
-              type="button"
-              onClick={fillAdminCredentials}
-              className="text-blue-500 hover:text-blue-700 hover:underline"
-            >
-              Admin login: admin@emrilacademy.tech | Password: 1Joel100%
-            </button>
-          </div>
         </form>
       </Form>
 
       <div className="text-center">
-        <button onClick={onToggleMode} className="text-blue-600 hover:text-blue-800 transition-colors">
+        <button 
+          onClick={onToggleMode} 
+          className="text-blue-600 hover:text-blue-800 transition-colors"
+        >
           Need an account? Sign up
         </button>
       </div>
-    </div>;
+    </div>
+  );
 };

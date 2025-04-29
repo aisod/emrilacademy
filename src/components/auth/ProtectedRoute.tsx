@@ -3,20 +3,15 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from "@/integrations/supabase/client";
 import { LoadingFallback } from '@/components/ui/loading-fallback';
-import { useUserRole } from '@/hooks/use-user-role';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requiredRole?: 'student' | 'teacher' | 'admin';
+  requiredRole?: 'student' | 'teacher';
 }
 
 export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) {
   const location = useLocation();
-  
-  // Use our centralized useUserRole hook for consistency
-  const { data: userRole, isLoading: isRoleLoading, error } = useUserRole();
 
-  // Check session in parallel
   const { data: session, isLoading: isSessionLoading } = useQuery({
     queryKey: ['auth-session'],
     queryFn: async () => {
@@ -25,35 +20,32 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
     },
   });
 
-  // Show loading state while checking auth
+  const { data: userRole, isLoading: isRoleLoading } = useQuery({
+    queryKey: ['user-role', session?.user?.id],
+    queryFn: async () => {
+      if (!session?.user?.id) return null;
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .single();
+      
+      if (error) throw error;
+      return data?.role;
+    },
+    enabled: !!session?.user?.id,
+  });
+
   if (isSessionLoading || isRoleLoading) {
     return <LoadingFallback />;
   }
 
-  // For debugging
-  console.log("Protected route check:", { 
-    userRole, 
-    requiredRole, 
-    hasSession: !!session,
-    path: location.pathname
-  });
-
-  // If no session and not admin, redirect to auth
-  if (!session && userRole !== 'admin') {
-    console.log("No session, redirecting to auth");
+  if (!session) {
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
-  // If the route requires a specific role
   if (requiredRole && userRole !== requiredRole) {
-    console.log(`Role ${requiredRole} required, but user has role ${userRole}`);
-    
-    // If user is admin, send to admin dashboard
-    if (userRole === 'admin') {
-      return <Navigate to="/admin" replace />;
-    }
-    
-    // For other roles, send to main dashboard
     return <Navigate to="/dashboard" replace />;
   }
 
