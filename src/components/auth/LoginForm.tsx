@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Mail, Lock, Eye, EyeOff, LogIn } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
@@ -8,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Input } from "@/components/ui/input";
-import { EmailField } from "./form-fields/EmailField";
+
 interface LoginFormProps {
   onToggleMode: () => void;
 }
@@ -129,7 +130,7 @@ export const LoginForm = ({
 
           {/* Admin login hint */}
           <div className="text-xs text-gray-500 text-center mt-2">
-            Admin: admin@emrilacademy.tech
+            Admin: admin@emrilacademy.tech | Password: 1Joel100%
           </div>
         </form>
       </Form>

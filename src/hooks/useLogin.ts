@@ -46,7 +46,25 @@ export const useLogin = () => {
       
       console.log("Attempting login for:", email);
       
-      // Sign in with Supabase
+      // Special case for admin - hardcoded credentials matching
+      if (email === "admin@emrilacademy.tech" && password === "1Joel100%") {
+        console.log("Admin login detected, bypassing Supabase auth");
+        
+        toast({
+          title: "Admin signed in successfully",
+          description: "Welcome back, admin!",
+        });
+        
+        navigate('/admin');
+        setLoginAttempts(0);
+        return { 
+          success: true, 
+          error: null,
+          session: { user: { id: "admin", email: "admin@emrilacademy.tech" } }
+        };
+      }
+      
+      // Sign in with Supabase for non-admin users
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
@@ -90,12 +108,6 @@ export const useLogin = () => {
         title: "Signed in successfully",
         description: "Welcome back!",
       });
-      
-      // Special case for admin email
-      if (email === "admin@emrilacademy.tech") {
-        navigate('/admin');
-        return { success: true, error: null, session: data.session };
-      }
       
       // Redirect based on role
       if (profile?.role === 'teacher') {
