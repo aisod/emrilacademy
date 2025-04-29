@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Mail, Lock, Eye, EyeOff, LogIn } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
@@ -8,13 +9,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Input } from "@/components/ui/input";
+
 interface LoginFormProps {
   onToggleMode: () => void;
 }
 
 // Simple login schema that doesn't enforce domain restrictions
 const loginFormSchema = z.object({
-  email: z.string().min(1, {
+  email: z.string().trim().min(1, {
     message: "Email is required"
   }).email({
     message: "Please enter a valid email address"
@@ -23,19 +25,17 @@ const loginFormSchema = z.object({
     message: "Password is required"
   })
 });
+
 type LoginFormValues = z.infer<typeof loginFormSchema>;
+
 export const LoginForm = ({
   onToggleMode
 }: LoginFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const {
-    login,
-    loading
-  } = useLogin();
-  const {
-    toast
-  } = useToast();
+  const { login, loading } = useLogin();
+  const { toast } = useToast();
+  
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
@@ -43,14 +43,17 @@ export const LoginForm = ({
       password: ""
     }
   });
+
   const handleLogin = async (values: LoginFormValues) => {
     setError(null);
     try {
       // Trim values to remove any whitespace
-      const trimmedEmail = values.email.trim();
+      const trimmedEmail = values.email.trim().toLowerCase(); // Add toLowerCase() for case insensitivity
       const trimmedPassword = values.password; // Don't trim password as it might contain intentional spaces
       console.log("Attempting login with:", trimmedEmail);
+      
       const result = await login(trimmedEmail, trimmedPassword);
+      
       if (!result.success) {
         setError(result.error || "Failed to sign in");
         toast({
@@ -70,9 +73,17 @@ export const LoginForm = ({
       console.error("Login error:", error);
     }
   };
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+
+  // Function to prefill admin credentials for testing
+  const fillAdminCredentials = () => {
+    form.setValue("email", "admin@emrilacademy.tech");
+    form.setValue("password", "1Joel100%");
+  };
+
   return <div className="w-full max-w-md bg-white p-6 rounded-xl shadow-lg space-y-6 mx-auto px-4 sm:px-6 lg:px-8">
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-800">Welcome Back</h2>
@@ -93,7 +104,13 @@ export const LoginForm = ({
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
                     <FormControl>
-                      <Input type="email" placeholder="Your email address" {...field} className="pl-10" />
+                      <Input 
+                        type="email" 
+                        placeholder="Your email address" 
+                        {...field} 
+                        className="pl-10"
+                        autoComplete="email" 
+                      />
                     </FormControl>
                   </div>
                   <FormMessage className="text-sm text-red-500" />
@@ -108,7 +125,13 @@ export const LoginForm = ({
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
                     <FormControl>
-                      <Input type={showPassword ? "text" : "password"} className="pl-10" placeholder="Your password" {...field} />
+                      <Input 
+                        type={showPassword ? "text" : "password"} 
+                        className="pl-10" 
+                        placeholder="Your password" 
+                        {...field} 
+                        autoComplete="current-password" 
+                      />
                     </FormControl>
                     <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700" onClick={togglePasswordVisibility}>
                       {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
@@ -118,17 +141,23 @@ export const LoginForm = ({
                 </div>
               </FormItem>} />
 
-          <Button type="submit" variant="default" disabled={loading} className="w-full flex items-center justify-center gap-2 h-auto py-2 text-base font-normal text-blue-700">
+          <Button type="submit" variant="default" disabled={loading} className="w-full flex items-center justify-center gap-2 h-auto py-2 text-base font-normal">
             {loading ? <>
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-r-transparent"></div> Signing In...
               </> : <>
-                Sign In <LogIn className="h-5 w-5" />
+                Sign In <LogIn className="h-5 w-5 ml-1" />
               </>}
           </Button>
 
-          {/* Admin login hint */}
+          {/* Admin login hint with clickable button */}
           <div className="text-xs text-gray-500 text-center mt-2">
-            Admin: admin@emrilacademy.tech | Password: 1Joel100%
+            <button 
+              type="button"
+              onClick={fillAdminCredentials}
+              className="text-blue-500 hover:text-blue-700 hover:underline"
+            >
+              Admin login: admin@emrilacademy.tech | Password: 1Joel100%
+            </button>
           </div>
         </form>
       </Form>
