@@ -120,7 +120,7 @@ export const LoginForm = ({
                 </div>
               </FormItem>} />
 
-          <Button type="submit" variant="default" disabled={loading} className="w-full flex items-center justify-center gap-2 h-auto py-2 text-base font-normal text-blue-600">
+          <Button type="submit" variant="default" disabled={loading} className="w-full flex items-center justify-center gap-2 h-auto py-2 text-base font-normal">
             {loading ? <>
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-r-transparent"></div> Signing In...
               </> : <>

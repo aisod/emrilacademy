@@ -6,12 +6,18 @@ export function useUserRole() {
   return useQuery({
     queryKey: ["user-role"],
     queryFn: async () => {
+      // Check for admin token in localStorage (our special case)
+      const adminSessionData = localStorage.getItem('supabase.auth.token');
+      if (adminSessionData && adminSessionData.includes('admin@emrilacademy.tech')) {
+        return "admin" as const;
+      }
+
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return null;
 
       // Special case for hardcoded admin
       if (session.user.email === "admin@emrilacademy.tech") {
-        return "admin";
+        return "admin" as const;
       }
 
       const { data } = await supabase

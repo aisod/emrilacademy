@@ -12,6 +12,21 @@ interface ProtectedRouteProps {
 export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) {
   const location = useLocation();
 
+  // Check for admin token in localStorage (our special case)
+  const adminSessionData = localStorage.getItem('supabase.auth.token');
+  const isAdmin = adminSessionData && adminSessionData.includes('admin@emrilacademy.tech');
+
+  // If we have an admin user from localStorage, handle that case
+  if (isAdmin) {
+    // If this is an admin route or no specific role is required, allow access
+    if (!requiredRole || requiredRole === 'admin') {
+      return <>{children}</>;
+    } else {
+      // Admins shouldn't access student or teacher specific routes
+      return <Navigate to="/admin" replace />;
+    }
+  }
+
   const { data: session, isLoading: isSessionLoading } = useQuery({
     queryKey: ['auth-session'],
     queryFn: async () => {

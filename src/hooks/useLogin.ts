@@ -47,7 +47,7 @@ export const useLogin = () => {
       console.log("Attempting login for:", email);
       
       // Special case for admin - hardcoded credentials matching
-      if (email === "admin@emrilacademy.tech" && password === "1Joel100%") {
+      if (email.toLowerCase() === "admin@emrilacademy.tech" && password === "1Joel100%") {
         console.log("Admin login detected, bypassing Supabase auth");
         
         toast({
@@ -55,12 +55,24 @@ export const useLogin = () => {
           description: "Welcome back, admin!",
         });
         
+        // Store admin session in local storage so the app knows user is logged in
+        localStorage.setItem('supabase.auth.token', JSON.stringify({
+          currentSession: {
+            access_token: 'admin-token',
+            user: { 
+              id: 'admin-id', 
+              email: 'admin@emrilacademy.tech',
+              user_metadata: { role: 'admin' }
+            }
+          }
+        }));
+        
         navigate('/admin');
         setLoginAttempts(0);
         return { 
           success: true, 
           error: null,
-          session: { user: { id: "admin", email: "admin@emrilacademy.tech" } }
+          session: { user: { id: "admin-id", email: "admin@emrilacademy.tech" } }
         };
       }
       
@@ -149,6 +161,9 @@ export const useLogin = () => {
   const logout = useCallback(async () => {
     setLoading(true);
     try {
+      // First clear any special admin session if it exists
+      localStorage.removeItem('supabase.auth.token');
+      
       const { error } = await supabase.auth.signOut();
       
       if (error) throw error;
