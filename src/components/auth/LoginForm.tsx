@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Mail, Lock, Eye, EyeOff, LogIn } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
@@ -9,7 +8,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Input } from "@/components/ui/input";
-
 interface LoginFormProps {
   onToggleMode: () => void;
 }
@@ -120,7 +118,7 @@ export const LoginForm = ({
                 </div>
               </FormItem>} />
 
-          <Button type="submit" variant="default" disabled={loading} className="w-full flex items-center justify-center gap-2 h-auto py-2 text-base font-normal">
+          <Button type="submit" variant="default" disabled={loading} className="w-full flex items-center justify-center gap-2 h-auto py-2 text-base font-normal text-blue-700">
             {loading ? <>
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-r-transparent"></div> Signing In...
               </> : <>
