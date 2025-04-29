@@ -15,7 +15,7 @@ export function useUserRole() {
         .eq("id", session.user.id)
         .single();
 
-      return data?.role as "student" | "teacher" | null;
+      return data?.role as "student" | "teacher" | "admin" | null;
     },
   });
 }
