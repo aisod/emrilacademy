@@ -25,6 +25,11 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
     queryFn: async () => {
       if (!session?.user?.id) return null;
       
+      // Special case for hardcoded admin
+      if (session.user.email === "admin@emrilacademy.tech") {
+        return "admin";
+      }
+      
       const { data, error } = await supabase
         .from('profiles')
         .select('role')
@@ -37,7 +42,7 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
     enabled: !!session?.user?.id,
   });
 
-  if (isSessionLoading || isRoleLoading) {
+  if (isSessionLoading || (session && isRoleLoading)) {
     return <LoadingFallback />;
   }
 

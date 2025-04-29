@@ -11,12 +11,35 @@ import { CreateClassForm } from "@/components/classes/CreateClassForm";
 import { ClassGrid } from "./ClassGrid";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
+import { useUserRole } from "@/hooks/use-user-role";
 
 export function TeacherClassesView() {
   const [searchTerm, setSearchTerm] = useState("");
   const [sort, setSort] = useState<string>("newest");
   const [showCreateForm, setShowCreateForm] = useState(false);
   const { toast } = useToast();
+  const { data: userRole } = useQuery({
+    queryKey: ["user-role"],
+    queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return null;
+
+      // Special case for hardcoded admin
+      if (session.user.email === "admin@emrilacademy.tech") {
+        return "admin";
+      }
+
+      const { data } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", session.user.id)
+        .single();
+
+      return data?.role as "student" | "teacher" | "admin" | null;
+    },
+  });
+
+  const isAdmin = userRole === "admin";
 
   const { data: classes, isLoading, refetch } = useQuery({
     queryKey: ["teacher-classes-view", sort],
@@ -127,20 +150,22 @@ export function TeacherClassesView() {
             Calendar
           </Button>
 
-          <Dialog open={showCreateForm} onOpenChange={setShowCreateForm}>
-            <DialogTrigger asChild>
-              <Button className="w-full sm:w-auto">
-                <Plus className="h-4 w-4 mr-2" />
-                Create Class
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-lg">
-              <DialogHeader>
-                <DialogTitle>Create New Class</DialogTitle>
-              </DialogHeader>
-              <CreateClassForm onSuccess={handleClassCreated} />
-            </DialogContent>
-          </Dialog>
+          {isAdmin && (
+            <Dialog open={showCreateForm} onOpenChange={setShowCreateForm}>
+              <DialogTrigger asChild>
+                <Button className="w-full sm:w-auto">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Class
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-lg">
+                <DialogHeader>
+                  <DialogTitle>Create New Class</DialogTitle>
+                </DialogHeader>
+                <CreateClassForm onSuccess={handleClassCreated} />
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
       </div>
 

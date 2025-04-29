@@ -9,6 +9,11 @@ export function useUserRole() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return null;
 
+      // Special case for hardcoded admin
+      if (session.user.email === "admin@emrilacademy.tech") {
+        return "admin";
+      }
+
       const { data } = await supabase
         .from("profiles")
         .select("role")
