@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
@@ -96,6 +95,8 @@ export const useLogin = () => {
         navigate('/teacher');
       } else if (profile?.role === 'student') {
         navigate('/student');
+      } else if (profile?.role === 'admin') {
+        navigate('/admin');
       } else {
         navigate('/dashboard');
       }
