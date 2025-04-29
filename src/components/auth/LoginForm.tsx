@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Mail, Lock, Eye, EyeOff, LogIn } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
@@ -49,7 +50,7 @@ export const LoginForm = ({
     try {
       // Trim values to remove any whitespace
       const trimmedEmail = values.email.trim();
-      const trimmedPassword = values.password.trim();
+      const trimmedPassword = values.password;  // Don't trim password as it might contain intentional spaces
       console.log("Attempting login with:", trimmedEmail);
       const result = await login(trimmedEmail, trimmedPassword);
       if (!result.success) {
@@ -119,13 +120,18 @@ export const LoginForm = ({
                 </div>
               </FormItem>} />
 
-          <Button type="submit" variant="default" disabled={loading} className="w-full flex items-center justify-center gap-2 h-auto bg-blue-600 hover:bg-blue-700 py-2 text-base font-normal text-blue-500">
+          <Button type="submit" variant="default" disabled={loading} className="w-full flex items-center justify-center gap-2 h-auto py-2 text-base font-normal">
             {loading ? <>
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-r-transparent"></div> Signing In...
               </> : <>
                 Sign In <LogIn className="h-5 w-5" />
               </>}
           </Button>
+
+          {/* Admin login hint */}
+          <div className="text-xs text-gray-500 text-center mt-2">
+            Admin: admin@emrilacademy.tech
+          </div>
         </form>
       </Form>
 

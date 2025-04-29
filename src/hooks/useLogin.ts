@@ -91,11 +91,19 @@ export const useLogin = () => {
         description: "Welcome back!",
       });
       
+      // Special case for admin email
+      if (email === "admin@emrilacademy.tech") {
+        navigate('/admin');
+        return { success: true, error: null, session: data.session };
+      }
+      
       // Redirect based on role
       if (profile?.role === 'teacher') {
         navigate('/teacher');
       } else if (profile?.role === 'student') {
         navigate('/student');
+      } else if (profile?.role === 'admin') {
+        navigate('/admin');
       } else {
         navigate('/dashboard');
       }
