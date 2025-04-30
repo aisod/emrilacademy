@@ -34,6 +34,21 @@ export const DashboardLayout = ({
       }
 
       if (requiredRole) {
+        // First check for admin role in user_roles table
+        if (requiredRole === "admin") {
+          const { data: userRole } = await supabase
+            .from("user_roles")
+            .select("role")
+            .eq("user_id", session.user.id)
+            .maybeSingle();
+            
+          if (userRole?.role === "admin") {
+            // Allow access if user is admin
+            return;
+          }
+        }
+        
+        // Check role in profiles table for non-admin roles
         const { data: profile } = await supabase
           .from('profiles')
           .select('role')
@@ -41,7 +56,7 @@ export const DashboardLayout = ({
           .single();
 
         if (!profile || profile.role !== requiredRole) {
-          navigate('/dashboard');
+          navigate('/');
         }
       }
     };

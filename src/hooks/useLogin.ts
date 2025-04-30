@@ -75,7 +75,23 @@ export const useLogin = () => {
       // Reset login attempts on successful login
       setLoginAttempts(0);
       
-      // Get the user's role from profiles table
+      // First check for admin role in user_roles table
+      const { data: userRole } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", data.user.id)
+        .maybeSingle();
+        
+      if (userRole?.role === "admin") {
+        toast({
+          title: "Signed in successfully",
+          description: "Welcome back, Admin!",
+        });
+        navigate('/admin');
+        return { success: true, error: null, session: data.session };
+      }
+      
+      // If not admin, get role from profiles table
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('role')

@@ -17,8 +17,9 @@ export function AllUsersTable() {
   const [page, setPage] = useState(1);
   const pageSize = 20;
 
-  const { data: users, isLoading } = useQuery({
-    queryKey: ["all-users", page],
+  // Fetch users from profiles table
+  const { data: profileUsers, isLoading: isLoadingProfiles } = useQuery({
+    queryKey: ["all-profiles", page],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
@@ -27,9 +28,25 @@ export function AllUsersTable() {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data;
+      return data || [];
     },
   });
+
+  // Fetch admin users from user_roles table
+  const { data: adminUsers, isLoading: isLoadingAdmins } = useQuery({
+    queryKey: ["admin-users"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("user_id")
+        .eq("role", "admin");
+
+      if (error) throw error;
+      return data?.map(item => item.user_id) || [];
+    },
+  });
+
+  const isLoading = isLoadingProfiles || isLoadingAdmins;
 
   if (isLoading) {
     return (
@@ -39,6 +56,17 @@ export function AllUsersTable() {
       </div>
     );
   }
+
+  // Combine the data to show the correct role for admins
+  const users = profileUsers?.map(user => {
+    // Check if user is in the admin list
+    const isAdmin = adminUsers?.includes(user.id);
+    return {
+      ...user,
+      // Override role if user is admin
+      role: isAdmin ? "admin" : user.role
+    };
+  });
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
