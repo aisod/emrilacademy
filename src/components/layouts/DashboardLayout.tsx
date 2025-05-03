@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
-  requiredRole?: "student" | "teacher" | "admin";
+  requiredRole?: "student" | "teacher";
   className?: string;
 }
 
@@ -34,21 +34,6 @@ export const DashboardLayout = ({
       }
 
       if (requiredRole) {
-        // First check for admin role in user_roles table
-        if (requiredRole === "admin") {
-          const { data: userRole } = await supabase
-            .from("user_roles")
-            .select("role")
-            .eq("user_id", session.user.id)
-            .maybeSingle();
-            
-          if (userRole?.role === "admin") {
-            // Allow access if user is admin
-            return;
-          }
-        }
-        
-        // Check role in profiles table for non-admin roles
         const { data: profile } = await supabase
           .from('profiles')
           .select('role')
@@ -67,7 +52,7 @@ export const DashboardLayout = ({
   return (
     <SidebarProvider defaultOpen={!isMobile}>
       <div className="min-h-screen flex w-full bg-gray-50 dark:bg-gray-900">
-        {/* Desktop sidebar */}
+        {/* Mobile sidebar handled by DashboardSidebar directly */}
         <div className="hidden md:block">
           <DashboardSidebar />
         </div>
@@ -76,23 +61,16 @@ export const DashboardLayout = ({
           <Navigation />
           
           <div className="p-3 md:p-6 pt-16 md:pt-20 max-w-7xl mx-auto w-full">
-            {/* Mobile menu bar only shown on mobile */}
-            <div className="mb-4 md:hidden">
+            <div className="mb-4">
               <DashboardMenubar onMobileToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)} />
             </div>
-            
-            {/* Desktop menu bar only shown on desktop */}
-            <div className="mb-4 hidden md:block">
-              <DashboardMenubar />
-            </div>
-            
             <main className={cn("overflow-x-hidden", className)}>
               {children}
             </main>
           </div>
         </div>
         
-        {/* Mobile sidebar */}
+        {/* Sidebar for mobile view */}
         {isMobile && (
           <DashboardSidebar 
             isMobileOpen={isMobileMenuOpen} 
